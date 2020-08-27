@@ -32,6 +32,7 @@
     <link rel="stylesheet" href="{{ asset('public/css/default-css.css') }}">
     <link rel="stylesheet" href="{{ asset('public/css/styles.css') }}">
     <link rel="stylesheet" href="{{ asset('public/css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
     <!-- modernizr css -->
     <script src="{{ asset('public/js/vendor/modernizr-2.8.3.min.js') }}"></script>
     

@@ -169,11 +169,15 @@
                         $('#websiteSubmitBtn').html('Please wait...');
                     },
                     success: function(data) {
-                        ('#websitesDataTable').DataTable().ajax.reload();
+                        $('#addWebsiteModal').modal('hide');
+                        $('#addWebsiteForm')[0].reset();
+                        toastr.success('Success!', 'Website added successfully and being monitored' ,{"positionClass": "toast-bottom-right"});
+                        $('#websitesDataTable').DataTable().ajax.reload();
                         $('#websiteSubmitBtn').prop('disabled', false);
                         $('#websiteSubmitBtn').html('Submit');
                     },
                     error: function() {
+                        toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
                         $('#websiteSubmitBtn').prop('disabled', false);
                         $('#websiteSubmitBtn').html('Submit');
                     },

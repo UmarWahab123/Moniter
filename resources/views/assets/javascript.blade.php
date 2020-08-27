@@ -23,6 +23,7 @@
 
     <script src="https://www.highcharts.com/samples/static/highslide-full.min.js"></script>
     <script src="https://www.highcharts.com/samples/static/highslide.config.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="{{ asset('public/js/line-chart.js') }}"></script>
 
 
