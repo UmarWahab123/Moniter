@@ -26,7 +26,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="{{ asset('public/js/line-chart.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
         <!-- others plugins -->
     <script src="{{ asset('public/js/plugins.js') }}"></script>
     <script src="{{ asset('public/js/scripts.js') }}"></script>

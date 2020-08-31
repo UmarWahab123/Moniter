@@ -30,3 +30,8 @@
         <!-- others plugins -->
     <script src="{{ asset('public/js/plugins.js') }}"></script>
     <script src="{{ asset('public/js/scripts.js') }}"></script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        })
+    </script>

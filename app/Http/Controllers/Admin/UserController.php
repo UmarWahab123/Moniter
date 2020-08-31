@@ -20,9 +20,16 @@ class UserController extends Controller
             ->addIndexColumn()
             ->addColumn('action', function ($item) {
                 $html_string = '
-                          <button  value="'.$item->id.'"  class="btn btn-primary btn-sm edit-user"  title="Edit"><i class="fa fa-pencil"></i></button>
-                          <button  class="btn btn-sm btn-danger suspend-user" value="'.$item->id.'"   title="Suspend"><i class="fa fa-ban"></i></button>
+                          <button  value="'.$item->id.'"  class="btn btn-primary btn-sm edit-user"  title="Edit"><i class="fa fa-pencil"></i></button>                          
                      ';
+                     if($item->status==1)
+                     {
+                        $html_string .= ' <button   class="btn btn-sm btn-danger user-status" data-status=0 value="'.$item->id.'"   title="Suspend User"><i class="fa fa-ban"></i></button>';
+                     }
+                     else if($item->status==0)
+                     {
+                        $html_string .= ' <button  class="btn btn-sm btn-success user-status" data-status=1 value="'.$item->id.'"   title="Activate User"><i class="fa fa-check-circle"></i></button>';
+                     }
                 return $html_string;
             })
             ->addColumn('status', function ($item) {
@@ -65,9 +72,9 @@ class UserController extends Controller
             }
         }
     }
-    public function destroy(Request $request)
+    public function userStatus(Request $request)
     {
-        $user=User::where('id',$request->id)->update(['status'=>0]);
+        $user=User::where('id',$request->id)->update(['status'=>$request->status]);
         if($user==1)
         {
             return response()->json(['success'=>true]);
@@ -75,6 +82,23 @@ class UserController extends Controller
         else
         {
             return response()->json(['success'=>false]);
+        }
+    }
+    public function update(Request $request)
+    {
+        if(!empty($request->all()))
+        {
+            $user=User::find($request->id);
+            $user->name=$request->name;
+            $user->email=$request->email;
+            if($user->save())
+            {
+                return response()->json(['success'=>true]);
+            }
+            else
+            {
+                return response()->json(['success'=>false]);
+            }
         }
     }
 }

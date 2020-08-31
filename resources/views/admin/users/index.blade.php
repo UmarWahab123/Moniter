@@ -41,7 +41,7 @@
                                             <th>#</th>
                                             <th>Name </th>
                                             <th>Email </th>
-                                            <th>Role </th>
+                                            <th>Status </th>
                                             <th> </th>
                                         </tr>
                                     </thead>
@@ -83,6 +83,38 @@
                                 <label class="form-check-label" for="exampleCheck1">Check me out</label>
                             </div>
                             <button type="submit" id="userSubmitBtn" class="btn btn-primary mt-4 pr-4 pl-4">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="editUserModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit User</h5>
+                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editUserForm">
+                            @csrf
+                                <input type="text" name="id" class="form-control d-none" id="editID">
+
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Name</label>
+                                <input type="text" name="name" class="form-control" id="editName" aria-describedby="" placeholder="Enter Name">
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Email</label>
+                                <input type="email" name="email" class="form-control" id="editEmail" aria-describedby="emailHelp" placeholder="Enter Email">
+                            </div>
+                           
+                            <div class="form-check d-none">
+                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                            </div>
+                            <button type="submit" id="userEditSubmitBtn" class="btn btn-primary mt-4 pr-4 pl-4">Update</button>
                         </form>
                     </div>
                 </div>
@@ -134,14 +166,40 @@
                         data: 'action',
                         name: 'action'
                     },
-
-
                 ],
-
             });
 
-            $('#addUserBtn').on('click', function() {
-                $('#addUserModal').modal('show');
+            $(document).on('click','.edit-user', function() {
+                $('#editUserModal').modal('show');
+                $('#editID').val($(this).val());
+                $('#editName').val($(this).parent().prev().prev().prev().html());
+                $('#editEmail').val($(this).parent().prev().prev().html());
+            });
+            $('#editUserForm').on('submit', function(e) {
+                e.preventDefault();
+                var form = $('#editUserForm').serialize();
+                $.ajax({
+                    url: '{{ route('edit-user') }}', 
+                    method: 'post',
+                    data: form,
+                    beforeSend: function() {
+                        $('#userEditSubmitBtn').prop('disabled', true);
+                        $('#userEditSubmitBtn').html('Please wait...');
+                    },
+                    success: function(data) {
+                        $('#editUserModal').modal('hide');
+                        $('#editUserForm')[0].reset();
+                        toastr.success('Success!', 'User updated successfully' ,{"positionClass": "toast-bottom-right"});
+                        $('#usersDataTable').DataTable().ajax.reload();
+                        $('#userEditSubmitBtn').prop('disabled', false);
+                        $('#userEditSubmitBtn').html('Update');
+                    },
+                    error: function() {
+                        toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
+                        $('#userEditSubmitBtn').prop('disabled', false);
+                        $('#userEditSubmitBtn').html('Update');
+                    },
+                })
             });
             $('#addUserForm').on('submit', function(e) {
                 e.preventDefault();
@@ -170,12 +228,24 @@
                     },
                 })
             });
-            $(document).on('click','.btn-danger', function(e) {
+            $(document).on('click','.user-status', function(e) {
+
                 var id = $(this).val();
-                $.ajax({
-                    url: '{{ route('suspend-user') }}', 
+                var status = $(this).data('status');
+                Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, do it!'
+                }).then((result) => {
+                if (result.value) {
+                   $.ajax({
+                    url: '{{ route('user-status') }}', 
                     method: 'get',
-                    data: {id:id},
+                    data: {id:id,status:status},
                     success: function(data) {
                         toastr.success('Success!', 'User suspended successfully' ,{"positionClass": "toast-bottom-right"});
                         $('#usersDataTable').DataTable().ajax.reload();
@@ -184,7 +254,10 @@
                         toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
                 
                     },
+                });
+                }
                 })
+                
             });
 {{-- Highcharts.chart('container', {
 
