@@ -35,11 +35,11 @@ class UserController extends Controller
             ->addColumn('status', function ($item) {
                 if($item->status==1)
                 {
-                    return '<span class="badge badge-success col-3">Active</span>';
+                    return '<span class="badge badge-success ">Active</span>';
                 }
                 else
                 {
-                    return '<span class="badge badge-danger col-3">Suspended</span>';
+                    return '<span class="badge badge-danger ">Suspended</span>';
                 }
              })
             ->setRowId(function ($item) {
