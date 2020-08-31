@@ -35,7 +35,7 @@ class LoginController extends Controller
         }
         elseif(Auth::user()->hasAnyRole('user'))
         {
-            return redirect('/home');
+            return redirect('/user/home');
         }
         else
         {
