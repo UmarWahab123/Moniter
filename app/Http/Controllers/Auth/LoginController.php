@@ -29,11 +29,11 @@ class LoginController extends Controller
     {
         $user->last_seen_at = Carbon::now()->format('Y-m-d H:i:s');
         $user->save();
-        if(Auth::user()->hasAnyRole('admin'))
+        if(Auth::user()->hasAnyRole('admin')&&Auth::user()->status==1)
         {
             return redirect('admin/home');
         }
-        elseif(Auth::user()->hasAnyRole('user'))
+        elseif(Auth::user()->hasAnyRole('user')&&Auth::user()->status==1)
         {
             return redirect('/user/home');
         }

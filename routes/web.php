@@ -19,7 +19,7 @@ Auth::routes();
 Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => 'admin'], function (){
     Route::get('/home', 'HomeController@index')->name('home');
     Route::get('/websites', 'WebSiteController@index')->name('websites');
-    Route::post('/add-website', 'WebSiteControlller@store')->name('add-website');
+    Route::post('/add-website', 'WebSiteController@store')->name('add-website');
     Route::get('/users', 'UserController@index')->name('users');
     Route::post('/add-user', 'UserController@store')->name('add-user');
     Route::post('/edit-user', 'UserController@update')->name('edit-user');
@@ -29,5 +29,5 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => 'admi
 Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => 'user'], function (){
     Route::get('/home', 'HomeController@index')->name('home');
     Route::get('/websites', 'WebSiteController@index')->name('websites');
-    Route::post('/add-website', 'WebSitesControlller@store')->name('add-website');
+    Route::post('/add-website', 'WebSitesController@store')->name('add-website');
 });

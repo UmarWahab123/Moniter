@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Aritsan;
+use Artisan;
 use Auth;
 use App\Monitor;
 use Yajra\Datatables\Datatables;

@@ -1,10 +1,9 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Aritsan;
+use Artisan;
 use Auth;
 use App\Monitor;
 use Yajra\Datatables\Datatables;
@@ -56,6 +55,7 @@ class WebsiteController extends Controller
     {
         define('STDIN',fopen("php://stdin","r"));
         $output=Artisan::call("monitor:create ".$request->url);
+        dd($output);
         return response()->json(['success'=>true]);
     }
 }
