@@ -126,7 +126,7 @@
                 },
 
                 scrollCollapse: true,
-                ajax: "{{ route('websites') }}",
+                ajax: "{{ url('user/websites') }}",
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex'
@@ -161,7 +161,7 @@
                 var form = $('#addWebsiteForm').serialize();
 
                 $.ajax({
-                    url: '{{ route('add-website') }}', 
+                    url: '{{ url('user/add-website') }}', 
                     method: 'post',
                     data: form,
                     beforeSend: function() {

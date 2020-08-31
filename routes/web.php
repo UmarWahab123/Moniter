@@ -29,5 +29,5 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => 'admi
 Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => 'user'], function (){
     Route::get('/home', 'HomeController@index')->name('home');
     Route::get('/websites', 'WebSiteController@index')->name('websites');
-    Route::post('/add-website', 'WebSitesController@store')->name('add-website');
+    Route::post('/add-website', 'WebSiteController@store')->name('add-website');
 });
