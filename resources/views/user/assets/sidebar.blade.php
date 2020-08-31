@@ -9,11 +9,11 @@
                     <nav>
                         <ul class="metismenu" id="menu">
                             <li class="active">
-                                <a href="{{ url('home') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>dashboard</span></a>
+                                <a href="{{ route('home') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>dashboard</span></a>
                                
                             </li>
                             <li class="active">
-                                <a href="{{ url('websites') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Websites</span></a>
+                                <a href="{{ route('websites') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Websites</span></a>
                             </li>
 
                            

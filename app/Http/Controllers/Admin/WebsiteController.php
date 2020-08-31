@@ -1,13 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-//use Spatie\UptimeMonitor\Models\Monitor;
+use App\Http\Controllers\Controller;
+use Aritsan;
+use Auth;
 use App\Monitor;
 use Yajra\Datatables\Datatables;
-use Artisan;
-class WebSitesControlller extends Controller
+
+class WebsiteController extends Controller
 {
     public function index(Request $request)
     {
@@ -47,7 +49,7 @@ class WebSitesControlller extends Controller
             ->rawColumns(['action','status'])
             ->make(true);
         }
-        return view('websites.index',compact('websites'));
+        return view('admin.websites.index',compact('websites'));
         
     }
     public function store(Request $request)
@@ -57,4 +59,3 @@ class WebSitesControlller extends Controller
         return response()->json(['success'=>true]);
     }
 }
-   

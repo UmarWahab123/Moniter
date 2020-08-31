@@ -18,8 +18,8 @@ Route::get('/', function () {
 Auth::routes();
 Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => 'admin'], function (){
     Route::get('/home', 'HomeController@index')->name('home');
-    Route::get('/websites', 'WebSitesControlller@index')->name('websites');
-    Route::post('/add-website', 'WebSitesControlller@store')->name('add-website');
+    Route::get('/websites', 'WebSiteController@index')->name('websites');
+    Route::post('/add-website', 'WebSiteControlller@store')->name('add-website');
     Route::get('/users', 'UserController@index')->name('users');
     Route::post('/add-user', 'UserController@store')->name('add-user');
     Route::get('/suspend-user', 'UserController@destroy')->name('suspend-user');
@@ -27,6 +27,6 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => 'admi
 
 Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => 'user'], function (){
     Route::get('/home', 'HomeController@index')->name('home');
-    Route::get('/websites', 'WebSitesControlller@index')->name('websites');
+    Route::get('/websites', 'WebSiteController@index')->name('websites');
     Route::post('/add-website', 'WebSitesControlller@store')->name('add-website');
     });
