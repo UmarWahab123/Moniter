@@ -12,7 +12,7 @@
                                 <a href="{{ route('home') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>dashboard</span></a>
                                
                             </li>
-                            <li class="active">
+                            <li class="">
                                 <a href="{{ route('websites') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Websites</span></a>
                             </li>
 

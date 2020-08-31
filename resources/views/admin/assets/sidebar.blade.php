@@ -9,14 +9,14 @@
                     <nav>
                         <ul class="metismenu" id="menu">
                             <li class="active">
-                                <a href="{{ route('home') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>dashboard</span></a>
+                                <a href="{{ url('admin/home') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>dashboard</span></a>
                                
                             </li>
                             <li class="">
-                                <a href="{{ route('websites') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Websites</span></a>
+                                <a href="{{ url('admin/websites') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Websites</span></a>
                             </li>
                             <li class="">
-                                <a href="{{ route('users') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Users</span></a>
+                                <a href="{{ url('admin/users') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Users</span></a>
                             </li>
 
                            
