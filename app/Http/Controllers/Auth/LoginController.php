@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-
+use Auth;
+use Carbon\Carbon;
 class LoginController extends Controller
 {
     /*
@@ -19,13 +20,29 @@ class LoginController extends Controller
     */
 
     use AuthenticatesUsers;
-
     /**
      * Where to redirect users after login.
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    public function authenticated($request,$user)
+    {
+        $user->last_seen_at = Carbon::now()->format('Y-m-d H:i:s');
+        $user->save();
+        if(Auth::user()->hasAnyRole('admin'))
+        {
+            return redirect('admin/home');
+        }
+        elseif(Auth::user()->hasAnyRole('user'))
+        {
+            return redirect('/home');
+        }
+        else
+        {
+            Auth::logout();
+            return redirect('/login');
+        }
+    }
 
     /**
      * Create a new controller instance.

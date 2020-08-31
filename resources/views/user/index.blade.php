@@ -3,7 +3,7 @@
 @section('content')
 <div class="page-container">
     <!-- sidebar menu area start -->
-    @include('assets.sidebar')
+    @include('user.assets.sidebar')
     <!-- sidebar menu area end -->
     <!-- main content area start -->
     <div class="main-content">
@@ -12,7 +12,7 @@
 
         <!-- header area end -->
         <!-- page title area start -->
-        @include('assets.title_area')
+        @include('user.assets.title_area')
 
         <!-- page title area end -->
         <div class="main-content-inner">
@@ -308,8 +308,8 @@
     </div>
     <!-- main content area end -->
     <!-- footer area start-->
-    @include('assets.footer')
+    @include('user.assets.footer')
     <!-- footer area end-->
-    @include('assets.javascript')
+    @include('user.assets.javascript')
 </div>
 @endsection
