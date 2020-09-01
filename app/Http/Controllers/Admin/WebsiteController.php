@@ -8,7 +8,7 @@ use Auth;
 use App\Monitor;
 use Yajra\Datatables\Datatables;
 
-class WebsiteController extends Controller
+class WebSiteController extends Controller
 {
     public function index(Request $request)
     {
@@ -55,7 +55,13 @@ class WebsiteController extends Controller
     {
         define('STDIN',fopen("php://stdin","r"));
         $output=Artisan::call("monitor:create ".$request->url);
-        dd($output);
+        // $website=Monitor::where('url',$request->url)->first();
+        // dd($website);
+        // $m=Monitor::where('url',$monitor->url)->first();
+        // $uweb=new UserWebsite();
+        // $uweb->website_id=1;
+        // $uweb->user_id=Auth::user()->id;
+        // $uweb->save();
         return response()->json(['success'=>true]);
     }
 }
