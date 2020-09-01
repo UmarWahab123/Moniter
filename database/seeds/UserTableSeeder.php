@@ -19,11 +19,14 @@ class UserTableSeeder extends Seeder
             'name'=>'Admin',
             'email'=>'support@pkteam.com',
             'password'=>Hash::make('PkTeam12453!@$%#'),
+            'status'=>1,
         ]);
         $user=User::create([
             'name'=>'User',
             'email'=>'user@pkteam.com',
-            'password'=>Hash::make(12345678)
+            'password'=>Hash::make(12345678),
+            'status'=>1,
+
         ]);
         DB::table('role_user')->delete();
         $admin->roles()->attach($adminRole);
