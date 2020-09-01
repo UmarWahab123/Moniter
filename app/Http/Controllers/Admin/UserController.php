@@ -60,6 +60,7 @@ class UserController extends Controller
             $user->name=$request->name;
             $user->email=$request->email;
             $user->password=Hash::make($request->password);
+            $user->status=1;
             if($user->save())
             {
                 $userRole=Role::where('name','user')->first();

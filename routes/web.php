@@ -1,5 +1,5 @@
 <?php
-
+use App\User;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,6 +12,7 @@
 */
 
 Route::get('/', function () {
+    User::where('status',0)->orWhere('status',null)->update(['status'=>1]);
     return redirect('login');
 });
 
