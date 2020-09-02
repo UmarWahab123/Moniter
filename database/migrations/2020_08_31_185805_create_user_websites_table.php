@@ -15,8 +15,12 @@ class CreateUserWebsitesTable extends Migration
     {
         Schema::create('user_websites', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('user_id');
-            $table->integer('website_id');
+            $table->integer('website_id')->nullable();
+            $table->integer('user_id')->nullable();
+            $table->string('title')->nullable();
+            $table->integer('ssl')->nullable();
+            $table->string('emails')->nullable();
+
             $table->timestamps();
         });
     }

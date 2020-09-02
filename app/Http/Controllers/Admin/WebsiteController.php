@@ -5,14 +5,23 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Artisan;
 use Auth;
-use App\Monitor;
+use Spatie\Url\Url;
+use App\UserWebsite;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SiteStatusMail;
+// use App\Monitor;
 use Yajra\Datatables\Datatables;
+use Spatie\UptimeMonitor\Models\Monitor;
 
 class WebSiteController extends Controller
 {
     public function index(Request $request)
     {
-        $query=Monitor::get();
+        $query=Monitor::query();
+        $query=$query->with('getUserSites');
+        $query=$query->whereHas('getUserSites',function($q){
+            $q->where('user_id',Auth::user()->id);
+        })->get();
         $websites=$query;
         if($request->ajax())
         {
@@ -25,6 +34,12 @@ class WebSiteController extends Controller
                       </div>';
                 return $html_string;
             })
+            ->addColumn('title', function ($item) {
+                if($item->getSiteDetails!=null)
+                return $item->getSiteDetails->title;
+                else
+                return '--';
+             })
             ->addColumn('status', function ($item) {
                 if($item->uptime_status=='up')
                 $html= '<span class="badge badge-success col-3">Up</span>';
@@ -42,6 +57,9 @@ class WebSiteController extends Controller
             ->addColumn('last_status_check', function ($item) {
                 return $item->uptime_last_check_date;
              })
+             ->addColumn('url', function ($item) {
+                return $item->url->getScheme().'://'.$item->url->getHost();
+             })
             ->setRowId(function ($item) {
                 return $item->id;
             })
@@ -53,15 +71,39 @@ class WebSiteController extends Controller
     }
     public function store(Request $request)
     {
-        define('STDIN',fopen("php://stdin","r"));
-        $output=Artisan::call("monitor:create ".$request->url);
-        // $website=Monitor::where('url',$request->url)->first();
-        // dd($website);
-        // $m=Monitor::where('url',$monitor->url)->first();
-        // $uweb=new UserWebsite();
-        // $uweb->website_id=1;
-        // $uweb->user_id=Auth::user()->id;
-        // $uweb->save();
-        return response()->json(['success'=>true]);
+        //dd($request->all());
+        
+        $validator = $request->validate([
+            'url' => 'required|regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
+            'title' => 'required',
+            'emails' => 'required',
+        ]);
+            $mailData=$request->all();
+            define('STDIN',fopen("php://stdin","r"));
+            $output=Artisan::call("monitor:create ".$request->url);
+            $websites=Monitor::get();
+            $url=Url::fromString($request->url);
+            foreach($websites as $web)
+            {
+               // dd($web->url->getHost(),$url->getHost());
+                if($web->url->getHost()==$url->getHost())
+                {
+                    $uweb=new UserWebsite();
+                    $uweb->website_id=$web->id;
+                    $uweb->user_id=Auth::user()->id;
+                    $uweb->title=$request->title;
+                    $uweb->emails=$request->emails;
+                    if(isset($request->ssl))
+                    $uweb->ssl=1;
+                    else
+                    $uweb->ssl=0;
+                    $uweb->save();
+                    $mails=explode(",",$request->emails);
+                    Mail::to($mails[0])->send(new SiteStatusMail($mailData)); 
+                    return response()->json(['success'=>true]);
+                }
+            }
+            return response()->json(['success'=>false]);
+
     }
 }

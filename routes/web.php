@@ -16,7 +16,7 @@ Route::get('/', function () {
 });
 
 Auth::routes();
-Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => 'admin'], function (){
+Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['auth','admin']], function (){
     Route::get('/home', 'HomeController@index')->name('home');
     Route::get('/websites', 'WebSiteController@index')->name('websites');
     Route::post('/add-website', 'WebSiteController@store')->name('add-website');
@@ -26,7 +26,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => 'admi
     Route::get('/user-status', 'UserController@userStatus')->name('user-status');
 });
 
-Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => 'user'], function (){
+Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth','user']], function (){
     Route::get('/home', 'HomeController@index')->name('home');
     Route::get('/websites', 'WebSiteController@index')->name('websites');
     Route::post('/add-website', 'WebSiteController@store')->name('add-website');

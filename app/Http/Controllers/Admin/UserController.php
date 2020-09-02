@@ -8,6 +8,8 @@ use Yajra\Datatables\Datatables;
 use App\User;
 use App\Role;
 use Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\UserSignupMail;
 class UserController extends Controller
 {
     public function index(Request $request)
@@ -56,15 +58,17 @@ class UserController extends Controller
         
         if(!empty($request->all()))
         {
+            $mailData=$request->all();
             $user=new User();
             $user->name=$request->name;
             $user->email=$request->email;
-            $user->password=Hash::make($request->password);
+            $user->password=Hash::make(12345678);
             $user->status=1;
             if($user->save())
             {
                 $userRole=Role::where('name','user')->first();
                 $user->roles()->attach($userRole);
+                Mail::to($request->email)->send(new UserSignupMail($mailData)); 
                 return response()->json(['success'=>true]);
             }
             else

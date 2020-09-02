@@ -57,6 +57,7 @@
                                         <tr>
 
                                             <th>#</th>
+                                            <th>Title </th>
                                             <th>Website </th>
                                             <th>Status Changed On </th>
                                             <th>Last Checked On </th>
@@ -77,7 +78,7 @@
 
             <!-- footer area end-->
         </div>
-        <div class="modal fade" id="addWebsiteModal">
+       <div class="modal fade" id="addWebsiteModal">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -91,13 +92,22 @@
                                 <label for="exampleInputEmail1">URL</label>
                                 <input type="text" name="url" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Url">
                             </div>
-                            <div class="form-check d-none">
-                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                             <div class="form-group">
+                                <label for="exampleInputEmail1">Title</label>
+                                <input type="text" name="title" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Title">
+                            </div>
+                              <div class="form-group">
+                                <label for="exampleInputEmail1">Emails </label><small class="text-danger float-right"> (Emails should be comma seprated)</small>
+                                <input type="text" name="emails" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Title">
+                            </div>
+                            <div class="form-check ">
+                                <input name="ssl" type="checkbox" class="form-check-input" id="exampleCheck1">
+                                <label class="form-check-label" for="exampleCheck1">Ssl Check</label>
                             </div>
                             <button type="submit" id="websiteSubmitBtn" class="btn btn-primary mt-4 pr-4 pl-4">Submit</button>
                         </form>
-                    </div>
+                    </div >
+                   
                 </div>
             </div>
         </div>
@@ -130,6 +140,10 @@
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex'
+                    },
+                    {
+                        data: 'title',
+                        name: 'title'
                     },
                     {
                         data: 'url',

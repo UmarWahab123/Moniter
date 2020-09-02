@@ -107,7 +107,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="exampleInputEmail1">Email</label>
-                                <input type="email" name="email" class="form-control" id="editEmail" aria-describedby="emailHelp" placeholder="Enter Email">
+                                <input type="email" readonly name="email" class="form-control" id="editEmail" aria-describedby="emailHelp" placeholder="Enter Email">
                             </div>
                            
                             <div class="form-check d-none">
@@ -201,12 +201,16 @@
                     },
                 })
             });
+            $(document).on('click','#addUserBtn', function() {
+                $('#addUserModal').modal('show');
+            
+            });
             $('#addUserForm').on('submit', function(e) {
                 e.preventDefault();
                 var form = $('#addUserForm').serialize();
 
                 $.ajax({
-                    url: '{{ route('add-user') }}', 
+                    url: '{{ url('admin/add-user') }}', 
                     method: 'post',
                     data: form,
                     beforeSend: function() {

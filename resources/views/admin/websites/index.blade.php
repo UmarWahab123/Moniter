@@ -50,13 +50,13 @@
                     <div class="card">
                         <div class="card-body">
                             <span class="h4">Websites</span>
-                            <button class="btn btn-primary btn-sm float-right" id="addWebsiteBtn"> <i class="fa fa-plus"></i> Add Website</button>
+                            <button class="btn btn-primary btn-sm float-right mb-2" id="addWebsiteBtn"> <i class="fa fa-plus"></i> Add Website</button>
                             <div class="table-responsive">
                                 <table id="websitesDataTable" class="table table-stripped text-center">
                                     <thead>
                                         <tr>
-
                                             <th>#</th>
+                                            <th>Title </th>
                                             <th>Website </th>
                                             <th>Status Changed On </th>
                                             <th>Last Checked On </th>
@@ -91,13 +91,22 @@
                                 <label for="exampleInputEmail1">URL</label>
                                 <input type="text" name="url" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Url">
                             </div>
-                            <div class="form-check d-none">
-                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                             <div class="form-group">
+                                <label for="exampleInputEmail1">Title</label>
+                                <input type="text" name="title" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Title">
+                            </div>
+                              <div class="form-group">
+                                <label for="exampleInputEmail1">Emails </label><small class="text-danger float-right"> (Emails should be comma seprated)</small>
+                                <input type="text" name="emails" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Title">
+                            </div>
+                            <div class="form-check ">
+                                <input name="ssl" type="checkbox" class="form-check-input" id="exampleCheck1">
+                                <label class="form-check-label" for="exampleCheck1">Ssl Check</label>
                             </div>
                             <button type="submit" id="websiteSubmitBtn" class="btn btn-primary mt-4 pr-4 pl-4">Submit</button>
                         </form>
-                    </div>
+                    </div >
+                   
                 </div>
             </div>
         </div>
@@ -117,8 +126,9 @@
             var table = $('#websitesDataTable').DataTable({
                 // "bAutoWidth": false,
                 processing: true,
-                searching: false,
+                searching: true,
                 ordering: true,
+                pageLength: {{50}},
                 "processing": true,
                 'language': {
                     'loadingRecords': '&nbsp;',
@@ -127,9 +137,15 @@
 
                 scrollCollapse: true,
                 ajax: "{{ url('admin/websites') }}",
-                columns: [{
+                columns: [
+                    {
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex'
+                    },
+                    
+                    {
+                        data: 'title',
+                        name: 'title'
                     },
                     {
                         data: 'url',
@@ -152,7 +168,10 @@
                 ],
 
             });
-
+            $(document).on('keyup', '.form-control', function(){
+                $(this).removeClass('is-invalid');
+                $(this).next().remove();
+            });
             $('#addWebsiteBtn').on('click', function() {
                 $('#addWebsiteModal').modal('show');
             });
@@ -169,21 +188,37 @@
                         $('#websiteSubmitBtn').html('Please wait...');
                     },
                     success: function(data) {
-                        $('#addWebsiteModal').modal('hide');
-                        $('#addWebsiteForm')[0].reset();
-                        toastr.success('Success!', 'Website added successfully and being monitored' ,{"positionClass": "toast-bottom-right"});
-                        $('#websitesDataTable').DataTable().ajax.reload();
-                        $('#websiteSubmitBtn').prop('disabled', false);
-                        $('#websiteSubmitBtn').html('Submit');
+                        if(data.success==true)
+                        {
+                            $('#addWebsiteModal').modal('hide');
+                            $('#addWebsiteForm')[0].reset();
+                            toastr.success('Success!', 'Website added successfully and being monitored' ,{"positionClass": "toast-bottom-right"});
+                            $('#websitesDataTable').DataTable().ajax.reload();
+                            $('#websiteSubmitBtn').prop('disabled', false);
+                            $('#websiteSubmitBtn').html('Submit');
+                        }
+                        else if(data.success==false)
+                        {
+                            toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
+                            $('#websiteSubmitBtn').prop('disabled', false);
+                            $('#websiteSubmitBtn').html('Submit');
+                        }
                     },
-                    error: function() {
+                    error: function(request, status, error) {
                         toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
                         $('#websiteSubmitBtn').prop('disabled', false);
                         $('#websiteSubmitBtn').html('Submit');
+                        $('.form-control').removeClass('is-invalid');
+                        $('.form-control').next().remove();
+                        json = $.parseJSON(request.responseText);
+                        $.each(json.errors, function(key, value){
+                            $('input[name="'+key+'"]').after('<span class="invalid-feedback" role="alert"><strong>'+value+'</strong>');
+                            $('input[name="'+key+'"]').addClass('is-invalid');
+                        });
                     },
                 })
             });
-Highcharts.chart('container', {
+{{-- Highcharts.chart('container', {
 
     title: {
         text: 'Up and Down Time Check of Servers'
@@ -243,6 +278,6 @@ Highcharts.chart('container', {
         }]
     }
 
-});
+}); --}}
         </script>
         @endsection

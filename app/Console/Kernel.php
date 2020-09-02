@@ -4,7 +4,8 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SiteStatusMail;
 class Kernel extends ConsoleKernel
 {
     /**
