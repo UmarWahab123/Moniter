@@ -57,7 +57,7 @@ class WebSiteController extends Controller
                 return $item->uptime_last_check_date;
              })
              ->addColumn('url', function ($item) {
-                return $item->url->getScheme().'://'.$item->url->getHost();
+                return $item->url;
              })
             ->setRowId(function ($item) {
                 return $item->id;
