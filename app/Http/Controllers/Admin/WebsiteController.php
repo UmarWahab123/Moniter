@@ -10,14 +10,15 @@ use App\UserWebsite;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SiteStatusMail;
 use Yajra\Datatables\Datatables;
-use Spatie\UptimeMonitor\Models\Monitor;
+//use Spatie\UptimeMonitor\Models\Monitor;
+use App\Monitor;
 
 class WebSiteController extends Controller
 {
     public function index(Request $request)
     {
 
-        $query=Monitor::whereHas('web',function($q){
+        $query=Monitor::whereHas('getUserWebsites',function($q){
             $q->where('user_id',Auth::user()->id);
         })->get();
         $websites=$query;
