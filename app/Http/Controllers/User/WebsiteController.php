@@ -40,9 +40,9 @@ class WebsiteController extends Controller
              })
             ->addColumn('status', function ($item) {
                 if($item->uptime_status=='up')
-                $html= '<span class="badge badge-success col-3">Up</span>';
+                $html= '<span class="badge badge-success ">Up</span>';
                 else if($item->uptime_status=='down')
-                $html='<span class="badge badge-danger col-3">Down</span>';
+                $html='<span class="badge badge-danger ">Down</span>';
                 else
                 $html='<span class="badge badge-info">'.$item->uptime_status.'</span>';
 
@@ -84,7 +84,8 @@ class WebsiteController extends Controller
             foreach($websites as $web)
             {
                // dd($web->url->getHost(),$url->getHost());
-                if($web->url->getHost()==$url->getHost())
+               $webUrl=Url::fromString($web->url);
+                if($webUrl->getHost()==$url->getHost())
                 {
                     $uweb=new UserWebsite();
                     $uweb->website_id=$web->id;
