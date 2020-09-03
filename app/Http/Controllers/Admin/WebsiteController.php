@@ -92,7 +92,7 @@ class WebSiteController extends Controller
                     $uweb=new UserWebsite();
                     $uweb->website_id=$web->id;
                     $uweb->user_id=Auth::user()->id;
-                    // $uweb->title='ABC';
+                    $uweb->title='ABC';
                     $uweb->emails=$request->emails;
                     if(isset($request->ssl))
                     $uweb->ssl=1;
@@ -100,6 +100,7 @@ class WebSiteController extends Controller
                     $uweb->ssl=0;
                     $uweb->save();
                     $mails=explode(",",$request->emails);
+                    if(!empty($mails))
                     Mail::to($mails[0])->send(new SiteStatusMail($mailData)); 
                     return response()->json(['success'=>true]);
                 }
