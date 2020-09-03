@@ -9,7 +9,6 @@ use Spatie\Url\Url;
 use App\UserWebsite;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SiteStatusMail;
-// use App\Monitor;
 use Yajra\Datatables\Datatables;
 use Spatie\UptimeMonitor\Models\Monitor;
 
@@ -18,7 +17,7 @@ class WebSiteController extends Controller
     public function index(Request $request)
     {
 
-        $query=Monitor::whereHas('userWebsites',function($q){
+        $query=Monitor::whereHas('user_websites',function($q){
             $q->where('user_id',Auth::user()->id);
         })->get();
         $websites=$query;
@@ -82,6 +81,7 @@ class WebSiteController extends Controller
             $output=Artisan::call("monitor:create ".$request->url);
             $websites=Monitor::get();
             $url=Url::fromString($request->url);
+            
             foreach($websites as $web)
             {
                // dd($web->url->getHost(),$url->getHost());
