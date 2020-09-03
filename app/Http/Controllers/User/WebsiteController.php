@@ -9,7 +9,6 @@ use Spatie\Url\Url;
 use App\UserWebsite;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SiteStatusMail;
-// use App\Monitor;
 use Yajra\Datatables\Datatables;
 //use Spatie\UptimeMonitor\Models\Monitor;
 use App\Monitor;
