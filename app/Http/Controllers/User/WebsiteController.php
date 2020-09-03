@@ -17,7 +17,7 @@ class WebsiteController extends Controller
 {
     public function index(Request $request)
     {
-        $query=Monitor::with('userWebsites')->whereHas('userWebsites',function($q){
+        $query=Monitor::whereHas('userWebsites',function($q){
             $q->where('user_id',Auth::user()->id);
         })->get();
         $websites=$query;
