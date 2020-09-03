@@ -92,7 +92,7 @@ class WebSiteController extends Controller
                     $uweb=new UserWebsite();
                     $uweb->website_id=$web->id;
                     $uweb->user_id=Auth::user()->id;
-                    $uweb->title=$request->title;
+                    $uweb->title='ABC';
                     $uweb->emails=$request->emails;
                     if(isset($request->ssl))
                     $uweb->ssl=1;
