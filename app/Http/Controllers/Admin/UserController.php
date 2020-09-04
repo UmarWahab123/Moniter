@@ -30,7 +30,7 @@ class UserController extends Controller
                      }
                      else if($item->status==0)
                      {
-                        $html_string .= ' <button  class="btn btn-sm btn-success user-status" data-status=1 value="'.$item->id.'"   title="Activate User"><i class="fa fa-check-circle"></i></button>';
+                        $html_string .= ' <button  class="btn btn-sm btn-success user-status" data-status=1 value="'.$item->id.'"   title="Activate User"  ><i class="fa fa-check-circle"></i></button>';
                      }
                 return $html_string;
             })

@@ -12,7 +12,7 @@ use App\Mail\SiteStatusMail;
 use Yajra\Datatables\Datatables;
 //use Spatie\UptimeMonitor\Models\Monitor;
 use App\Monitor;
-
+use Config;
 class WebSiteController extends Controller
 {
     public function index(Request $request)
@@ -27,10 +27,10 @@ class WebSiteController extends Controller
             return Datatables::of($query)
             ->addIndexColumn()
             ->addColumn('action', function ($item) {
-                $html_string = '<div class="icons">'.'
-                          <a href="javascript:void(0);" data-id="'.$item->id.'"  class="actionicon tickIcon edit-icon" title="Edit"><i class="fa fa-pencil"></i></a>
-                          <a href="javascript:void(0);" class="actionicon deleteIcon delete-menu" data-id="'.$item->id.'" data-menu_name="'.$item->title.'" title="Delete"><i class="fa fa-ban"></i></a>
-                      </div>';
+                $html_string =' <button  value="'.$item->id.'"  class="btn btn-primary btn-sm edit-site"  title="Edit"><i class="fa fa-pencil"></i></button>';
+                $html_string.=' <button  value="'.$item->id.'"  class="btn btn-danger btn-sm delete-site"  title="Delete"><i class="fa fa-trash-o"></i></button>';
+                                                     
+                    
                 return $html_string;
             })
             ->addColumn('title', function ($item) {
@@ -75,8 +75,8 @@ class WebSiteController extends Controller
         $validator = $request->validate([
             'url' => 'required|regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
             'title' => 'required',
-            'emails' => 'required',
         ]);
+        
             $mailData=$request->all();
             define('STDIN',fopen("php://stdin","r"));
             $output=Artisan::call("monitor:create ".$request->url);
@@ -99,13 +99,26 @@ class WebSiteController extends Controller
                     else
                     $uweb->ssl=0;
                     $uweb->save();
-                    $mails=explode(",",$request->emails);
                     if(!empty($mails))
-                    Mail::to($mails[0])->send(new SiteStatusMail($mailData)); 
+                    {
+                        $mails=explode(",",$request->emails);
+                        foreach($mails as $mail)
+                        {
+                             Mail::to($mail)->send(new SiteStatusMail($mailData)); 
+                        }
+                    }
+                    else
+                    {
+                        $default_mail=config('uptime-monitor.notifications.mail.to');
+                        if(!empty($default_mail))
+                        {
+                            Mail::to($default_mail[0])->send(new SiteStatusMail($mailData));
+                        }
+                    }
                     return response()->json(['success'=>true]);
                 }
             }
             return response()->json(['success'=>false]);
-
     }
+    
 }

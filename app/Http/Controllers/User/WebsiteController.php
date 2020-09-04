@@ -97,8 +97,22 @@ class WebsiteController extends Controller
                     else
                     $uweb->ssl=0;
                     $uweb->save();
-                    $mails=explode(",",$request->emails);
-                    Mail::to($mails[0])->send(new SiteStatusMail($mailData)); 
+                    if(!empty($mails))
+                    {
+                        $mails=explode(",",$request->emails);
+                        foreach($mails as $mail)
+                        {
+                             Mail::to($mail)->send(new SiteStatusMail($mailData)); 
+                        }
+                    }
+                    else
+                    {
+                        $default_mail=config('uptime-monitor.notifications.mail.to');
+                        if(!empty($default_mail))
+                        {
+                            Mail::to($default_mail[0])->send(new SiteStatusMail($mailData));
+                        }
+                    }
 
                     return response()->json(['success'=>true]);
 

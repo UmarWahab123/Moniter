@@ -38,11 +38,10 @@
                                     <thead>
                                         <tr>
 
-                                            <th>#</th>
+                                            <th></th>
                                             <th>Name </th>
                                             <th>Email </th>
                                             <th>Status </th>
-                                            <th> </th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -146,9 +145,10 @@
 
                 scrollCollapse: true,
                 ajax: "{{ route('users') }}",
-                columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex'
+                columns: [
+                     {
+                        data: 'action',
+                        name: 'action'
                     },
                     {
                         data: 'name',
@@ -162,10 +162,7 @@
                         data: 'status',
                         name: 'status'
                     },
-                     {
-                        data: 'action',
-                        name: 'action'
-                    },
+                    
                 ],
             });
 
