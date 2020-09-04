@@ -232,7 +232,7 @@
                 }).then((result) => {
                 if (result.value) {
                    $.ajax({
-                    url: '{{ route('delete-website') }}', 
+                    url: '{{ url('admin/delete-website') }}', 
                     method: 'get',
                     data: {id:id},
                     success: function(data) {
