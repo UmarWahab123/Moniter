@@ -14,7 +14,7 @@ use Yajra\Datatables\Datatables;
 use App\WebsiteLog;
 use App\Monitor;
 use Config;
-class WebSiteController extends Controller
+class WebsiteController extends Controller
 {
     public function index(Request $request)
     {
