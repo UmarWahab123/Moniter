@@ -25,6 +25,7 @@
     <script src="https://www.highcharts.com/samples/static/highslide.config.js" charset="utf-8"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="{{ asset('public/js/line-chart.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
 
         <!-- others plugins -->

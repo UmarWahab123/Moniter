@@ -14,7 +14,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $query=User::get();
+        $query=User::with('userWebsites')->get();
         if($request->ajax())
         {
 
@@ -34,7 +34,13 @@ class UserController extends Controller
                      }
                 return $html_string;
             })
-            ->addColumn('status', function ($item) {
+            ->addColumn('counter', function ($item) {
+                if($item->userWebsites->isEmpty())
+                return 0;
+                else
+                return $item->userWebsites->count('id');
+             })
+             ->addColumn('status', function ($item) {
                 if($item->status==1)
                 {
                     return '<span class="badge badge-success ">Active</span>';

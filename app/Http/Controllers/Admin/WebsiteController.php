@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\SiteStatusMail;
 use Yajra\Datatables\Datatables;
 //use Spatie\UptimeMonitor\Models\Monitor;
+use App\WebsiteLog;
 use App\Monitor;
 use Config;
 class WebSiteController extends Controller
@@ -27,7 +28,7 @@ class WebSiteController extends Controller
             return Datatables::of($query)
             ->addIndexColumn()
             ->addColumn('action', function ($item) {
-                $html_string =' <button  value="'.$item->id.'"  class="btn btn-primary btn-sm edit-site"  title="Edit"><i class="fa fa-pencil"></i></button>';
+                $html_string =' <button  value="'.$item->id.'"  class="btn btn-primary btn-sm edit-site d-none"  title="Edit"><i class="fa fa-pencil"></i></button>';
                 $html_string.=' <button  value="'.$item->id.'"  class="btn btn-danger btn-sm delete-site"  title="Delete"><i class="fa fa-trash-o"></i></button>';
                                                      
                     
@@ -82,7 +83,7 @@ class WebSiteController extends Controller
             $output=Artisan::call("monitor:create ".$request->url);
             $websites=Monitor::get();
             $url=Url::fromString($request->url);
-            
+            $ssl=null;
             foreach($websites as $web)
             {
                // dd($web->url->getHost(),$url->getHost());
@@ -95,10 +96,19 @@ class WebSiteController extends Controller
                     $uweb->title=$request->title;
                     $uweb->emails=$request->emails;
                     if(isset($request->ssl))
-                    $uweb->ssl=1;
+                    {
+                        $ssl=1;
+                        $mailData['ssl']="True";
+                    }
                     else
-                    $uweb->ssl=0;
+                    {
+                        $ssl=0;
+                        $mailData['ssl']="False";
+
+                    }
+                    $uweb->ssl=$ssl;
                     $uweb->save();
+                    Monitor::where('id',$web->id)->update(['certificate_check_enabled'=>$ssl]);
                     if(!empty($mails))
                     {
                         $mails=explode(",",$request->emails);
@@ -120,5 +130,25 @@ class WebSiteController extends Controller
             }
             return response()->json(['success'=>false]);
     }
-    
+
+    public function destroy(Request $request)
+    {
+        // $website=Monitor::find($request->id);
+        // if($website!=null)
+        // {
+        //     define('STDIN',fopen("php://stdin","r"));
+        //     $output=Artisan::call("monitor:delete ".$website->url);
+        //     dd($output);
+        //     return response()->json(['success'=>true]);
+        // }
+        $output=Monitor::where('id',$request->id)->delete();
+        if($output>0)
+        {
+            UserWebsite::where('website_id',$request->id)->delete();
+            WebsiteLog::where('website_id',$request->id)->delete();
+            return response()->json(['success'=>true]);
+
+        }
+        
+    }
 }

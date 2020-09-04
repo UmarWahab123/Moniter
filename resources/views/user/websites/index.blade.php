@@ -56,7 +56,7 @@
                                     <thead>
                                         <tr>
 
-                                            <th>#</th>
+                                            <th></th>
                                             <th>Title </th>
                                             <th>Website </th>
                                             <th>Status Changed On </th>
@@ -138,8 +138,8 @@
                 scrollCollapse: true,
                 ajax: "{{ url('user/websites') }}",
                 columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex'
+                        data: 'action',
+                        name: 'action'
                     },
                     {
                         data: 'title',
@@ -197,7 +197,36 @@
                     },
                 })
             });
-Highcharts.chart('container', {
+               $(document).on('click','.delete-site', function(e) {
+
+                var id = $(this).val();
+                Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, do it!'
+                }).then((result) => {
+                if (result.value) {
+                   $.ajax({
+                    url: '{{ route('delete-website') }}', 
+                    method: 'get',
+                    data: {id:id},
+                    success: function(data) {
+                        toastr.success('Success!', 'Website deleted successfully' ,{"positionClass": "toast-bottom-right"});
+                        $('#websitesDataTable').DataTable().ajax.reload();
+                    },
+                    error: function() {
+                        toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
+                    },
+                });
+                }
+                })
+                
+            });
+{{-- Highcharts.chart('container', {
 
     title: {
         text: 'Up and Down Time Check of Servers'
@@ -257,6 +286,6 @@ Highcharts.chart('container', {
         }]
     }
 
-});
+}); --}}
         </script>
         @endsection
