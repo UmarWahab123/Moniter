@@ -1,7 +1,7 @@
 @component('mail::message')
 # Website {{ $mailData['status'] }}
 
-Your website <b>{{ $mailData['site'] }}</b> status has been changed to <br>
+Your website <b>({{ $mailData['site'] }})</b> status has been changed to <br>
 {{ $mailData['status'] }}
 
 

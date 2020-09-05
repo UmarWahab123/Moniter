@@ -7,7 +7,7 @@
                             <span></span>
                             <span></span>
                         </div>
-                        <div class="search-box pull-left">
+                        <div class="search-box pull-left d-none">
                             <form action="#">
                                 <input type="text" name="search" placeholder="Search..." required>
                                 <i class="ti-search"></i>
@@ -16,7 +16,7 @@
                     </div>
                     <!-- profile info & task notification -->
                     <div class="col-md-6 col-sm-4 clearfix">
-                        <ul class="notification-area pull-right">
+                        <ul class="d-none notification-area pull-right">
                             <li id="full-view"><i class="ti-fullscreen"></i></li>
                             <li id="full-view-exit"><i class="ti-zoom-out"></i></li>
                             <li class="dropdown">
@@ -160,6 +160,23 @@
                                 <i class="ti-settings"></i>
                             </li>
                         </ul>
+                        <div class="user-profile pull-right">
+                            <img class="avatar user-thumb" src="{{ asset('public/images/author/avatar.png') }}" alt="avatar">
+                            <h4 class="user-name dropdown-toggle" data-toggle="dropdown">{{ Auth::user()->name }}<i class="fa fa-angle-down"></i></h4>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="#">Message</a>
+                                <a class="dropdown-item" href="#">Settings</a>
+                                <a class="dropdown-item" href="#"><a class="dropdown-item" href="{{ route('logout') }}"
+                                       onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();">
+                                        {{ __('Logout') }}
+                                    </a>
+
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                        @csrf
+                                    </form></a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

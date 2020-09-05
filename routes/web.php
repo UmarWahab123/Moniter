@@ -25,6 +25,8 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['aut
     Route::post('/add-user', 'UserController@store')->name('add-user');
     Route::post('/edit-user', 'UserController@update')->name('edit-user');
     Route::get('/user-status', 'UserController@userStatus')->name('user-status');
+
+    Route::get('/settings', 'SettingController@index')->name('settings');
 });
 
 Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth','user']], function (){
