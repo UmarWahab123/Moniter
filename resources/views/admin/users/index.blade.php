@@ -17,11 +17,11 @@
     <!-- main content area start -->
     <div class="main-content">
         <!-- header area start -->
-        @include('admin.assets.header')
+        {{-- @include('admin.assets.header') --}}
 
         <!-- header area end -->
         <!-- page title area start -->
-        {{-- @include('admin.assets.title_area') --}}
+        @include('admin.assets.title_area')
 
         <!-- page title area end -->
         <div class="main-content-inner">
@@ -33,8 +33,8 @@
                         <div class="card-body">
                             <span class="h4">Users</span>
                             <button class="btn btn-primary btn-sm float-right" id="addUserBtn"> <i class="fa fa-plus"></i> Add User</button>
-                            <div class="table-responsive">
-                                <table id="usersDataTable" class="table table-stripped text-center">
+                            <div class="table-responsive mt-3">
+                                <table id="usersDataTable" class=" table table-stripped text-center">
                                     <thead>
                                         <tr>
 
@@ -136,7 +136,7 @@
             var table = $('#usersDataTable').DataTable({
                 // "bAutoWidth": false,
                 processing: true,
-                searching: false,
+                searching: true,
                 ordering: true,
                 "processing": true,
                 'language': {

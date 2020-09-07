@@ -8,11 +8,11 @@
     <!-- main content area start -->
     <div class="main-content">
         <!-- header area start -->
-        @include('admin.assets.header')
+        {{-- @include('admin.assets.header') --}}
 
         <!-- header area end -->
         <!-- page title area start -->
-        {{-- @include('user.assets.title_area') --}}
+        @include('user.assets.title_area')
 
         <!-- page title area end -->
         <div class="main-content-inner">

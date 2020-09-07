@@ -17,11 +17,11 @@
     <!-- main content area start -->
     <div class="main-content">
         <!-- header area start -->
-        @include('admin.assets.header')
+        {{-- @include('admin.assets.header') --}}
 
         <!-- header area end -->
         <!-- page title area start -->
-        {{-- @include('admin.assets.title_area') --}}
+        @include('admin.assets.title_area')
 
         <!-- page title area end -->
         <div class="main-content-inner">
@@ -49,7 +49,6 @@
                 <div class="col-12 mt-5">
                     <div class="card">
                         <div class="card-body">
-                            <span class="h4">Websites</span>
                             <button class="btn btn-primary btn-sm float-right mb-2" id="addWebsiteBtn"> <i class="fa fa-plus"></i> Add Website</button>
                             <div class="table-responsive">
                                 <table id="websitesDataTable" class="table table-stripped text-center">
