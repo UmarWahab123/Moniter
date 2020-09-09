@@ -134,7 +134,7 @@ class WebsiteController extends Controller
                     $uweb->save();
                     Monitor::where('id',$web->id)->update(['certificate_check_enabled'=>$ssl]);
                     $mails=$request->emails;
-                    if(!empty($mails))
+                    if($mails!=null)
                     {
 
                         $mails=explode(",",$request->emails);
