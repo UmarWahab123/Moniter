@@ -35,7 +35,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
     <!-- modernizr css -->
     <script src="{{ asset('public/js/vendor/modernizr-2.8.3.min.js') }}"></script>
-    
+<style>
+#myProgress {
+  width: 100%;
+  background-color: #ddd;
+}
+
+#myBar {
+  width: 1%;
+  height: 30px;
+  background-color: #4CAF50;
+}
+</style>
 </head>
 <body>
     <div id="app">

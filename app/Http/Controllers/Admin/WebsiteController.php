@@ -28,7 +28,7 @@ class WebsiteController extends Controller
             return Datatables::of($query)
             ->addIndexColumn()
             ->addColumn('action', function ($item) {
-                $html_string =' <button  value="'.$item->id.'"  class="btn btn-primary btn-sm edit-site d-none"  title="Edit"><i class="fa fa-pencil"></i></button>';
+                $html_string =' <button  value="'.$item->id.'"  class="btn btn-primary btn-sm edit-site d-none "  title="Edit"><i class="fa fa-pencil"></i></button>';
                 $html_string.=' <button  value="'.$item->id.'"  class="btn btn-danger btn-sm delete-site"  title="Delete"><i class="fa fa-trash-o"></i></button>';
                                                      
                     
@@ -54,16 +54,39 @@ class WebsiteController extends Controller
             ->addColumn('status_change_on', function ($item) {
                return $item->uptime_status_last_change_date;
             })
+            
             ->addColumn('last_status_check', function ($item) {
                 return $item->uptime_last_check_date;
              })
+             ->addColumn('certificate_expiry_date', function ($item) {
+                if($item->certificate_expiration_date==null)
+                return '--';
+                return $item->certificate_expiration_date;
+             })
+             ->addColumn('certificate_check', function ($item) {
+                if($item->certificate_check_enabled)
+                {
+                    return '<span class="badge badge-success ">ON</span>';
+                }
+                else
+                {
+                    return '<span class="badge badge-danger ">OFF</span>';
+                }
+                return $item->certificate_check_enabled;
+             })
+             ->addColumn('certificate_issuer', function ($item) {
+                 if($item->certificate_issuer==null)
+                 return '--';
+                return $item->certificate_issuer;
+             })
+             
              ->addColumn('url', function ($item) {
                 return $item->url;
              })
             ->setRowId(function ($item) {
                 return $item->id;
             })
-            ->rawColumns(['action','status'])
+            ->rawColumns(['action','status','certificate_check'])
             ->make(true);
         }
         return view('admin.websites.index',compact('websites'));
@@ -72,6 +95,7 @@ class WebsiteController extends Controller
     public function store(Request $request)
     {
         //dd($request->all());
+        
         
         $validator = $request->validate([
             'url' => 'required|regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
@@ -109,12 +133,14 @@ class WebsiteController extends Controller
                     $uweb->ssl=$ssl;
                     $uweb->save();
                     Monitor::where('id',$web->id)->update(['certificate_check_enabled'=>$ssl]);
+                    $mails=$request->emails;
                     if(!empty($mails))
                     {
+
                         $mails=explode(",",$request->emails);
                         foreach($mails as $mail)
                         {
-                             Mail::to($mail)->send(new SiteStatusMail($mailData)); 
+                            Mail::to($mail)->send(new SiteStatusMail($mailData)); 
                         }
                     }
                     else

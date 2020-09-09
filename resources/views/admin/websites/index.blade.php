@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+
 <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
@@ -48,18 +49,24 @@
                 </div> --}}
                 <div class="col-12 mt-5">
                     <div class="card">
+                   
                         <div class="card-body">
                             <button class="btn btn-primary btn-sm float-right mb-2" id="addWebsiteBtn"> <i class="fa fa-plus"></i> Add Website</button>
                             <div class="table-responsive">
+
                                 <table id="websitesDataTable" class="table table-stripped text-center">
                                     <thead>
                                         <tr>
-                                            <th></th>
                                             <th>Title </th>
                                             <th>Website </th>
                                             <th>Status Changed On </th>
                                             <th>Last Checked On </th>
+                                            <th>Ssl Cerificate Check </th>
+                                            <th>Certificate Expiry Date </th>
+                                            <th>Certificate Issuer </th>
                                             <th>Status </th>
+                                            <th>Action</th>
+
                                         </tr>
                                     </thead>
                                 </table>
@@ -109,6 +116,33 @@
                 </div>
             </div>
         </div>
+         <div class="modal fade" id="editWebsiteModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add New Website</h5>
+                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editWebsiteForm">
+                            @csrf
+                          
+                             <div class="form-group">
+                                <label for="exampleInputEmail1">Title</label>
+                                <input type="text" name="title" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Title">
+                            </div>
+                         
+                            <div class="form-check ">
+                                <input name="ssl" type="checkbox" class="form-check-input" id="exampleCheck1">
+                                <label class="form-check-label" for="exampleCheck1">Ssl Check</label>
+                            </div>
+                            <button type="submit" id="editWebsiteSubmitBtn" class="btn btn-primary mt-4 pr-4 pl-4">Submit</button>
+                        </form>
+                    </div >
+                   
+                </div>
+            </div>
+        </div>
         @include('admin.assets.javascript')
         <!-- Start datatable js -->
         <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
@@ -133,14 +167,18 @@
                     'loadingRecords': '&nbsp;',
                     'processing': 'Loading...'
                 },
-
                 scrollCollapse: true,
-                ajax: "{{ url('admin/websites') }}",
-                columns: [
+                ajax: {
+                    url:"{{ url('admin/websites') }}",
+                    {{-- beforeSend:function()
                     {
-                        data: 'action',
-                        name: 'action'
                     },
+                    success:function()
+                    {
+                    } --}}
+                },
+                columns: [
+                 
                     
                     {
                         data: 'title',
@@ -158,9 +196,25 @@
                         data: 'last_status_check',
                         name: 'last_status_check'
                     },
+                    {
+                        data: 'certificate_check',
+                        name: 'certificate_check'
+                    },
+                    {
+                        data: 'certificate_expiry_date',
+                        name: 'certificate_expiry_date'
+                    },
+                     {
+                        data: 'certificate_issuer',
+                        name: 'certificate_issuer'
+                    },
                      {
                         data: 'status',
                         name: 'status'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action'
                     },
 
 
@@ -246,6 +300,41 @@
                 })
                 
             });
+                $(document).on('click','.edit-site', function(e) {
+
+                    $('#editWebsiteModal').modal('show');
+
+                    {{-- var id = $(this).val();
+                   $.ajax({
+                    url: '{{ url('admin/edit-website') }}', 
+                    method: 'get',
+                    data: {id:id},
+                    success: function(data) {
+                        toastr.success('Success!', 'Website deleted successfully' ,{"positionClass": "toast-bottom-right"});
+                        $('#websitesDataTable').DataTable().ajax.reload();
+                    },
+                    error: function() {
+                        toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
+                    },
+                }); --}}
+                
+            });
+
+            $(document).ready(function(){
+                    reloadDatatable();                
+            });
+
+            function reloadDatatable()
+            {
+                 setTimeout(function(){           
+                    $('#websitesDataTable').DataTable().ajax.reload();
+                    reloadDatatable();              
+
+                }, 65000);
+                
+            }
+
+         
 {{-- Highcharts.chart('container', {
 
     title: {
