@@ -38,11 +38,12 @@
                                     <thead>
                                         <tr>
 
-                                            <th></th>
                                             <th>Name </th>
                                             <th>Email </th>
                                             <th>Total Websites </th>
                                             <th>Status </th>
+                                            <th>Action</th>
+
                                         </tr>
                                     </thead>
                                 </table>
@@ -147,10 +148,7 @@
                 scrollCollapse: true,
                 ajax: "{{ route('users') }}",
                 columns: [
-                     {
-                        data: 'action',
-                        name: 'action'
-                    },
+                   
                     {
                         data: 'name',
                         name: 'name'
@@ -167,6 +165,10 @@
                         data: 'status',
                         name: 'status'
                     },
+                    {
+                        data: 'action',
+                        name: 'action'
+                    },
                     
                     
                 ],
@@ -175,8 +177,8 @@
             $(document).on('click','.edit-user', function() {
                 $('#editUserModal').modal('show');
                 $('#editID').val($(this).val());
-                $('#editName').val($(this).parent().next().html());
-                $('#editEmail').val($(this).parent().next().next().html());
+                $('#editName').val($(this).parent().prev().prev().prev().prev().html());
+                $('#editEmail').val($(this).parent().prev().prev().prev().html());
             });
             $('#editUserForm').on('submit', function(e) {
                 e.preventDefault();
