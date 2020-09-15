@@ -20,6 +20,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['aut
     Route::get('/home', 'HomeController@index')->name('home');
     Route::get('/websites', 'WebsiteController@index')->name('websites');
     Route::post('/add-website', 'WebsiteController@store')->name('add-website');
+    Route::get('/edit-website', 'WebsiteController@update')->name('edit-website');
     Route::get('/delete-website', 'WebsiteController@destroy')->name('delete-website');
     Route::get('/users', 'UserController@index')->name('users');
     Route::post('/add-user', 'UserController@store')->name('add-user');

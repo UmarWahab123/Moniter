@@ -120,23 +120,29 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Add New Website</h5>
+                        <h5 class="modal-title">Edit Website</h5>
                         <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                     </div>
                     <div class="modal-body">
                         <form id="editWebsiteForm">
                             @csrf
-                          
+                            <input type="hidden" name="id" id="editId">
                              <div class="form-group">
                                 <label for="exampleInputEmail1">Title</label>
-                                <input type="text" name="title" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Title">
+                                <input type="text" name="title" class="form-control" id="editTitle" aria-describedby="emailHelp" placeholder="Enter Title">
                             </div>
+                             <div class="form-group">
+                                <label for="exampleInputEmail1">Emails</label>
+                                <input type="text" name="emails" class="form-control" id="editEmails" aria-describedby="emailHelp" placeholder="Enter Title">
+                            </div>
+                            
+
                          
                             <div class="form-check ">
-                                <input name="ssl" type="checkbox" class="form-check-input" id="exampleCheck1">
-                                <label class="form-check-label" for="exampleCheck1">Ssl Check</label>
+                                <input name="ssl" type="checkbox" class="form-check-input" id="editSsl">
+                                <label class="form-check-label" for="editSsl">Ssl Check</label>
                             </div>
-                            <button type="submit" id="editWebsiteSubmitBtn" class="btn btn-primary mt-4 pr-4 pl-4">Submit</button>
+                            <button type="submit" id="editWebsiteSubmitBtn" class="btn btn-primary mt-4 pr-4 pl-4">Update</button>
                         </form>
                     </div >
                    
@@ -303,20 +309,36 @@
                 $(document).on('click','.edit-site', function(e) {
 
                     $('#editWebsiteModal').modal('show');
+                    $('#editTitle').val($(this).parent().siblings('td:first').html());
+                    $('#editEmails').val($(this).data('emails'));
+                    $('#editId').val($(this).val());
+                    if($(this).data('ssl')==1)
+                    {
+                        $('#editSsl').prop('checked',true);
+                    }
+                    else
+                    {
+                        $('#editSsl').prop('checked',false);
+                    }
+                   
+                });
 
-                    {{-- var id = $(this).val();
-                   $.ajax({
-                    url: '{{ url('admin/edit-website') }}', 
-                    method: 'get',
-                    data: {id:id},
-                    success: function(data) {
-                        toastr.success('Success!', 'Website deleted successfully' ,{"positionClass": "toast-bottom-right"});
-                        $('#websitesDataTable').DataTable().ajax.reload();
-                    },
-                    error: function() {
-                        toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
-                    },
-                }); --}}
+                $(document).on('click','#editWebsiteSubmitBtn',function(e){
+                    e.preventDefault();
+                        var formData=$('#editWebsiteForm').serialize();
+                        $.ajax({
+                        url: '{{ url('admin/edit-website') }}', 
+                        method: 'get',
+                        data: formData,
+                        success: function(data) {
+                            $('#editWebsiteModal').modal('hide');
+                            toastr.success('Success!', 'Website deleted successfully' ,{"positionClass": "toast-bottom-right"});
+                            $('#websitesDataTable').DataTable().ajax.reload();
+                        },
+                        error: function() {
+                            toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
+                        },
+                })
                 
             });
 

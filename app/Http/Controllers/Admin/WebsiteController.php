@@ -28,7 +28,7 @@ class WebsiteController extends Controller
             return Datatables::of($query)
             ->addIndexColumn()
             ->addColumn('action', function ($item) {
-                $html_string =' <button  value="'.$item->id.'"  class="btn btn-primary btn-sm edit-site d-none "  title="Edit"><i class="fa fa-pencil"></i></button>';
+                $html_string =' <button  value="'.$item->id.'" data-emails="'.$item->getSiteDetails->emails.'" data-ssl="'.$item->certificate_check_enabled.'"  class="btn btn-primary btn-sm edit-site "  title="Edit"><i class="fa fa-pencil"></i></button>';
                 $html_string.=' <button  value="'.$item->id.'"  class="btn btn-danger btn-sm delete-site"  title="Delete"><i class="fa fa-trash-o"></i></button>';
                                                      
                     
@@ -176,5 +176,22 @@ class WebsiteController extends Controller
 
         }
         
+    }
+
+    public function update(Request $request)
+    {
+        $monitor=Monitor::find($request->id);
+        $ssl=0;
+        if(isset($request->ssl))
+        {
+            $ssl=1;
+        }
+        $monitor->certificate_check_enabled=$ssl;
+        if($monitor->save())
+        {
+            UserWebsite::where('website_id',$request->id)->update(['emails'=>$request->emails,'title'=>$request->title]);
+            return response()->json(['success'=>true]);
+        }
+        return response()->json(['success'=>false]);
     }
 }
