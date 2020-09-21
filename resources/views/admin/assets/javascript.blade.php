@@ -17,15 +17,7 @@
     <!-- start chart js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
     <!-- start highcharts js -->
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/modules/data.js"></script>
-    <script src="https://code.highcharts.com/modules/series-label.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
-    <script src="https://code.highcharts.com/modules/export-data.js"></script>
-    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 
-    <script src="https://www.highcharts.com/samples/static/highslide-full.min.js"></script>
-    <script src="https://www.highcharts.com/samples/static/highslide.config.js" charset="utf-8"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="{{ asset('public/js/line-chart.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
@@ -33,3 +25,9 @@
         <!-- others plugins -->
     <script src="{{ asset('public/js/plugins.js') }}"></script>
     <script src="{{ asset('public/js/scripts.js') }}"></script>
+
+        <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+        <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
+        {{-- <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+        <script src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js"></script> --}}

@@ -25,22 +25,30 @@
 
         <!-- page title area end -->
         <div class="main-content-inner">
-            <div class="col-lg-6 col-ml-12">
+            <div class="col-lg-12 col-ml-12 mt-5">
+
                 <div class="row">
                     <!-- basic form start -->
+
                     <div class="col-12 mt-5">
-                        <div class="card">
+
+                        <div class="card col-6">
                             <div class="card-body">
-                                <h4 class="header-title">Email Setting</h4>
-                                <form>
+                                <h4 class="header-title">Default Settings
+                                </h4>
+                                <table class="table d-none"> 
+                                    <tr>
+                                        <th>Email</th>
+                                        <td>arslan@akhtarsitsolutions.com</td>
+                                    </tr>
+                                </table>
+                                <form id="defaultSettingForm">
+                                @csrf
                                     <div class="form-group">
                                         <label for="exampleInputEmail1">Email address</label>
-                                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
-                                        <small id="emailHelp" class="form-text text-muted">We'll never share your
-                                            email with anyone else.</small>
+                                        <input required value="{{@$setting->settings}}" type="email" class="form-control" name="email" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
                                     </div>
-                                 
-                                    <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Submit</button>
+                                    <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Save</button>
                                 </form>
                             </div>
                         </div>
@@ -53,7 +61,36 @@
             <!-- footer area end-->
         </div>
 </div>
-
-@include('admin.assets.javascript')
 </div>
+@include('admin.assets.javascript')
+
+<script>
+  
+    $(document).on('submit','#defaultSettingForm',function(e){
+
+        e.preventDefault();
+        var formData=$('#defaultSettingForm').serialize();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+            }
+        });
+        $.ajax({
+            method:"post",
+            url:"{{url('admin/add-settings')}}",
+            data:formData,
+            success:function(data)
+            {
+                if(data.success)
+                {
+                    toastr.success('Success!', 'Settings save successfully' ,{"positionClass": "toast-bottom-right"});
+                }
+                else
+                {
+                    toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
+                }
+            }
+        })
+    })
+</script>
 @endsection

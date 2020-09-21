@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SiteUptimeStatus;
 use App\WebsiteLog;
-
+use App\Setting;
 use App\Monitor;
 
 class SendEmails extends Command
@@ -72,21 +72,41 @@ class SendEmails extends Command
                             }
                             else
                             {
-                                $default_mail=config('uptime-monitor.notifications.mail.to');
-                                if(!empty($default_mail))
+                                $setting=Setting::where('type','email')->first();
+                                if($setting==null)
                                 {
-                                    Mail::to($default_mail[0])->send(new SiteUptimeStatus($mailData));
+                                    $default_mail=config('uptime-monitor.notifications.mail.to');
+                                    if($default_mail!=null)
+                                    {
+                                        Mail::to($default_mail[0])->send(new SiteUptimeStatus($mailData));
+                                    }
                                 }
-                                $this->info('Mail sent to default mail for website sent!'.$mailData['site']);
+                                else
+                                {
+                                    Mail::to($setting->settings)->send(new SiteUptimeStatus($mailData));
+                                    // /dd('up',$setting->settings);
 
+                                }
                             }
                         }
                         else
                         {
-                            $default_mail=config('uptime-monitor.notifications.mail.to');
-                            if(!empty($default_mail))
+                            $setting=Setting::where('type','email')->first();
+                            if($setting==null)
                             {
-                                Mail::to($default_mail[0])->send(new SiteUptimeStatus($mailData));
+                                $default_mail=config('uptime-monitor.notifications.mail.to');
+                                if($default_mail!=null)
+                                {
+                                    Mail::to($default_mail[0])->send(new SiteUptimeStatus($mailData));
+                                    $this->info('Mail sent to config default mail for website sent!'.$mailData['site']);
+
+                                }
+                            }
+                            else
+                            {
+                                Mail::to($setting->settings)->send(new SiteUptimeStatus($mailData));
+                                $this->info('Mail sent to setting mail for website sent!'.$mailData['site']);
+
                             }
                             $this->info('Mail sent to default mail for website sent!'.$mailData['site']);
 
@@ -156,24 +176,44 @@ class SendEmails extends Command
                         }
                         else
                         {
-                            $default_mail=config('uptime-monitor.notifications.mail.to');
-                            if(!empty($default_mail))
+                            $setting=Setting::where('type','email')->first();
+                            if($setting==null)
                             {
-                                Mail::to($default_mail[0])->send(new SiteUptimeStatus($mailData));
+                                $default_mail=config('uptime-monitor.notifications.mail.to');
+                                if($default_mail!=null)
+                                {
+                                    Mail::to($default_mail[0])->send(new SiteUptimeStatus($mailData));
+                                }
                             }
-                            $this->info('Mail sent to default mail for website sent!'.$mailData['site']);
+                            else
+                            {
+                                Mail::to($setting->settings)->send(new SiteUptimeStatus($mailData));
+                                //dd('down',$setting->settings);
 
+
+                            }
                         }
                     }
                     else
                     {
-                        $default_mail=config('uptime-monitor.notifications.mail.to');
-                        if(!empty($default_mail))
+                        $setting=Setting::where('type','email')->first();
+                        if($setting==null)
                         {
-                            Mail::to($default_mail[0])->send(new SiteUptimeStatus($mailData));
+                            $default_mail=config('uptime-monitor.notifications.mail.to');
+                            if($default_mail!=null)
+                            {
+                                Mail::to($default_mail[0])->send(new SiteUptimeStatus($mailData));
+                                $this->info('Mail sent to config default mail for website sent!'.$mailData['site']);
+
+                            }
+                        }
+                        else
+                        {
+                            Mail::to($setting->settings)->send(new SiteUptimeStatus($mailData));
+                            $this->info('Mail sent to setting mail for website sent!'.$mailData['site']);
+
                         }
                         $this->info('Mail sent to default mail for website sent!'.$mailData['site']);
-
                     }
                   
                 }

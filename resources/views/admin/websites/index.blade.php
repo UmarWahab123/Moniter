@@ -61,7 +61,7 @@
                                             <th>Website </th>
                                             <th>Status Changed On </th>
                                             <th>Last Checked On </th>
-                                            <th>Ssl Cerificate Check </th>
+                                            <th>SSL Cerificate Check </th>
                                             <th>Certificate Expiry Date </th>
                                             <th>Certificate Issuer </th>
                                             <th>Status </th>
@@ -107,7 +107,7 @@
                             </div>
                             <div class="form-check ">
                                 <input name="ssl" type="checkbox" class="form-check-input" id="exampleCheck1">
-                                <label class="form-check-label" for="exampleCheck1">Ssl Check</label>
+                                <label class="form-check-label" for="exampleCheck1">SSL Check</label>
                             </div>
                             <button type="submit" id="websiteSubmitBtn" class="btn btn-primary mt-4 pr-4 pl-4">Submit</button>
                         </form>

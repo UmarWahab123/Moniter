@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+
 <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
@@ -17,7 +18,7 @@
     <!-- main content area start -->
     <div class="main-content">
         <!-- header area start -->
-        {{-- @include('assets.header') --}}
+        {{-- @include('admin.assets.header') --}}
 
         <!-- header area end -->
         <!-- page title area start -->
@@ -48,20 +49,24 @@
                 </div> --}}
                 <div class="col-12 mt-5">
                     <div class="card">
+                   
                         <div class="card-body">
-                            <span class="h4">Websites</span>
-                            <button class="btn btn-primary btn-sm float-right" id="addWebsiteBtn"> <i class="fa fa-plus"></i> Add Website</button>
+                            <button class="btn btn-primary btn-sm float-right mb-2" id="addWebsiteBtn"> <i class="fa fa-plus"></i> Add Website</button>
                             <div class="table-responsive">
+
                                 <table id="websitesDataTable" class="table table-stripped text-center">
                                     <thead>
                                         <tr>
-
-                                            <th></th>
                                             <th>Title </th>
                                             <th>Website </th>
                                             <th>Status Changed On </th>
                                             <th>Last Checked On </th>
+                                            <th>SSL Cerificate Check </th>
+                                            <th>Certificate Expiry Date </th>
+                                            <th>Certificate Issuer </th>
                                             <th>Status </th>
+                                            <th>Action</th>
+
                                         </tr>
                                     </thead>
                                 </table>
@@ -78,7 +83,7 @@
 
             <!-- footer area end-->
         </div>
-       <div class="modal fade" id="addWebsiteModal">
+        <div class="modal fade" id="addWebsiteModal">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -102,7 +107,7 @@
                             </div>
                             <div class="form-check ">
                                 <input name="ssl" type="checkbox" class="form-check-input" id="exampleCheck1">
-                                <label class="form-check-label" for="exampleCheck1">Ssl Check</label>
+                                <label class="form-check-label" for="exampleCheck1">SSL Check</label>
                             </div>
                             <button type="submit" id="websiteSubmitBtn" class="btn btn-primary mt-4 pr-4 pl-4">Submit</button>
                         </form>
@@ -111,7 +116,40 @@
                 </div>
             </div>
         </div>
-        @include('user.assets.javascript')
+         <div class="modal fade" id="editWebsiteModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Website</h5>
+                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editWebsiteForm">
+                            @csrf
+                            <input type="hidden" name="id" id="editId">
+                             <div class="form-group">
+                                <label for="exampleInputEmail1">Title</label>
+                                <input type="text" name="title" class="form-control" id="editTitle" aria-describedby="emailHelp" placeholder="Enter Title">
+                            </div>
+                             <div class="form-group">
+                                <label for="exampleInputEmail1">Emails</label>
+                                <input type="text" name="emails" class="form-control" id="editEmails" aria-describedby="emailHelp" placeholder="Enter Title">
+                            </div>
+                            
+
+                         
+                            <div class="form-check ">
+                                <input name="ssl" type="checkbox" class="form-check-input" id="editSsl">
+                                <label class="form-check-label" for="editSsl">Ssl Check</label>
+                            </div>
+                            <button type="submit" id="editWebsiteSubmitBtn" class="btn btn-primary mt-4 pr-4 pl-4">Update</button>
+                        </form>
+                    </div >
+                   
+                </div>
+            </div>
+        </div>
+        @include('admin.assets.javascript')
         <!-- Start datatable js -->
         <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
         <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
@@ -127,20 +165,27 @@
             var table = $('#websitesDataTable').DataTable({
                 // "bAutoWidth": false,
                 processing: true,
-                searching: false,
+                searching: true,
                 ordering: true,
+                pageLength: {{50}},
                 "processing": true,
                 'language': {
                     'loadingRecords': '&nbsp;',
                     'processing': 'Loading...'
                 },
-
                 scrollCollapse: true,
-                ajax: "{{ url('user/websites') }}",
-                columns: [{
-                        data: 'action',
-                        name: 'action'
+                ajax: {
+                    url:"{{ url('user/websites') }}",
+                    {{-- beforeSend:function()
+                    {
                     },
+                    success:function()
+                    {
+                    } --}}
+                },
+                columns: [
+                 
+                    
                     {
                         data: 'title',
                         name: 'title'
@@ -157,16 +202,35 @@
                         data: 'last_status_check',
                         name: 'last_status_check'
                     },
+                    {
+                        data: 'certificate_check',
+                        name: 'certificate_check'
+                    },
+                    {
+                        data: 'certificate_expiry_date',
+                        name: 'certificate_expiry_date'
+                    },
+                     {
+                        data: 'certificate_issuer',
+                        name: 'certificate_issuer'
+                    },
                      {
                         data: 'status',
                         name: 'status'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action'
                     },
 
 
                 ],
 
             });
-
+            $(document).on('keyup', '.form-control', function(){
+                $(this).removeClass('is-invalid');
+                $(this).next().remove();
+            });
             $('#addWebsiteBtn').on('click', function() {
                 $('#addWebsiteModal').modal('show');
             });
@@ -183,21 +247,37 @@
                         $('#websiteSubmitBtn').html('Please wait...');
                     },
                     success: function(data) {
-                        $('#addWebsiteModal').modal('hide');
-                        $('#addWebsiteForm')[0].reset();
-                        toastr.success('Success!', 'Website added successfully and being monitored' ,{"positionClass": "toast-bottom-right"});
-                        $('#websitesDataTable').DataTable().ajax.reload();
-                        $('#websiteSubmitBtn').prop('disabled', false);
-                        $('#websiteSubmitBtn').html('Submit');
+                        if(data.success==true)
+                        {
+                            $('#addWebsiteModal').modal('hide');
+                            $('#addWebsiteForm')[0].reset();
+                            toastr.success('Success!', 'Website added successfully and being monitored' ,{"positionClass": "toast-bottom-right"});
+                            $('#websitesDataTable').DataTable().ajax.reload();
+                            $('#websiteSubmitBtn').prop('disabled', false);
+                            $('#websiteSubmitBtn').html('Submit');
+                        }
+                        else if(data.success==false)
+                        {
+                            toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
+                            $('#websiteSubmitBtn').prop('disabled', false);
+                            $('#websiteSubmitBtn').html('Submit');
+                        }
                     },
-                    error: function() {
+                    error: function(request, status, error) {
                         toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
                         $('#websiteSubmitBtn').prop('disabled', false);
                         $('#websiteSubmitBtn').html('Submit');
+                        $('.form-control').removeClass('is-invalid');
+                        $('.form-control').next().remove();
+                        json = $.parseJSON(request.responseText);
+                        $.each(json.errors, function(key, value){
+                            $('input[name="'+key+'"]').after('<span class="invalid-feedback" role="alert"><strong>'+value+'</strong>');
+                            $('input[name="'+key+'"]').addClass('is-invalid');
+                        });
                     },
                 })
             });
-               $(document).on('click','.delete-site', function(e) {
+            $(document).on('click','.delete-site', function(e) {
 
                 var id = $(this).val();
                 Swal.fire({
@@ -226,6 +306,57 @@
                 })
                 
             });
+                $(document).on('click','.edit-site', function(e) {
+
+                    $('#editWebsiteModal').modal('show');
+                    $('#editTitle').val($(this).parent().siblings('td:first').html());
+                    $('#editEmails').val($(this).data('emails'));
+                    $('#editId').val($(this).val());
+                    if($(this).data('ssl')==1)
+                    {
+                        $('#editSsl').prop('checked',true);
+                    }
+                    else
+                    {
+                        $('#editSsl').prop('checked',false);
+                    }
+                   
+                });
+
+                $(document).on('click','#editWebsiteSubmitBtn',function(e){
+                    e.preventDefault();
+                        var formData=$('#editWebsiteForm').serialize();
+                        $.ajax({
+                        url: '{{ url('user/edit-website') }}', 
+                        method: 'get',
+                        data: formData,
+                        success: function(data) {
+                            $('#editWebsiteModal').modal('hide');
+                            toastr.success('Success!', 'Website deleted successfully' ,{"positionClass": "toast-bottom-right"});
+                            $('#websitesDataTable').DataTable().ajax.reload();
+                        },
+                        error: function() {
+                            toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
+                        },
+                })
+                
+            });
+
+            $(document).ready(function(){
+                    reloadDatatable();                
+            });
+
+            function reloadDatatable()
+            {
+                 setTimeout(function(){           
+                    $('#websitesDataTable').DataTable().ajax.reload();
+                    reloadDatatable();              
+
+                }, 65000);
+                
+            }
+
+         
 {{-- Highcharts.chart('container', {
 
     title: {

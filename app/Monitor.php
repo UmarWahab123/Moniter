@@ -14,4 +14,10 @@ class Monitor extends Model
     {
         return $this->belongsTo('App\UserWebsite','id','website_id');
     } 
+
+    public function getSiteLogs()
+    {
+        return $this->belongsTo('App\WebsiteLog','id','website_id');
+    } 
+
 }

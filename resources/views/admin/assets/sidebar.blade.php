@@ -18,7 +18,7 @@
                             <li class="">
                                 <a href="{{ url('admin/users') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Users</span></a>
                             </li>
-                             <li class="d-none">
+                             <li class="">
                                 <a href="{{ url('admin/settings') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Settings</span></a>
                             </li>
 

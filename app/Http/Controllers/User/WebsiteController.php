@@ -25,8 +25,10 @@ class WebsiteController extends Controller
         if($request->ajax())
         {
             return Datatables::of($query)
+            ->addIndexColumn()
             ->addColumn('action', function ($item) {
-                $html_string =' <button  value="'.$item->id.'"  class="btn btn-primary btn-sm edit-site d-none"  title="Edit"><i class="fa fa-pencil"></i></button>';
+                $html_string =' <a  href='.url("admin/website-logs/$item->id").' value="'.$item->id.'"  class="btn btn-info btn-sm"  title="Details"><i class="fa fa-eye text-white"></i></a>';
+                $html_string .=' <button  value="'.$item->id.'" data-emails="'.$item->getSiteDetails->emails.'" data-ssl="'.$item->certificate_check_enabled.'"  class="btn btn-primary btn-sm edit-site "  title="Edit"><i class="fa fa-pencil"></i></button>';
                 $html_string.=' <button  value="'.$item->id.'"  class="btn btn-danger btn-sm delete-site"  title="Delete"><i class="fa fa-trash-o"></i></button>';
                                                      
                     
@@ -52,24 +54,50 @@ class WebsiteController extends Controller
             ->addColumn('status_change_on', function ($item) {
                return $item->uptime_status_last_change_date;
             })
+            
             ->addColumn('last_status_check', function ($item) {
+                if($item->uptime_last_check_date==null)
+                return '--';
                 return $item->uptime_last_check_date;
              })
+             ->addColumn('certificate_expiry_date', function ($item) {
+                if($item->certificate_expiration_date==null)
+                return '--';
+                return $item->certificate_expiration_date;
+             })
+             ->addColumn('certificate_check', function ($item) {
+                if($item->certificate_check_enabled)
+                {
+                    return '<span class="badge badge-success ">ON</span>';
+                }
+                else
+                {
+                    return '<span class="badge badge-danger ">OFF</span>';
+                }
+                return $item->certificate_check_enabled;
+             })
+             ->addColumn('certificate_issuer', function ($item) {
+                 if($item->certificate_issuer==null)
+                 return '--';
+                return $item->certificate_issuer;
+             })
+             
              ->addColumn('url', function ($item) {
                 return $item->url;
              })
             ->setRowId(function ($item) {
                 return $item->id;
             })
-            ->rawColumns(['action','status'])
+            ->rawColumns(['action','status','certificate_check'])
             ->make(true);
         }
-        return view('user.websites.index',compact('websites'));
+        return view('User.websites.index',compact('websites'));
         
     }
     public function store(Request $request)
     {
         //dd($request->all());
+        
         
         $validator = $request->validate([
             'url' => 'required|regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
@@ -107,21 +135,32 @@ class WebsiteController extends Controller
                     $uweb->ssl=$ssl;
                     $uweb->save();
                     Monitor::where('id',$web->id)->update(['certificate_check_enabled'=>$ssl]);
-                    if(!empty($mails))
+                    $mails=$request->emails;
+                    if($mails!=null)
                     {
+
                         $mails=explode(",",$request->emails);
                         foreach($mails as $mail)
                         {
-                             Mail::to($mail)->send(new SiteStatusMail($mailData)); 
+                            Mail::to($mail)->send(new SiteStatusMail($mailData)); 
                         }
                     }
                     else
                     {
-                        $default_mail=config('uptime-monitor.notifications.mail.to');
-                        if(!empty($default_mail))
+                        $setting=Setting::where('type','email')->first();
+                        if($setting==null)
                         {
-                            Mail::to($default_mail[0])->send(new SiteStatusMail($mailData));
+                            $default_mail=config('uptime-monitor.notifications.mail.to');
+                            if($default_mail!=null)
+                            {
+                                Mail::to($default_mail[0])->send(new SiteStatusMail($mailData));
+                            }
                         }
+                        else
+                        {
+                            Mail::to($setting->settings)->send(new SiteStatusMail($mailData));
+                        }
+                       
                     }
                     return response()->json(['success'=>true]);
                 }
@@ -148,5 +187,27 @@ class WebsiteController extends Controller
 
         }
         
+    }
+
+    public function update(Request $request)
+    {
+        $monitor=Monitor::find($request->id);
+        $ssl=0;
+        if(isset($request->ssl))
+        {
+            $ssl=1;
+        }
+        $monitor->certificate_check_enabled=$ssl;
+        if($monitor->save())
+        {
+            UserWebsite::where('website_id',$request->id)->update(['emails'=>$request->emails,'title'=>$request->title]);
+            return response()->json(['success'=>true]);
+        }
+        return response()->json(['success'=>false]);
+    }
+
+    public function websiteLogs($id)
+    {
+        dd($id);
     }
 }

@@ -22,12 +22,15 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['aut
     Route::post('/add-website', 'WebsiteController@store')->name('add-website');
     Route::get('/edit-website', 'WebsiteController@update')->name('edit-website');
     Route::get('/delete-website', 'WebsiteController@destroy')->name('delete-website');
+    Route::get('/website-logs/{id}', 'WebsiteController@websiteLogs')->name('website-logs');
+    
     Route::get('/users', 'UserController@index')->name('users');
     Route::post('/add-user', 'UserController@store')->name('add-user');
     Route::post('/edit-user', 'UserController@update')->name('edit-user');
     Route::get('/user-status', 'UserController@userStatus')->name('user-status');
 
     Route::get('/settings', 'SettingController@index')->name('settings');
+    Route::post('/add-settings', 'SettingController@store')->name('add-settings');
 });
 
 Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth','user']], function (){

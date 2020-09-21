@@ -13,6 +13,7 @@ use Yajra\Datatables\Datatables;
 //use Spatie\UptimeMonitor\Models\Monitor;
 use App\WebsiteLog;
 use App\Monitor;
+use App\Setting;
 use Config;
 class WebsiteController extends Controller
 {
@@ -28,7 +29,8 @@ class WebsiteController extends Controller
             return Datatables::of($query)
             ->addIndexColumn()
             ->addColumn('action', function ($item) {
-                $html_string =' <button  value="'.$item->id.'" data-emails="'.$item->getSiteDetails->emails.'" data-ssl="'.$item->certificate_check_enabled.'"  class="btn btn-primary btn-sm edit-site "  title="Edit"><i class="fa fa-pencil"></i></button>';
+                $html_string =' <a  href='.url("admin/website-logs/$item->id").' value="'.$item->id.'"  class="btn btn-info btn-sm"  title="Details"><i class="fa fa-eye text-white"></i></a>';
+                $html_string .=' <button  value="'.$item->id.'" data-emails="'.$item->getSiteDetails->emails.'" data-ssl="'.$item->certificate_check_enabled.'"  class="btn btn-primary btn-sm edit-site "  title="Edit"><i class="fa fa-pencil"></i></button>';
                 $html_string.=' <button  value="'.$item->id.'"  class="btn btn-danger btn-sm delete-site"  title="Delete"><i class="fa fa-trash-o"></i></button>';
                                                      
                     
@@ -56,6 +58,8 @@ class WebsiteController extends Controller
             })
             
             ->addColumn('last_status_check', function ($item) {
+                if($item->uptime_last_check_date==null)
+                return '--';
                 return $item->uptime_last_check_date;
              })
              ->addColumn('certificate_expiry_date', function ($item) {
@@ -145,11 +149,20 @@ class WebsiteController extends Controller
                     }
                     else
                     {
-                        $default_mail=config('uptime-monitor.notifications.mail.to');
-                        if(!empty($default_mail))
+                        $setting=Setting::where('type','email')->first();
+                        if($setting==null)
                         {
-                            Mail::to($default_mail[0])->send(new SiteStatusMail($mailData));
+                            $default_mail=config('uptime-monitor.notifications.mail.to');
+                            if($default_mail!=null)
+                            {
+                                Mail::to($default_mail[0])->send(new SiteStatusMail($mailData));
+                            }
                         }
+                        else
+                        {
+                            Mail::to($setting->settings)->send(new SiteStatusMail($mailData));
+                        }
+                       
                     }
                     return response()->json(['success'=>true]);
                 }
@@ -193,5 +206,37 @@ class WebsiteController extends Controller
             return response()->json(['success'=>true]);
         }
         return response()->json(['success'=>false]);
+    }
+
+    public function websiteLogs(Request $request,$website_id)
+    {
+        $website=Monitor::where('id',$website_id)->first();
+        if($request->ajax())
+        {
+            $query=WebsiteLog::where('website_id',$website_id);
+            return Datatables::of($query)
+            ->addIndexColumn()
+            ->addColumn('action', function ($item) {
+                $html_string =' <a  href='.url("admin/website-logs/$item->id").' value="'.$item->id.'"  class="btn btn-info btn-sm"  title="Details"><i class="fa fa-eye text-white"></i></a>';
+                $html_string.=' <button  value="'.$item->id.'"  class="btn btn-danger btn-sm delete-site"  title="Delete"><i class="fa fa-trash-o"></i></button>';
+                                                     
+                    
+                return $html_string;
+            })
+            ->addColumn('down_time',function($item){
+                if($item->down_time!=null)
+                return $item->down_time;
+                return '--';
+            })
+            ->addColumn('up_time',function($item){
+                if($item->up_time!=null)
+                return $item->up_time;
+                return '--';
+            })
+
+            ->rawColumns(['action','status','certificate_check'])
+            ->make(true);
+        }
+        return view('admin.websites.website-details',compact('website_id','website'));
     }
 }
