@@ -60,7 +60,7 @@
                                 </tr>
                                     <tr>
                                     <th>Status</th>
-                                    <td>@if($website->uptime_status==1) <span class="badge badge-success ">Up</span> @else <span class="badge badge-danger ">Down</span> @endif</td>
+                                    <td>@if($website->uptime_status=='up') <span class="badge badge-success ">Up</span> @else <span class="badge badge-danger ">Down</span> @endif</td>
                                 </tr>
                            </tbody>
                         </table>
