@@ -23,7 +23,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['aut
     Route::get('/edit-website', 'WebsiteController@update')->name('edit-website');
     Route::get('/delete-website', 'WebsiteController@destroy')->name('delete-website');
     Route::get('/website-logs/{id}', 'WebsiteController@websiteLogs')->name('website-logs');
-    
+    Route::get('feature', 'WebsiteController@featureWebsite')->name('feature');
     Route::get('/users', 'UserController@index')->name('users');
     Route::post('/add-user', 'UserController@store')->name('add-user');
     Route::post('/edit-user', 'UserController@update')->name('edit-user');

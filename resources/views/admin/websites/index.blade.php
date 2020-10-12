@@ -355,7 +355,48 @@
                 }, 65000);
                 
             }
+            $(document).on('click','.feature', function(e) {
 
+                var id = $(this).val();
+                var status=$(this).data('status');
+                Swal.fire({
+                title: 'Are you sure?',
+                text: "You want to feature this website",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, do it!'
+                }).then((result) => {
+                if (result.value) {
+                   $.ajax({
+                    url: '{{ url('admin/feature') }}', 
+                    method: 'get',
+                    data: {id:id,status:status},
+                    success: function(data) {
+                    if(data.limit==0)
+                    {
+                        toastr.success('Success!', 'Website featured successfully' ,{"positionClass": "toast-bottom-right"});
+                    }
+                    else if(data.limit==1)
+                    {
+                        toastr.info('Info!', 'Featured limit reached' ,{"positionClass": "toast-bottom-right"});
+                    }
+                    else if(data.limit==2)
+                    {
+                        toastr.success('Success!', 'Website unfeatured successfully' ,{"positionClass": "toast-bottom-right"});
+                    }
+                        
+                        $('#websitesDataTable').DataTable().ajax.reload();
+                    },
+                    error: function() {
+                        toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
+                    },
+                });
+                }
+                })
+                
+            });
          
 {{-- Highcharts.chart('container', {
 

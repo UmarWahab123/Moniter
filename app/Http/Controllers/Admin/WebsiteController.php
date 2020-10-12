@@ -29,7 +29,19 @@ class WebsiteController extends Controller
             return Datatables::of($query)
             ->addIndexColumn()
             ->addColumn('action', function ($item) {
-                $html_string =' <a  href='.url("admin/website-logs/$item->id").' value="'.$item->id.'"  class="btn btn-info btn-sm"  title="Details"><i class="fa fa-eye text-white"></i></a>';
+                if($item->getSiteDetails!=null)
+                {
+                    $html_string=null;
+                    if($item->getSiteDetails->is_featured==1)
+                    {
+                        $html_string =' <button   value="'.$item->id.'" data-status="0" class="btn btn-secondary btn-sm feature"  title="Click to unfetaure"><i class="fa fa-star text-white"></i></button>';
+                    }
+                    else
+                    {
+                        $html_string =' <button   value="'.$item->id.'" data-status="1" class="btn btn-success btn-sm feature"  title="Click to fetaure"><i class="fa fa-star text-white"></i></button>';
+                    }
+                }
+                $html_string .=' <a  href='.url("admin/website-logs/$item->id").' value="'.$item->id.'"  class="btn btn-info btn-sm"  title="Details"><i class="fa fa-eye text-white"></i></a>';
                 $html_string .=' <button  value="'.$item->id.'" data-emails="'.$item->getSiteDetails->emails.'" data-ssl="'.$item->certificate_check_enabled.'"  class="btn btn-primary btn-sm edit-site "  title="Edit"><i class="fa fa-pencil"></i></button>';
                 $html_string.=' <button  value="'.$item->id.'"  class="btn btn-danger btn-sm delete-site"  title="Delete"><i class="fa fa-trash-o"></i></button>';
                                                      
@@ -68,7 +80,7 @@ class WebsiteController extends Controller
                 return $item->certificate_expiration_date;
              })
              ->addColumn('certificate_check', function ($item) {
-                if($item->certificate_check_enabled)
+                if($item->certificate_check_enabled==1)
                 {
                     return '<span class="badge badge-success ">ON</span>';
                 }
@@ -76,7 +88,6 @@ class WebsiteController extends Controller
                 {
                     return '<span class="badge badge-danger ">OFF</span>';
                 }
-                return $item->certificate_check_enabled;
              })
              ->addColumn('certificate_issuer', function ($item) {
                  if($item->certificate_issuer==null)
@@ -238,5 +249,29 @@ class WebsiteController extends Controller
             ->make(true);
         }
         return view('admin.websites.website-details',compact('website_id','website'));
+    }
+
+    public function featureWebsite(Request $request)
+    {
+        $count=UserWebsite::where('user_id',Auth::user()->id)->where('is_featured',1)->count();
+        if($request->status==1)
+        {
+            if($count < 4)
+            {
+
+                UserWebsite::where('id',$request->id)->update(['is_featured'=>$request->status]);
+                return response()->json(['success'=>true,'limit'=>0]);
+            }
+            else
+            {
+                return response()->json(['success'=>true,'limit'=>1]);
+            }
+        }
+        else
+        {
+            UserWebsite::where('id',$request->id)->update(['is_featured'=>$request->status]);
+            return response()->json(['success'=>true,'limit'=>2]);
+        }
+        
     }
 }

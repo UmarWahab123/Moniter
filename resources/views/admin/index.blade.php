@@ -17,66 +17,43 @@
         <!-- page title area end -->
         <div class="main-content-inner">
             <!-- sales report area start -->
+            @if(!$monitors->isEmpty())
             <div class="sales-report-area sales-style-two">
                 <div class="row">
+                @foreach($monitors as $monitor)
                     <div class="col-xl-3 col-ml-3 col-md-6 mt-5">
                         <div class="single-report">
                             <div class="s-sale-inner pt--30 mb-3">
-                                <div class="s-report-title d-flex justify-content-between">
-                                    <h4 class="header-title mb-0">Product Sold</h4>
-                                    <select class="custome-select border-0 pr-3">
-                                        <option selected="">Last 7 Days</option>
-                                        <option value="0">Last 7 Days</option>
-                                    </select>
+                                <div class=" d-flex justify-content-between">
+                                    <h5 class="header-title mb-0">{{@$monitor->getSiteDetails->title}}</h5>
+                                    @if($monitor->uptime_status=='up')
+                                        <span class="badge badge-success text-white px-2 ">UP</span>
+                                    @elseif($monitor->uptime_status=='down')
+                                        <span class="badge badge-danger text-white px-2">Down</span>
+                                    @else
+                                        <span class="badge badge-warning text-white">Not Yet Checked</span>
+                                    @endif
+                                </div>
+                                <div class="mt-2">
+                                    <p class="bg-white pl-0">{{$monitor->url}}</p>
+
+                                </div>
+                                <div class=" d-flex justify-content-between mt-2">
+                                    <p class="bg-white pl-0">SSL Certificate Check</p>
+                                    @if($monitor->certificate_check_enabled==1)
+                                        <span class="badge badge-info text-white">ON</span>
+                                    @else
+                                        <span class="badge badge-warning text-white ">OFF</span>
+                                    @endif
                                 </div>
                             </div>
-                            <canvas id="coin_sales4" height="100"></canvas>
                         </div>
                     </div>
-                    <div class="col-xl-3 col-ml-3 col-md-6 mt-5">
-                        <div class="single-report">
-                            <div class="s-sale-inner pt--30 mb-3">
-                                <div class="s-report-title d-flex justify-content-between">
-                                    <h4 class="header-title mb-0">Gross Profit</h4>
-                                    <select class="custome-select border-0 pr-3">
-                                        <option selected="">Last 7 Days</option>
-                                        <option value="0">Last 7 Days</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <canvas id="coin_sales5" height="100"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-ml-3 col-md-6  mt-5">
-                        <div class="single-report">
-                            <div class="s-sale-inner pt--30 mb-3">
-                                <div class="s-report-title d-flex justify-content-between">
-                                    <h4 class="header-title mb-0">Orders</h4>
-                                    <select class="custome-select border-0 pr-3">
-                                        <option selected="">Last 7 Days</option>
-                                        <option value="0">Last 7 Days</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <canvas id="coin_sales6" height="100"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-ml-3 col-md-6 mt-5">
-                        <div class="single-report">
-                            <div class="s-sale-inner pt--30 mb-3">
-                                <div class="s-report-title d-flex justify-content-between">
-                                    <h4 class="header-title mb-0">New Coustomers</h4>
-                                    <select class="custome-select border-0 pr-3">
-                                        <option selected="">Last 7 Days</option>
-                                        <option value="0">Last 7 Days</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <canvas id="coin_sales7" height="100"></canvas>
-                        </div>
-                    </div>
+                @endforeach    
+
                 </div>
             </div>
+            @endif
             <!-- sales report area end -->
             <!-- visitor graph area start -->
             <div class="card mt-5">

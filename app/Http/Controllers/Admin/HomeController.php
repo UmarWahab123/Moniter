@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use App\Monitor;
+use Auth;
 class HomeController extends Controller
 {
      /**
@@ -24,6 +24,9 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('admin.index');
+        $monitors=Monitor::whereHas('getUserWebsites',function($q){
+            $q->where('is_featured',1)->where('user_id',Auth::user()->id);
+        })->get();
+        return view('admin.index',compact('monitors'));
     }
 }
