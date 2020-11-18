@@ -27,12 +27,12 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
-        // $schedule->command('monitor:check-uptime')->withoutOverlapping()->everyMinute()  
-        // ->appendOutputTo('storage/logs/check-uptime.log');
+        $schedule->command('monitor:check-uptime')->withoutOverlapping()->everyMinute()  
+        ->appendOutputTo('storage/logs/check-uptime.log');
         $schedule->command('monitor:send-emails')->withoutOverlapping()->everyMinute()  
         ->appendOutputTo('storage/logs/send-emails.log');
-        // $schedule->command('monitor:check-certificate')->withoutOverlapping()->daily()
-        // ->appendOutputTo('storage/logs/check-certificate.log');
+        $schedule->command('monitor:check-certificate')->withoutOverlapping()->daily()
+        ->appendOutputTo('storage/logs/check-certificate.log');
 
     }
 
