@@ -29,6 +29,6 @@ class SiteUptimeStatus extends Mailable
     public function build()
     {
         $mailData=$this->mailData;
-        return $this->markdown('emails.siteuptimestatus');
+        return $this->subject('Your site is '.$mailData['status'].': '.$mailData['site'])->markdown('emails.siteuptimestatus');
     }
 }

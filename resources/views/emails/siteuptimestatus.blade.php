@@ -6,5 +6,6 @@ Your website <b>({{ $mailData['site'] }})</b> status has been changed to <br>
 
 
 Thanks,<br>
-{{ config('app.name') }}
+{{ config('app.name') }}<br>
+https://monitor.aladdinapps.com
 @endcomponent
