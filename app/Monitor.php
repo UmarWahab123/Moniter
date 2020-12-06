@@ -17,7 +17,7 @@ class Monitor extends Model
 
     public function getSiteLogs()
     {
-        return $this->belongsTo('App\WebsiteLog','id','website_id');
+        return $this->hasMany('App\WebsiteLog','website_id','id')->orderBy('created_at','desc');
     } 
 
 }

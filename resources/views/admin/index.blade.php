@@ -21,34 +21,39 @@
             <div class="sales-report-area sales-style-two">
                 <div class="row">
                 @foreach($monitors as $monitor)
-                    <div class="col-xl-3 col-ml-3 col-md-6 mt-5">
-                        <div class="single-report">
-                            <div class="s-sale-inner pt--30 mb-3">
-                                <div class=" d-flex justify-content-between">
-                                    <h5 class="header-title mb-0">{{@$monitor->getSiteDetails->title}}</h5>
-                                    @if($monitor->uptime_status=='up')
-                                        <span class="badge badge-success text-white px-2 ">UP</span>
-                                    @elseif($monitor->uptime_status=='down')
-                                        <span class="badge badge-danger text-white px-2">Down</span>
-                                    @else
-                                        <span class="badge badge-warning text-white">Not Yet Checked</span>
-                                    @endif
-                                </div>
-                                <div class="mt-2">
-                                    <p class="bg-white pl-0">{{$monitor->url}}</p>
+                        <a href="{{url('admin/website-logs/'.$monitor->id)}}" class="col-xl-3 col-ml-3 col-md-3 mt-5">
+                            <div class="single-report">
+                                <div class="s-sale-inner pt--30 mb-3">
+                                    <div class=" d-flex justify-content-between">
+                                        <h5 class="header-title mb-0">{{@$monitor->getSiteDetails->title}}</h5>
+                                        @if($monitor->uptime_status=='up')
+                                            <span class="badge badge-success text-white px-4 ">Up</span>
+                                        @elseif($monitor->uptime_status=='down')
+                                            <span class="badge badge-danger text-white px-4">Down</span>
+                                        @else
+                                            <span class="badge badge-warning text-white">Not Yet Checked</span>
+                                        @endif
+                                    </div>
+                                    <div class="mt-2">
+                                        <p class="bg-white pl-0">{{$monitor->url}}</p>
 
-                                </div>
-                                <div class=" d-flex justify-content-between mt-2">
-                                    <p class="bg-white pl-0">SSL Certificate Check</p>
-                                    @if($monitor->certificate_check_enabled==1)
-                                        <span class="badge badge-info text-white">ON</span>
-                                    @else
-                                        <span class="badge badge-warning text-white ">OFF</span>
-                                    @endif
+                                    </div>
+                                    <div class=" d-flex justify-content-between mt-2">
+                                        <p class="bg-white pl-0">SSL Expiry Date</p>
+                                        <p class="bg-info badge text-white">@if($monitor->getSiteLogs!=null){{date('Y-m-d',strtotime($monitor->certificate_expiration_date))}} @else {{"--"}} @endif</p>
+                                    </div>
+                                     <div class=" d-flex justify-content-between mt-2">
+                                        <p class="bg-white pl-0">Last Down</p>
+                                        <p class="bg-dark badge text-white">@if($monitor->getSiteLogs!=null){{date('Y-m-d',strtotime($monitor->getSiteLogs->first()->down_time))}}@else {{"--"}} @endif</p>
+                                      
+                                    </div>
+                                     <div class=" d-flex justify-content-between mt-2">
+                                        <p class="bg-white pl-0">Last Up</p>
+                                        <p class="bg-success badge text-white ">@if($monitor->getSiteLogs!=null){{date('Y-m-d',strtotime($monitor->getSiteLogs->first()->up_time))}}@else {{"--"}} @endif</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        </a>
                 @endforeach    
 
                 </div>
@@ -59,18 +64,24 @@
             <div class="card mt-5">
                 <div class="card-body">
                     <div class="d-flex justify-content-between mb-5">
-                        <h4 class="header-title mb-0">Visitor Graph</h4>
+                        <h4 class="header-title mb-0">Website Graph</h4>
                         <select class="custome-select border-0 pr-3">
                             <option selected="">Last 7 Days</option>
                             <option value="0">Last 7 Days</option>
                         </select>
                     </div>
-                    <div id="visitor_graph"></div>
+                    <figure class="highcharts-figure">
+                    <div id="container"></div>
+                    <p class="highcharts-description">
+                        Chart showing data loaded dynamically. The individual data points can
+                        be clicked to display more information.
+                    </p>
+                    </figure>
                 </div>
             </div>
             <!-- visitor graph area end -->
             <!-- order list area start -->
-            <div class="card mt-5">
+            <div class="card mt-5 d-none">
                 <div class="card-body">
                     <h4 class="header-title">Todays Order List</h4>
                     <div class="table-responsive">
@@ -138,7 +149,7 @@
                 </div>
             </div>
             <!-- order list area end -->
-            <div class="row">
+            <div class="row d-none">
                 <!-- product sold area start -->
                 <div class="col-xl-8 col-lg-7 col-md-12 mt-5">
                     <div class="card">
@@ -287,6 +298,72 @@
     <!-- footer area start-->
     @include('admin.assets.footer')
     <!-- footer area end-->
-    @include('admin.assets.javascript')
 </div>
+    @include('admin.assets.javascript')
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/series-label.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+
+    <script>
+        Highcharts.chart('container', {
+            chart: {
+                type: 'spline'
+            },
+            title: {
+                text: 'Weekely Website Status'
+            },
+            subtitle: {
+                text: 'Source: www.akhtarsitsolutions.com/'
+            },
+            xAxis: {
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            },
+            yAxis: {
+                title: {
+                    text: 'Temperature'
+                },
+                labels: {
+                    formatter: function () {
+                        return this.value + '°';
+                    }
+                }
+            },
+            tooltip: {
+                crosshairs: true,
+                shared: true
+            },
+            plotOptions: {
+                spline: {
+                    marker: {
+                        radius: 4,
+                        lineColor: '#666666',
+                        lineWidth: 1
+                    }
+                }
+            },
+            series: [{
+                name: 'Tokyo',
+                marker: {
+                    symbol: 'square'
+                },
+                data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, {
+                    y: 26.5,
+                  
+                }, 23.3, 18.3, 13.9, 9.6]
+
+            }, {
+                name: 'London',
+                marker: {
+                    symbol: 'diamond'
+                },
+                data: [{
+                    y: 3.9,
+                 
+                }, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
+            }]
+        });
+     
+    </script>
 @endsection
