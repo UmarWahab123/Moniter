@@ -34,7 +34,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('monitor:check-certificate')->withoutOverlapping()->daily()
         ->appendOutputTo('storage/logs/check-certificate.log');
 
-        $schedule->command('monitor:check-ssl-certificate-expiry')->withoutOverlapping()->everyMinute()
+        $schedule->command('monitor:check-ssl-certificate-expiry')->withoutOverlapping()->daily()
         ->appendOutputTo('storage/logs/check-ssl-certificate-expiry.log');
 
     }
