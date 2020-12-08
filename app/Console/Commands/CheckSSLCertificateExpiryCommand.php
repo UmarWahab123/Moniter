@@ -41,7 +41,8 @@ class CheckSSLCertificateExpiryCommand extends Command
      */
     public function handle()
     {
-        $monitors=Monitor::get();
+        $type=null;
+        $monitors=Monitor::with('getSiteDetails')->get();
         $today=Date('Y-m-d H:i:s');
         $monitor_ids=[];
         foreach($monitors as $monitor)
@@ -64,22 +65,44 @@ class CheckSSLCertificateExpiryCommand extends Command
                 $monitors_arr[]=([
                     'url'=>$monitor->url,
                     'certificate_expiration_date'=>$monitor->certificate_expiration_date,
-                    'name'=>$monitor->getSiteDetails->title,
-                    'email'=>$monitor->getSiteDetails->emails,
+                    'name'=>($monitor->getSiteDetails!=null)?$monitor->getSiteDetails->title:'N/A',
+                    'type'=>'admin',
+                    // 'email'=>($monitor->getSiteDetails!=null)?$monitor->getSiteDetails->emails:'N/A',
                 ]);
+                $urlEmailData=[];
+                $urlEmailData['url']=$monitor->url;
+                $urlEmailData['certificate_expiration_date']=$monitor->certificate_expiration_date;
+                $urlEmailData['name']=($monitor->getSiteDetails!=null)?$monitor->getSiteDetails->title:'N/A';
+                $type='url';
+
+                if($monitor->getSiteDetails!=null)
+                {
+                    $emails=$monitor->getSiteDetails->emails;
+                    if($emails!=null)
+                    {
+                        $mails=explode(',',$emails);
+                        foreach($mails as $mail)
+                        {
+                            Mail::to($mail)->send(new SSLCertificateExpiry($urlEmailData,$type));
+                        }
+    
+                    }
+                }
             }
             $setting=Setting::where('type','email')->first();
             if($setting==null)
             {
+                $type='admin';
                 $default_mail=config('uptime-monitor.notifications.mail.to');
                 if($default_mail!=null)
                 {
-                    Mail::to($default_mail[0])->send(new SSLCertificateExpiry($monitors_arr));
+                    Mail::to($default_mail[0])->send(new SSLCertificateExpiry($monitors_arr,$type));
                 }
             }
             else
             {
-                Mail::to($setting->settings)->send(new SSLCertificateExpiry($monitors_arr));
+                $type='admin';
+                Mail::to($setting->settings)->send(new SSLCertificateExpiry($monitors_arr,$type));
                 // /dd('up',$setting->settings);
 
             }

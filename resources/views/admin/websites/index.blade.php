@@ -65,7 +65,7 @@
                                             <th>Certificate Expiry Date </th>
                                             <th>Certificate Issuer </th>
                                             <th>Status </th>
-                                            <th style="min-width:10%">Action</th>
+                                            <th style="min-width:12%">Action</th>
 
                                         </tr>
                                     </thead>
@@ -103,7 +103,7 @@
                             </div>
                               <div class="form-group">
                                 <label for="exampleInputEmail1">Emails </label><small class="text-danger float-right"> (Emails should be comma seprated)</small>
-                                <input type="text" name="emails" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Title">
+                                <input type="text" name="emails" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Emails">
                             </div>
                             <div class="form-check ">
                                 <input name="ssl" type="checkbox" class="form-check-input" id="exampleCheck1">

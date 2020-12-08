@@ -34,16 +34,16 @@ class WebsiteController extends Controller
                     $html_string=null;
                     if($item->getSiteDetails->is_featured==1)
                     {
-                        $html_string =' <button   value="'.$item->id.'" data-status="0" class="btn btn-secondary btn-sm feature"  title="Click to unfetaure"><i class="fa fa-star text-white"></i></button>';
+                        $html_string =' <button   value="'.$item->id.'" data-status="0" class="btn btn-outline-secondary btn-sm feature"  title="Click to unfetaure"><i class="fa fa-star "></i></button>';
                     }
                     else
                     {
-                        $html_string =' <button   value="'.$item->id.'" data-status="1" class="btn btn-success btn-sm feature"  title="Click to fetaure"><i class="fa fa-star text-white"></i></button>';
+                        $html_string =' <button   value="'.$item->id.'" data-status="1" class="btn btn-outline-success btn-sm feature"  title="Click to fetaure"><i class="fa fa-star "></i></button>';
                     }
                 }
-                $html_string .=' <a  href='.url("admin/website-logs/$item->id").' value="'.$item->id.'"  class="btn btn-info btn-sm"  title="Details"><i class="fa fa-eye text-white"></i></a>';
-                $html_string .=' <button  value="'.$item->id.'" data-emails="'.$item->getSiteDetails->emails.'" data-ssl="'.$item->certificate_check_enabled.'"  class="btn btn-primary btn-sm edit-site "  title="Edit"><i class="fa fa-pencil"></i></button>';
-                $html_string.=' <button  value="'.$item->id.'"  class="btn btn-danger btn-sm delete-site"  title="Delete"><i class="fa fa-trash-o"></i></button>';
+                $html_string .=' <button  value="'.$item->id.'" data-emails="'.$item->getSiteDetails->emails.'" data-ssl="'.$item->certificate_check_enabled.'"  class="btn  btn-outline-primary btn-sm edit-site "  title="Edit"><i class="fa fa-pencil"></i></button>';
+                $html_string .=' <a  href='.url("admin/website-logs/$item->id").' value="'.$item->id.'"  class="btn btn-outline-info btn-sm"  title="Details"><i class="fa fa-eye "></i></a>';
+                $html_string.=' <button  value="'.$item->id.'"  class="btn btn-outline-danger btn-sm delete-site"  title="Delete"><i class="fa fa-trash-o"></i></button>';
                                                      
                     
                 return $html_string;
