@@ -22,15 +22,15 @@ class UserController extends Controller
             ->addIndexColumn()
             ->addColumn('action', function ($item) {
                 $html_string = '
-                          <button  value="'.$item->id.'"  class="btn btn-primary btn-sm edit-user"  title="Edit"><i class="fa fa-pencil"></i></button>                          
+                          <button  value="'.$item->id.'"  class="btn btn-outline-primary btn-sm edit-user"  title="Edit"><i class="fa fa-pencil"></i></button>                          
                      ';
                      if($item->status==1)
                      {
-                        $html_string .= ' <button   class="btn btn-sm btn-danger user-status" data-status=0 value="'.$item->id.'"   title="Suspend User"><i class="fa fa-ban"></i></button>';
+                        $html_string .= ' <button   class="btn btn-sm  btn-outline-danger user-status" data-status=0 value="'.$item->id.'"   title="Suspend User"><i class="fa fa-ban"></i></button>';
                      }
                      else if($item->status==0)
                      {
-                        $html_string .= ' <button  class="btn btn-sm btn-success user-status" data-status=1 value="'.$item->id.'"   title="Activate User"  ><i class="fa fa-check-circle"></i></button>';
+                        $html_string .= ' <button  class="btn btn-sm btn-outline-success user-status" data-status=1 value="'.$item->id.'"   title="Activate User"  ><i class="fa fa-check-circle"></i></button>';
                      }
                 return $html_string;
             })
