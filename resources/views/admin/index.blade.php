@@ -44,12 +44,12 @@
                                     </div>
                                      <div class=" d-flex justify-content-between mt-2">
                                         <p class="bg-white pl-0">Last Down</p>
-                                        <p class="bg-dark badge text-white">@if($monitor->getSiteLogs!=null){{date('Y-m-d',strtotime($monitor->getSiteLogs->first()->down_time))}}@else {{"--"}} @endif</p>
+                                        <p class="bg-dark badge text-white">@if($monitor->getSiteLogs!=null){{date('Y-m-d',strtotime($monitor->getSiteLogs[0]->down_time))}}@else {{"--"}} @endif</p>
                                       
                                     </div>
                                      <div class=" d-flex justify-content-between mt-2">
                                         <p class="bg-white pl-0">Last Up</p>
-                                        <p class="bg-success badge text-white ">@if($monitor->getSiteLogs!=null){{date('Y-m-d',strtotime($monitor->getSiteLogs->first()->up_time))}}@else {{"--"}} @endif</p>
+                                        <p class="bg-success badge text-white ">@if($monitor->getSiteLogs!=null){{date('Y-m-d',strtotime($monitor->getSiteLogs[0]->up_time))}}@else {{"--"}} @endif</p>
                                     </div>
                                 </div>
                             </div>
