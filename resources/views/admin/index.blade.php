@@ -40,7 +40,7 @@
                                     </div>
                                     <div class=" d-flex justify-content-between mt-2">
                                         <p class="bg-white pl-0">SSL Expiry Date</p>
-                                        <p class="bg-info badge text-white">@if($monitor->getSiteLogs!=null){{date('Y-m-d',strtotime($monitor->certificate_expiration_date))}} @else {{"--"}} @endif</p>
+                                        <p class="bg-info badge text-white">@if($monitor->certificate_expiration_date!=null){{date('Y-m-d',strtotime($monitor->certificate_expiration_date))}} @else {{"--"}} @endif</p>
                                     </div>
                                      <div class=" d-flex justify-content-between mt-2">
                                         <p class="bg-white pl-0">Last Down</p>
