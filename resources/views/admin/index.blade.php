@@ -69,7 +69,7 @@
             @endif
             <!-- sales report area end -->
             <!-- visitor graph area start -->
-            <div class="card mt-5">
+            <div class="card mt-5 d-none">
                 <div class="card-body">
                     <div class="d-flex justify-content-between mb-5">
                         <h4 class="header-title mb-0">Website Graph</h4>
