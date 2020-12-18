@@ -46,6 +46,10 @@
   height: 30px;
   background-color: #4CAF50;
 }
+    .custom-table tr th, .custom-table tr td{
+        border-bottom:0px !important;
+        border-top:0px !important;
+    }
 </style>
 </head>
 <body>

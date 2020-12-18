@@ -28,27 +28,24 @@
         <div class="main-content-inner">
             <div class="row">
                 <!-- data table start -->
-                {{-- <div class="col-12 mt-5">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="col-xl-12 col-lg-12">
-                                <div class="card">
-                                    <div class="card-body">
-                                    
-                                       <figure class="highcharts-figure">
-                                            <div id="container"></div>
-                                            <p class="highcharts-description">
-                                                Website up and down status logs.
-                                            </p>
-                                        </figure>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div> --}}
                 <div class="col-12 mt-5">
-                        <table class="table table-borderless w-50"> 
+                        {{-- <h2 class="text-uppercase">{{($website->getSiteDetails !=null )?$website->getSiteDetails->title:'N/A'}} <small></small></h2> --}}
+                        <table class="table table-sm table-borderless w-50 custom-table"> 
+                            <thead>
+                                <th class="text-uppercase">
+                                   <h2> {{($website->getSiteDetails !=null )?$website->getSiteDetails->title:'N/A'}}</h2>
+                                </th>
+                                            
+                                <th>
+                                    @if($website->uptime_status=='up')
+                                        <span class="badge badge-success text-white px-4 text-uppercase ">Up</span>
+                                    @elseif($monitor->uptime_status=='down')
+                                        <span class="badge badge-danger text-white px-4 text-uppercase">Down</span>
+                                    @else
+                                        <span class="badge badge-warning text-white">Not Yet Checked</span>
+                                    @endif
+                                </th>
+                            </thead>
                            <tbody>
                                  <tr>
                                     <th>Website</th>
@@ -56,11 +53,25 @@
                                 </tr>
                                     <tr>
                                     <th>Certificate Check</th>
-                                    <td>@if($website->certificate_check_enabled==1) <span class="badge badge-success ">True</span> @else <span class="badge badge-danger "> False </span> @endif</td>
+                                    <td>@if($website->certificate_check_enabled==1) <span class="badge badge-success "><i class="fa fa-check"></i></span> @else <span class="badge badge-danger "> <i class="fa fa-times"></i> </span> @endif</td>
                                 </tr>
-                                    <tr>
-                                    <th>Status</th>
-                                    <td>@if($website->uptime_status=='up') <span class="badge badge-success ">Up</span> @else <span class="badge badge-danger ">Down</span> @endif</td>
+                                <tr>
+                                    <th>Certificate Expiry Date</th>
+                                    <td>{{$website->certificate_expiration_date}}</td>
+                                </tr>
+                                  @php
+                                    if($website->getSiteLogs!=null)
+                                    {
+                                        $logs=$website->getSiteLogs->first();
+                                    }
+                                @endphp
+                                <tr>
+                                    <th>Last Down</th>
+                                    <td>{{($logs!=null)?date('Y-m-d H:i:s',strtotime($logs->down_time)):'--'}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Last Up</th>
+                                    <td>{{($logs!=null)?date('Y-m-d H:i:s',strtotime($logs->up_time)):'--'}}</td>
                                 </tr>
                            </tbody>
                         </table>
