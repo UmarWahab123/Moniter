@@ -165,7 +165,7 @@ return [
         /*
          * Package Service Providers...
          */
-        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
+        
         /*
          * Application Service Providers...
          */
@@ -177,6 +177,9 @@ return [
         Barryvdh\Debugbar\ServiceProvider::class,
         Spatie\UptimeMonitor\UptimeMonitorServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
+
+        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
+
     ],
 
     /*
