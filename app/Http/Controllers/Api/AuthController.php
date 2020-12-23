@@ -31,13 +31,14 @@ class AuthController extends Controller
  
     public function login(Request $request)
     {
+        // dd($request->all());
         $input = $request->only('email', 'password');
         $jwt_token = null;
  
         if (!$jwt_token = JWTAuth::attempt($input)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid Email or Password',
+                'message' => 'Invalid Credientials',
             ], 401);
         }
  

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Monitor;
 use JWTAuth;
 class ApiController extends Controller
 {
@@ -15,7 +16,8 @@ class ApiController extends Controller
     }
     public function getMonitor(Request $request)
     {
-        $websites=$this->user->userWebsites->toArray();
+        $website_ids=$this->user->userWebsites->pluck('website_id')->toArray();
+        $websites=Monitor::whereIn('id',$website_ids)->get()->toArray();
         if (!$websites) {
             return response()->json([
                 'success' => false,
