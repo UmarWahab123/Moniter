@@ -72,6 +72,7 @@ class ApiController extends Controller
             "url"=>$website->url,
             "status"=>$website->uptime_status,
             "last_status_change"=>$website->uptime_status_last_change_date,
+            "last_checked"=>$website->uptime_last_check_date,
             "ssl_check"=>($website->certificate_check_enabled==1)?'On':'Off',
             "certificate_expiry_date"=>$website->certificate_expiration_date,
             "certificate_issuer"=>$website->certificate_issuer,
