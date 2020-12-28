@@ -39,7 +39,7 @@
                                 <th>
                                     @if($website->uptime_status=='up')
                                         <span class="badge badge-success text-white px-4 text-uppercase ">Up</span>
-                                    @elseif($monitor->uptime_status=='down')
+                                    @elseif($website->uptime_status=='down')
                                         <span class="badge badge-danger text-white px-4 text-uppercase">Down</span>
                                     @else
                                         <span class="badge badge-warning text-white">Not Yet Checked</span>
