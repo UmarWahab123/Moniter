@@ -91,7 +91,7 @@ class ApiController extends Controller
     public function getFeaturedMonitor(Request $request)
     {
         $data=null;
-        $website_ids=$this->user->userWebsites->where('is_featuried',1)->pluck('website_id')->toArray();
+        $website_ids=$this->user->userWebsites->where('is_featured',1)->pluck('website_id')->toArray();
         $websites=Monitor::whereIn('id',$website_ids)->get();
         foreach($websites as $website)
         {
