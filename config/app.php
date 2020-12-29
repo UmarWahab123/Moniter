@@ -233,8 +233,7 @@ return [
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
 
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
-        'JWTFactory' => 'Tymon\JWTAuth\Facades\JWTFactory',
-
+        'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
 
     ],
 

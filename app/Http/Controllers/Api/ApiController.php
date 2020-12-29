@@ -16,6 +16,7 @@ class ApiController extends Controller
  
     public function __construct()
     {
+        // $this->user = JWTAuth::parseToken()->authenticate();
         try 
         {
             if (! $this->user = JWTAuth::parseToken()->authenticate())
@@ -28,18 +29,16 @@ class ApiController extends Controller
                     ]
                 ]);
             }
-
         } catch (TokenExpiredException $e) {
             return response()->json([
                 'error' => true,
                 'code'  => 11,
                 'data'  => [
-                    'message'   => 'Token Expired'
+                    'message'   => 'Expired Token'
                 ]
             ]);
 
         } catch (TokenInvalidException $e) {
-
             return response()->json([
                 'error' => true,
                 'code'  => 12,
@@ -83,6 +82,38 @@ class ApiController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'No website against this user',
+            ], 400);
+        }
+     
+        return $data;
+    }
+
+    public function getFeaturedMonitor(Request $request)
+    {
+        $data=null;
+        $website_ids=$this->user->userWebsites->pluck('website_id')->toArray();
+        $websites=Monitor::whereIn('id',$website_ids)->get();
+        foreach($websites as $website)
+        {
+            if($website->getSiteLogs!=null)
+            {
+                $logs=$website->getSiteLogs->first();
+            }
+    
+            $data[]=array(
+                "title"=>($website->getSiteDetails!=null)?$website->getSiteDetails->title:'N/A',
+                "url"=>$website->url,
+                "status"=>$website->uptime_status,
+                "certificate_expiry_date"=>$website->certificate_expiration_date,
+                "last_up"=>($logs!=null)?date('Y-m-d',strtotime($logs->up_time)):'--',
+                "last_down"=>($logs!=null)?date('Y-m-d',strtotime($logs->down_time)):'--',
+            );
+        }
+       
+        if (!$data) {
+            return response()->json([
+                'success' => true,
+                'message' => 'No website is featured',
             ], 400);
         }
      
