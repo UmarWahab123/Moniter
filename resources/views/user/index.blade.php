@@ -17,293 +17,59 @@
         <!-- page title area end -->
         <div class="main-content-inner">
             <!-- sales report area start -->
+   @if(!$monitors->isEmpty())
             <div class="sales-report-area sales-style-two">
                 <div class="row">
-                    <div class="col-xl-3 col-ml-3 col-md-6 mt-5">
-                        <div class="single-report">
-                            <div class="s-sale-inner pt--30 mb-3">
-                                <div class="s-report-title d-flex justify-content-between">
-                                    <h4 class="header-title mb-0">Product Sold</h4>
-                                    <select class="custome-select border-0 pr-3">
-                                        <option selected="">Last 7 Days</option>
-                                        <option value="0">Last 7 Days</option>
-                                    </select>
+                @foreach($monitors as $monitor)
+                        <a href="{{url('admin/website-logs/'.$monitor->id)}}" class="col-xl-3 col-ml-3 col-md-3 mt-5">
+                            <div class="single-report">
+                                <div class="s-sale-inner pt--30 mb-3">
+                                    <div class=" d-flex justify-content-between">
+                                        <h5 class="header-title mb-0">{{@$monitor->getSiteDetails->title}}</h5>
+                                        @if($monitor->uptime_status=='up')
+                                            <span class="badge badge-success text-white px-4 ">Up</span>
+                                        @elseif($monitor->uptime_status=='down')
+                                            <span class="badge badge-danger text-white px-4">Down</span>
+                                        @else
+                                            <span class="badge badge-warning text-white">Not Yet Checked</span>
+                                        @endif
+                                    </div>
+                                    <div class="mt-2">
+                                        <p class="bg-white pl-0">{{$monitor->url}}</p>
+
+                                    </div>
+                                    <div class=" d-flex justify-content-between mt-2">
+                                        <p class="bg-white pl-0">SSL Expiry Date</p>
+                                        <p class="bg-info badge text-white">@if($monitor->certificate_expiration_date!=null){{date('Y-m-d',strtotime($monitor->certificate_expiration_date))}} @else {{"--"}} @endif</p>
+                                    </div>
+                                     <div class=" d-flex justify-content-between mt-2">
+                                        <p class="bg-white pl-0">Last Down</p>
+                                        <p class="bg-dark badge text-white">
+                                            @php
+                                                if($monitor->getSiteLogs!=null)
+                                                {
+                                                    $logs=$monitor->getSiteLogs->first();
+                                                }
+                                            @endphp
+                                            {{($logs!=null)?date('Y-m-d',strtotime($logs->down_time)):'--'}}
+                                         </p>
+                                      
+                                    </div>
+                                     <div class=" d-flex justify-content-between mt-2">
+                                        <p class="bg-white pl-0">Last Up</p>
+                                        <p class="bg-success badge text-white ">{{($logs!=null)?date('Y-m-d',strtotime($logs->up_time)):'--'}}</p>
+                                    </div>
                                 </div>
                             </div>
-                            <canvas id="coin_sales4" height="100"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-ml-3 col-md-6 mt-5">
-                        <div class="single-report">
-                            <div class="s-sale-inner pt--30 mb-3">
-                                <div class="s-report-title d-flex justify-content-between">
-                                    <h4 class="header-title mb-0">Gross Profit</h4>
-                                    <select class="custome-select border-0 pr-3">
-                                        <option selected="">Last 7 Days</option>
-                                        <option value="0">Last 7 Days</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <canvas id="coin_sales5" height="100"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-ml-3 col-md-6  mt-5">
-                        <div class="single-report">
-                            <div class="s-sale-inner pt--30 mb-3">
-                                <div class="s-report-title d-flex justify-content-between">
-                                    <h4 class="header-title mb-0">Orders</h4>
-                                    <select class="custome-select border-0 pr-3">
-                                        <option selected="">Last 7 Days</option>
-                                        <option value="0">Last 7 Days</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <canvas id="coin_sales6" height="100"></canvas>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-ml-3 col-md-6 mt-5">
-                        <div class="single-report">
-                            <div class="s-sale-inner pt--30 mb-3">
-                                <div class="s-report-title d-flex justify-content-between">
-                                    <h4 class="header-title mb-0">New Coustomers</h4>
-                                    <select class="custome-select border-0 pr-3">
-                                        <option selected="">Last 7 Days</option>
-                                        <option value="0">Last 7 Days</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <canvas id="coin_sales7" height="100"></canvas>
-                        </div>
-                    </div>
+                        </a>
+                @endforeach    
+
                 </div>
             </div>
-            <!-- sales report area end -->
-            <!-- visitor graph area start -->
-            <div class="card mt-5">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between mb-5">
-                        <h4 class="header-title mb-0">Visitor Graph</h4>
-                        <select class="custome-select border-0 pr-3">
-                            <option selected="">Last 7 Days</option>
-                            <option value="0">Last 7 Days</option>
-                        </select>
-                    </div>
-                    <div id="visitor_graph"></div>
-                </div>
-            </div>
-            <!-- visitor graph area end -->
-            <!-- order list area start -->
-            <div class="card mt-5">
-                <div class="card-body">
-                    <h4 class="header-title">Todays Order List</h4>
-                    <div class="table-responsive">
-                        <table class="dbkit-table">
-                            <tbody>
-                                <tr class="heading-td">
-                                    <td>Product Name</td>
-                                    <td>Product Code</td>
-                                    <td>Order Status</td>
-                                    <td>Client Number</td>
-                                    <td>Zip Code</td>
-                                    <td>View Order</td>
-                                </tr>
-                                <tr>
-                                    <td>Ladis Sunglass</td>
-                                    <td>#894750374</td>
-                                    <td><span class="pending_dot">Pending</span></td>
-                                    <td>01976 74 92 00</td>
-                                    <td>9241</td>
-                                    <td>View Order</td>
-                                </tr>
-                                <tr>
-                                    <td>Ladis Sunglass</td>
-                                    <td>#894750374</td>
-                                    <td><span class="shipment_dot">Shipment</span></td>
-                                    <td>01976 74 92 00</td>
-                                    <td>9241</td>
-                                    <td>View Order</td>
-                                </tr>
-                                <tr>
-                                    <td>Ladis Sunglass</td>
-                                    <td>#894750374</td>
-                                    <td><span class="pending_dot">Pending</span></td>
-                                    <td>01976 74 92 00</td>
-                                    <td>9241</td>
-                                    <td>View Order</td>
-                                </tr>
-                                <tr>
-                                    <td>Ladis Sunglass</td>
-                                    <td>#894750374</td>
-                                    <td><span class="confirmed _dot">Confirmed </span></td>
-                                    <td>01976 74 92 00</td>
-                                    <td>9241</td>
-                                    <td>View Order</td>
-                                </tr>
-                                <tr>
-                                    <td>Ladis Sunglass</td>
-                                    <td>#894750374</td>
-                                    <td><span class="pending_dot">Pending</span></td>
-                                    <td>01976 74 92 00</td>
-                                    <td>9241</td>
-                                    <td>View Order</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="pagination_area pull-right mt-5">
-                        <ul>
-                            <li><a href="#"><i class="fa fa-chevron-left"></i></a></li>
-                            <li><a href="#">1</a></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#"><i class="fa fa-chevron-right"></i></a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <!-- order list area end -->
-            <div class="row">
-                <!-- product sold area start -->
-                <div class="col-xl-8 col-lg-7 col-md-12 mt-5">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between mb-4">
-                                <h4 class="header-title mb-0">Product Slod</h4>
-                                <select class="custome-select border-0 pr-3">
-                                    <option selected="">Today</option>
-                                    <option value="0">Last 7 Days</option>
-                                </select>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="dbkit-table">
-                                    <tbody>
-                                        <tr class="heading-td">
-                                            <td>Product Name</td>
-                                            <td>Revenue</td>
-                                            <td>Sold</td>
-                                            <td>Discount</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Ladis Sunglass</td>
-                                            <td>$56</td>
-                                            <td>$160</td>
-                                            <td>$20</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Ladis Sunglass</td>
-                                            <td>$26</td>
-                                            <td>$500</td>
-                                            <td>$20</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Ladis Sunglass</td>
-                                            <td>$26</td>
-                                            <td>$500</td>
-                                            <td>$20</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Ladis Sunglass</td>
-                                            <td>$56</td>
-                                            <td>$250</td>
-                                            <td>$10</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Ladis Sunglass</td>
-                                            <td>$56</td>
-                                            <td>$125</td>
-                                            <td>$50</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="pagination_area pull-right mt-5">
-                                <ul>
-                                    <li><a href="#"><i class="fa fa-chevron-left"></i></a></li>
-                                    <li><a href="#">1</a></li>
-                                    <li><a href="#">2</a></li>
-                                    <li><a href="#"><i class="fa fa-chevron-right"></i></a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- product sold area end -->
-                <!-- team member area start -->
-                <div class="col-xl-4 col-lg-5 col-md-12 mt-5">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-sm-flex flex-wrap justify-content-between mb-4 align-items-center">
-                                <h4 class="header-title mb-0">Team Member</h4>
-                                <form class="team-search">
-                                    <input type="text" name="search" placeholder="Search Here">
-                                </form>
-                            </div>
-                            <div class="member-box">
-                                <div class="s-member">
-                                    <div class="media align-items-center">
-                                        <img src="{{ asset('public/images/team/team-author1.jpg') }}" class="d-block ui-w-30 rounded-circle" alt="">
-                                        <div class="media-body ml-5">
-                                            <p>Amir Hamza</p><span>Manager</span>
-                                        </div>
-                                        <div class="tm-social">
-                                            <a href="#"><i class="fa fa-phone"></i></a>
-                                            <a href="#"><i class="fa fa-envelope"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="s-member">
-                                    <div class="media align-items-center">
-                                        <img src="{{ asset('public/images/team/team-author2.jpg') }}" class="d-block ui-w-30 rounded-circle" alt="">
-                                        <div class="media-body ml-5">
-                                            <p>Anamul Kabir</p><span>UI design</span>
-                                        </div>
-                                        <div class="tm-social">
-                                            <a href="#"><i class="fa fa-phone"></i></a>
-                                            <a href="#"><i class="fa fa-envelope"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="s-member">
-                                    <div class="media align-items-center">
-                                        <img src="{{asset('public/images/team/team-author3.jpg')}}" class="d-block ui-w-30 rounded-circle" alt="">
-                                        <div class="media-body ml-5">
-                                            <p>Animesh Mondol</p><span>UI design</span>
-                                        </div>
-                                        <div class="tm-social">
-                                            <a href="#"><i class="fa fa-phone"></i></a>
-                                            <a href="#"><i class="fa fa-envelope"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="s-member">
-                                    <div class="media align-items-center">
-                                        <img src="{{asset('public/images/team/team-author4.jpg')}}" class="d-block ui-w-30 rounded-circle" alt="">
-                                        <div class="media-body ml-5">
-                                            <p>Faruk Hasan</p><span>UI design</span>
-                                        </div>
-                                        <div class="tm-social">
-                                            <a href="#"><i class="fa fa-phone"></i></a>
-                                            <a href="#"><i class="fa fa-envelope"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="s-member">
-                                    <div class="media align-items-center">
-                                        <img src="{{asset('public/images/team/team-author5.jpg')}}" class="d-block ui-w-30 rounded-circle" alt="">
-                                        <div class="media-body ml-5">
-                                            <p>Sagor Chandra</p><span>Motion Designer</span>
-                                        </div>
-                                        <div class="tm-social">
-                                            <a href="#"><i class="fa fa-phone"></i></a>
-                                            <a href="#"><i class="fa fa-envelope"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- team member area end -->
-            </div>
+            @endif
+
+            
+           
         </div>
     </div>
     <!-- main content area end -->

@@ -68,7 +68,7 @@ class UserController extends Controller
             $user=new User();
             $user->name=$request->name;
             $user->email=$request->email;
-            $user->password=Hash::make(12345678);
+            $user->password=bcrypt(12345678);
             $user->status=1;
             if($user->save())
             {

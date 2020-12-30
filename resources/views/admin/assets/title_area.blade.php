@@ -9,12 +9,13 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="col-sm-12 clearfix">
-                        <div class="user-profile pull-right">
+                    <div class="col-sm-12 clearfix ">
+                        <div class="user-profile pull-right col-md-2">
                             <img class="avatar user-thumb" src="{{ asset('public/images/author/avatar.png') }}" alt="avatar">
                             <h4 class="user-name dropdown-toggle" data-toggle="dropdown">{{ Auth::user()->name }}<i class="fa fa-angle-down"></i></h4>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="{{ url('admin/settings') }}">Settings</a>
+                            <div class="dropdown-menu  mx-0">
+                                <a class="dropdown-item" href="{{ url('admin/profile') }}">Profile Setting</a>
+                                <a class="dropdown-item" href="{{ url('admin/settings') }}">Mail Setting</a>
                                 <a class="dropdown-item" href="#"><a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">

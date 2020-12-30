@@ -27,9 +27,21 @@ class WebsiteController extends Controller
             return Datatables::of($query)
             ->addIndexColumn()
             ->addColumn('action', function ($item) {
-                $html_string =' <a  href='.url("admin/website-logs/$item->id").' value="'.$item->id.'"  class="btn btn-info btn-sm"  title="Details"><i class="fa fa-eye text-white"></i></a>';
-                $html_string .=' <button  value="'.$item->id.'" data-emails="'.$item->getSiteDetails->emails.'" data-ssl="'.$item->certificate_check_enabled.'"  class="btn btn-primary btn-sm edit-site "  title="Edit"><i class="fa fa-pencil"></i></button>';
-                $html_string.=' <button  value="'.$item->id.'"  class="btn btn-danger btn-sm delete-site"  title="Delete"><i class="fa fa-trash-o"></i></button>';
+                if($item->getSiteDetails!=null)
+                {
+                    $html_string=null;
+                    if($item->getSiteDetails->is_featured==1)
+                    {
+                        $html_string =' <button   value="'.$item->id.'" data-status="0" class="btn btn-outline-secondary btn-sm feature"  title="Click to unfetaure"><i class="fa fa-star "></i></button>';
+                    }
+                    else
+                    {
+                        $html_string =' <button   value="'.$item->id.'" data-status="1" class="btn btn-outline-success btn-sm feature"  title="Click to fetaure"><i class="fa fa-star "></i></button>';
+                    }
+                }
+                $html_string .=' <button  value="'.$item->id.'" data-emails="'.$item->getSiteDetails->emails.'" data-ssl="'.$item->certificate_check_enabled.'"  class="btn  btn-outline-primary btn-sm edit-site "  title="Edit"><i class="fa fa-pencil"></i></button>';
+                $html_string .=' <a  href='.url("user/website-logs/$item->id").' value="'.$item->id.'"  class="btn btn-outline-info btn-sm"  title="Details"><i class="fa fa-eye "></i></a>';
+                $html_string.=' <button  value="'.$item->id.'"  class="btn btn-outline-danger btn-sm delete-site"  title="Delete"><i class="fa fa-trash-o"></i></button>';
                                                      
                     
                 return $html_string;
@@ -66,7 +78,7 @@ class WebsiteController extends Controller
                 return $item->certificate_expiration_date;
              })
              ->addColumn('certificate_check', function ($item) {
-                if($item->certificate_check_enabled)
+                if($item->certificate_check_enabled==1)
                 {
                     return '<span class="badge badge-success ">ON</span>';
                 }
@@ -74,7 +86,6 @@ class WebsiteController extends Controller
                 {
                     return '<span class="badge badge-danger ">OFF</span>';
                 }
-                return $item->certificate_check_enabled;
              })
              ->addColumn('certificate_issuer', function ($item) {
                  if($item->certificate_issuer==null)
@@ -91,7 +102,7 @@ class WebsiteController extends Controller
             ->rawColumns(['action','status','certificate_check'])
             ->make(true);
         }
-        return view('User.websites.index',compact('websites'));
+        return view('user.websites.index',compact('websites'));
         
     }
     public function store(Request $request)
@@ -205,9 +216,59 @@ class WebsiteController extends Controller
         }
         return response()->json(['success'=>false]);
     }
-
-    public function websiteLogs($id)
+    public function featureWebsite(Request $request)
     {
-        dd($id);
+        $count=UserWebsite::where('user_id',Auth::user()->id)->where('is_featured',1)->count();
+        if($request->status==1)
+        {
+            if($count < 4)
+            {
+
+                UserWebsite::where('id',$request->id)->update(['is_featured'=>$request->status]);
+                return response()->json(['success'=>true,'limit'=>0]);
+            }
+            else
+            {
+                return response()->json(['success'=>true,'limit'=>1]);
+            }
+        }
+        else
+        {
+            UserWebsite::where('id',$request->id)->update(['is_featured'=>$request->status]);
+            return response()->json(['success'=>true,'limit'=>2]);
+        }
+        
     }
+    public function websiteLogs(Request $request,$website_id)
+    {
+        $website=Monitor::where('id',$website_id)->first();
+        if($request->ajax())
+        {
+            $query=WebsiteLog::where('website_id',$website_id);
+            return Datatables::of($query)
+            ->addIndexColumn()
+            ->addColumn('action', function ($item) {
+                $html_string =' <a  href='.url("user/website-logs/$item->id").' value="'.$item->id.'"  class="btn btn-info btn-sm"  title="Details"><i class="fa fa-eye text-white"></i></a>';
+                $html_string.=' <button  value="'.$item->id.'"  class="btn btn-danger btn-sm delete-site"  title="Delete"><i class="fa fa-trash-o"></i></button>';
+                                                     
+                    
+                return $html_string;
+            })
+            ->addColumn('down_time',function($item){
+                if($item->down_time!=null)
+                return $item->down_time;
+                return '--';
+            })
+            ->addColumn('up_time',function($item){
+                if($item->up_time!=null)
+                return $item->up_time;
+                return '--';
+            })
+
+            ->rawColumns(['action','status','certificate_check'])
+            ->make(true);
+        }
+        return view('user.websites.website-details',compact('website_id','website'));
+    }
+
 }
