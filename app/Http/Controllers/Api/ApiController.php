@@ -75,8 +75,8 @@ class ApiController extends Controller
             "ssl_check"=>($website->certificate_check_enabled==1)?'On':'Off',
             "certificate_expiry_date"=>$website->certificate_expiration_date,
             "certificate_issuer"=>$website->certificate_issuer,
-            "created_at"=>$website->created_at,
-            "updated_at"=>$website->updated_at,
+            "created_at"=>$website->created_at->format('Y-m-d H:i:s'),
+            "updated_at"=>$website->updated_at->format('Y-m-d H:i:s'),
         );
         if (!$data) {
             return response()->json([
