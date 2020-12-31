@@ -119,4 +119,30 @@ class ApiController extends Controller
      
         return $data;
     }
+    
+    public function getMonitorDetail(Request $request)
+    {
+        $website=Monitor::where('id',$request->website_id)->first();
+        if($website!=null)
+        {
+            $data[]=array(
+                "title"=>($website->getSiteDetails!=null)?$website->getSiteDetails->title:'N/A',
+                "url"=>$website->url,
+                "status"=>$website->uptime_status,
+                "last_status_change"=>$website->uptime_status_last_change_date,
+                "last_checked"=>$website->uptime_last_check_date,
+                "ssl_check"=>($website->certificate_check_enabled==1)?'On':'Off',
+                "certificate_expiry_date"=>$website->certificate_expiration_date,
+                "certificate_issuer"=>$website->certificate_issuer,
+                "created_at"=>$website->created_at->format('Y-m-d H:i:s'),
+                "updated_at"=>$website->updated_at->format('Y-m-d H:i:s'),
+            );
+            return response()->json(['website'=>$data,'success'=>true]);
+        }
+        else
+        {
+            return response()->json(['website'=>'No data found','success'=>false]);
+        }
+       
+    }
 }
