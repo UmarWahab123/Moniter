@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Monitor;
+use App\WebsiteLog;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
@@ -124,28 +125,15 @@ class ApiController extends Controller
     
     public function getMonitorDetail(Request $request)
     {
-        $website=Monitor::where('id',$request->website_id)->first();
+        $website=WebsiteLog::where('website_id',$request->website_id)->get()->toArray();
         if($website!=null)
         {
-            $data[]=array(
 
-                "id"=>$website->id,
-                "title"=>($website->getSiteDetails!=null)?$website->getSiteDetails->title:'N/A',
-                "url"=>$website->url,
-                "status"=>$website->uptime_status,
-                "last_status_change"=>$website->uptime_status_last_change_date,
-                "last_checked"=>$website->uptime_last_check_date,
-                "ssl_check"=>($website->certificate_check_enabled==1)?'On':'Off',
-                "certificate_expiry_date"=>$website->certificate_expiration_date,
-                "certificate_issuer"=>$website->certificate_issuer,
-                "created_at"=>$website->created_at->format('Y-m-d H:i:s'),
-                "updated_at"=>$website->updated_at->format('Y-m-d H:i:s'),
-            );
-            return response()->json(['website'=>$data,'success'=>true]);
+            return response()->json(['website_logs'=>$website,'success'=>true]);
         }
         else
         {
-            return response()->json(['website'=>'No data found','success'=>false]);
+            return response()->json(['website_logs'=>'No log found','success'=>false]);
         }
        
     }
