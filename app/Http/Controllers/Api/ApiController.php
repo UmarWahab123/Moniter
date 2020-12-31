@@ -67,6 +67,7 @@ class ApiController extends Controller
         $websites=Monitor::whereIn('id',$website_ids)->get();
         foreach($websites as $website)
         $data[]=array(
+            "id"=>$website->id,
             "title"=>($website->getSiteDetails!=null)?$website->getSiteDetails->title:'N/A',
             "url"=>$website->url,
             "status"=>$website->uptime_status,
@@ -101,6 +102,7 @@ class ApiController extends Controller
             }
     
             $data[]=array(
+                "id"=>$website->id,
                 "title"=>($website->getSiteDetails!=null)?$website->getSiteDetails->title:'N/A',
                 "url"=>$website->url,
                 "status"=>$website->uptime_status,
@@ -126,6 +128,8 @@ class ApiController extends Controller
         if($website!=null)
         {
             $data[]=array(
+
+                "id"=>$website->id,
                 "title"=>($website->getSiteDetails!=null)?$website->getSiteDetails->title:'N/A',
                 "url"=>$website->url,
                 "status"=>$website->uptime_status,
