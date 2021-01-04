@@ -65,6 +65,7 @@
                                             <th>Certificate Expiry Date </th>
                                             <th>Certificate Issuer </th>
                                             <th>Status </th>
+                                            <th>Failure Reason </th>
                                             <th style="min-width:12%">Action</th>
 
                                         </tr>
@@ -198,6 +199,7 @@
                         data: 'status_change_on',
                         name: 'status_change_on'
                     },
+                   
                     {
                         data: 'last_status_check',
                         name: 'last_status_check'
@@ -217,6 +219,10 @@
                      {
                         data: 'status',
                         name: 'status'
+                    },
+                    {
+                        data: 'reason',
+                        name: 'reason'
                     },
                     {
                         data: 'action',

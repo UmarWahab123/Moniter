@@ -98,6 +98,9 @@ class WebsiteController extends Controller
              ->addColumn('url', function ($item) {
                 return $item->url;
              })
+             ->addColumn('reason', function ($item) {
+                return ($item->uptime_check_failure_reason!=null)?$item->uptime_check_failure_reason:'--';
+             })
             ->setRowId(function ($item) {
                 return $item->id;
             })
