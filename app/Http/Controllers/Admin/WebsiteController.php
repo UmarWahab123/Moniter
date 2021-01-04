@@ -259,7 +259,7 @@ class WebsiteController extends Controller
         $count=UserWebsite::where('user_id',Auth::user()->id)->where('is_featured',1)->count();
         if($request->status==1)
         {
-            if($count < 4)
+            if($count < 10)
             {
 
                 UserWebsite::where('id',$request->id)->update(['is_featured'=>$request->status]);

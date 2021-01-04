@@ -65,7 +65,6 @@
                                             <th>Certificate Expiry Date </th>
                                             <th>Certificate Issuer </th>
                                             <th>Status </th>
-                                            <th>Failure Reason </th>
                                             <th style="min-width:12%">Action</th>
 
                                         </tr>
@@ -219,10 +218,6 @@
                      {
                         data: 'status',
                         name: 'status'
-                    },
-                    {
-                        data: 'reason',
-                        name: 'reason'
                     },
                     {
                         data: 'action',
