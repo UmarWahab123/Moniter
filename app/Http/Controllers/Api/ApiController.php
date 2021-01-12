@@ -103,9 +103,9 @@ class ApiController extends Controller
             if($website->getSiteLogs!=null)
             {
                 $logs=$website->getSiteLogs->first();
-                $last_month_logs=$website->getSiteLogs->where('created_at','>',$lastmonth)->count();
+                // $last_month_logs=$website->getSiteLogs->where('created_at','>',$lastmonth)->count();
             }
-            dd($last_month_logs);
+            // dd($last_month_logs);
             $data[]=array(
                 "id"=>$website->id,
                 "title"=>($website->getSiteDetails!=null)?$website->getSiteDetails->title:'N/A',
