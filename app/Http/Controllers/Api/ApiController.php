@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Monitor;
 use App\WebsiteLog;
+use DateTime;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
@@ -95,13 +96,16 @@ class ApiController extends Controller
         $data=null;
         $website_ids=$this->user->userWebsites->where('is_featured',1)->pluck('website_id')->toArray();
         $websites=Monitor::whereIn('id',$website_ids)->get();
+        $dateObj=new DateTime();
+        $lastmonth=$dateObj->modify('-30 day')->format('Y-m-d');
         foreach($websites as $website)
         {
             if($website->getSiteLogs!=null)
             {
                 $logs=$website->getSiteLogs->first();
+                $last_month_logs=$website->getSiteLogs->where('created_at','>',$lastmonth)->count();
             }
-    
+            dd($last_month_logs);
             $data[]=array(
                 "id"=>$website->id,
                 "title"=>($website->getSiteDetails!=null)?$website->getSiteDetails->title:'N/A',
@@ -133,7 +137,7 @@ class ApiController extends Controller
         }
         else
         {
-            return response()->json(['website_logs'=>'No log found','success'=>false]);
+            return response()->json(['website_logs'=>$website,'success'=>false]);
         }
        
     }
