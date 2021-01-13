@@ -67,20 +67,35 @@ class ApiController extends Controller
         $data=null;
         $website_ids=$this->user->userWebsites->pluck('website_id')->toArray();
         $websites=Monitor::whereIn('id',$website_ids)->get();
+        $dateObj=new DateTime();
+        $lastmonth=$dateObj->modify('-30 day')->format('Y-m-d');
         foreach($websites as $website)
-        $data[]=array(
-            "id"=>$website->id,
-            "title"=>($website->getSiteDetails!=null)?$website->getSiteDetails->title:'N/A',
-            "url"=>$website->url,
-            "status"=>$website->uptime_status,
-            "last_status_change"=>$website->uptime_status_last_change_date,
-            "last_checked"=>$website->uptime_last_check_date,
-            "ssl_check"=>($website->certificate_check_enabled==1)?'On':'Off',
-            "certificate_expiry_date"=>$website->certificate_expiration_date,
-            "certificate_issuer"=>$website->certificate_issuer,
-            "created_at"=>$website->created_at->format('Y-m-d H:i:s'),
-            "updated_at"=>$website->updated_at->format('Y-m-d H:i:s'),
-        );
+        {
+            $percentage=null;
+            if($website->getSiteLogs!=null)
+            {
+                $last_month_logs=$website->getSiteLogs->where('created_at','>',$lastmonth)->count();
+                $last_month_logs=30-$last_month_logs;
+                $percentage=number_format(($last_month_logs/30)*100,2);
+                // dd($percentage,$last_month_logs);
+
+            }
+            $data[]=array(
+                "id"=>$website->id,
+                "title"=>($website->getSiteDetails!=null)?$website->getSiteDetails->title:'--',
+                "url"=>$website->url,
+                "status"=>$website->uptime_status,
+                "last_status_change"=>$website->uptime_status_last_change_date,
+                "last_checked"=>$website->uptime_last_check_date,
+                "ssl_check"=>($website->certificate_check_enabled==1)?'On':'Off',
+                "certificate_expiry_date"=>$website->certificate_expiration_date,
+                "certificate_issuer"=>$website->certificate_issuer,
+                "monthly_percentage"=>$percentage,
+                "created_at"=>$website->created_at->format('Y-m-d H:i:s'),
+                "updated_at"=>$website->updated_at->format('Y-m-d H:i:s'),
+            );
+        }
+       
         if (!$data) {
             return response()->json([
                 'success' => true,
@@ -100,10 +115,15 @@ class ApiController extends Controller
         $lastmonth=$dateObj->modify('-30 day')->format('Y-m-d');
         foreach($websites as $website)
         {
+            $percentage=null;
             if($website->getSiteLogs!=null)
             {
                 $logs=$website->getSiteLogs->first();
-                // $last_month_logs=$website->getSiteLogs->where('created_at','>',$lastmonth)->count();
+                $last_month_logs=$website->getSiteLogs->where('created_at','>',$lastmonth)->count();
+                $last_month_logs=30-$last_month_logs;
+                $percentage=number_format(($last_month_logs/30)*100,2);
+                // dd($percentage,$last_month_logs);
+
             }
             // dd($last_month_logs);
             $data[]=array(
@@ -114,6 +134,7 @@ class ApiController extends Controller
                 "certificate_expiry_date"=>$website->certificate_expiration_date,
                 "last_up"=>($logs!=null)?date('Y-m-d',strtotime($logs->up_time)):'--',
                 "last_down"=>($logs!=null)?date('Y-m-d',strtotime($logs->down_time)):'--',
+                "monthly_percentage"=>$percentage,
             );
         }
        
