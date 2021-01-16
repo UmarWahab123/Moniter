@@ -157,6 +157,7 @@ class SendEmails extends Command
                     $website_log=new WebsiteLog();
                     $website_log->website_id=$site->id;
                     $website_log->down_time=$site->uptime_status_last_change_date;
+                    $website_log->down_reason=$site->uptime_check_failure_reason;
                     $website_log->save();
                     $website=$site->url;
                     $mailData['status']="Down";

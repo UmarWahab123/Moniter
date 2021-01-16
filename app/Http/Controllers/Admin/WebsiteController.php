@@ -227,7 +227,7 @@ class WebsiteController extends Controller
         $website=Monitor::where('id',$website_id)->first();
         if($request->ajax())
         {
-            $query=WebsiteLog::where('website_id',$website_id);
+            $query=WebsiteLog::where('website_id',$website_id)->orderBy('created_at','desc');
             return Datatables::of($query)
             ->addIndexColumn()
             ->addColumn('action', function ($item) {
@@ -247,8 +247,10 @@ class WebsiteController extends Controller
                 return $item->up_time;
                 return '--';
             })
+            ->addColumn('down_reason',function($item){
+                return ($item->down_reason!=null?strstr($item->down_reason,":",true):'--');
+            })
 
-            ->rawColumns(['action','status','certificate_check'])
             ->make(true);
         }
         return view('admin.websites.website-details',compact('website_id','website'));

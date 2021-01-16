@@ -85,10 +85,8 @@
                                         <tr>
                                             <th>#</th>
                                             <th>Down Time </th>
-                                            <th>Up TIme </th>
-                                           
-                                           
-
+                                            <th>Up Time </th>
+                                            <th>Down Reason </th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -149,6 +147,10 @@
                     {
                         data: 'up_time',
                         name: 'up_time'
+                    },
+                    {
+                        data: 'down_reason',
+                        name: 'down_reason'
                     },
 
                 ],

@@ -264,7 +264,9 @@ class WebsiteController extends Controller
                 return $item->up_time;
                 return '--';
             })
-
+            ->addColumn('down_reason',function($item){
+                return ($item->down_reason!=null?strstr($item->down_reason,":",true):'--');
+            })
             ->rawColumns(['action','status','certificate_check'])
             ->make(true);
         }
