@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Monitor;
 use App\WebsiteLog;
+use Carbon\Carbon;
 use DateTime;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -69,16 +70,35 @@ class ApiController extends Controller
         $websites=Monitor::whereIn('id',$website_ids)->get();
         $dateObj=new DateTime();
         $lastmonth=$dateObj->modify('-30 day')->format('Y-m-d');
+        $now_time=Carbon::now();
+        $month_mintues=$now_time->diffInMinutes($lastmonth);
+        // $month_mintues=43800;
         foreach($websites as $website)
         {
             $percentage=null;
             if($website->getSiteLogs!=null)
             {
-                $last_month_logs=$website->getSiteLogs->where('created_at','>',$lastmonth)->count();
-                $last_month_logs=30-$last_month_logs;
-                $percentage=number_format(($last_month_logs/30)*100,2);
-                // dd($percentage,$last_month_logs);
+                $total_time=null;
+                $logs=$website->getSiteLogs->where('created_at','>',$lastmonth);
+                foreach($logs  as $log)
+                {
 
+
+                    $down_time=Carbon::parse($log->down_time);
+                    $up_time=Carbon::parse($log->up_time);
+                    $time_difference=null;
+                    if($up_time!=null)
+                    {
+                        $time_difference=$up_time->diffInMinutes($down_time);
+                    }
+                    else
+                    {
+                        $time_difference=$now_time->diffInMinutes($down_time);
+                    }
+                    $total_time+=$time_difference;
+                }
+                $percentage=100-number_format(($total_time/$month_mintues)*100,2);
+                // dd($percentage,$total_time);
             }
             $data[]=array(
                 "id"=>$website->id,
@@ -113,17 +133,34 @@ class ApiController extends Controller
         $websites=Monitor::whereIn('id',$website_ids)->get();
         $dateObj=new DateTime();
         $lastmonth=$dateObj->modify('-30 day')->format('Y-m-d');
+        $now_time=Carbon::now();
+        $month_mintues=$now_time->diffInMinutes($lastmonth);
         foreach($websites as $website)
         {
             $percentage=null;
+            $total_time=null;
             if($website->getSiteLogs!=null)
             {
-                $logs=$website->getSiteLogs->first();
-                $last_month_logs=$website->getSiteLogs->where('created_at','>',$lastmonth)->count();
-                $last_month_logs=30-$last_month_logs;
-                $percentage=number_format(($last_month_logs/30)*100,2);
-                // dd($percentage,$last_month_logs);
+                $details=$website->getSiteLogs->first();
+                $logs=$website->getSiteLogs->where('created_at','>',$lastmonth);
+                foreach($logs  as $log)
+                {
 
+
+                    $down_time=Carbon::parse($log->down_time);
+                    $up_time=Carbon::parse($log->up_time);
+                    $time_difference=null;
+                    if($up_time!=null)
+                    {
+                        $time_difference=$up_time->diffInMinutes($down_time);
+                    }
+                    else
+                    {
+                        $time_difference=$now_time->diffInMinutes($down_time);
+                    }
+                    $total_time+=$time_difference;
+                }
+                $percentage=100-number_format(($total_time/$month_mintues)*100,2);
             }
             // dd($last_month_logs);
             $data[]=array(
@@ -132,8 +169,8 @@ class ApiController extends Controller
                 "url"=>$website->url,
                 "status"=>$website->uptime_status,
                 "certificate_expiry_date"=>$website->certificate_expiration_date,
-                "last_up"=>($logs!=null)?date('Y-m-d',strtotime($logs->up_time)):'--',
-                "last_down"=>($logs!=null)?date('Y-m-d',strtotime($logs->down_time)):'--',
+                "last_up"=>($details!=null)?date('Y-m-d',strtotime($details->up_time)):'--',
+                "last_down"=>($details!=null)?date('Y-m-d',strtotime($details->down_time)):'--',
                 "monthly_percentage"=>$percentage,
             );
         }
