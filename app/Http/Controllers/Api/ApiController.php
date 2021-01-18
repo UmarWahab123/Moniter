@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Monitor;
+use App\User;
 use App\WebsiteLog;
 use Carbon\Carbon;
 use DateTime;
@@ -198,5 +199,13 @@ class ApiController extends Controller
             return response()->json(['website_logs'=>$website,'success'=>false]);
         }
        
+    }
+    public function addUserToken(Request $request)
+    {
+        $row=User::where('id',$this->user->id)->update(['token'=>$request->fcm_token]);
+        if($row==1)
+        return response()->json(['success'=>true]);
+        return response()->json(['success'=>false]);
+
     }
 }
