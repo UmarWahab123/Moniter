@@ -204,8 +204,13 @@ class ApiController extends Controller
     {
         $row=User::where('id',$this->user->id)->update(['token'=>$request->fcm_token]);
         if($row==1)
-        return response()->json(['success'=>true]);
-        return response()->json(['success'=>false]);
+        {
+            return response()->json(['success'=>true]);
+        }
+        else
+        {
+            return response()->json(['success'=>false]);
+        }
 
     }
 }
