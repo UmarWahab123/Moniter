@@ -179,6 +179,7 @@ return [
         Yajra\DataTables\DataTablesServiceProvider::class,
 
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
+        LaravelFCM\FCMServiceProvider::class,
 
     ],
 
@@ -234,7 +235,8 @@ return [
 
         'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
         'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
-
+        'FCM'      => LaravelFCM\Facades\FCM::class,
+        'FCMGroup' => LaravelFCM\Facades\FCMGroup::class, // Optional
     ],
 
 ];
