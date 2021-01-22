@@ -127,6 +127,69 @@ class ApiController extends Controller
         return $data;
     }
 
+    public function getSingleMonitor(Request $request)
+    {
+        $data=null;
+        $website=Monitor::where('id',$request->website_id)->first();
+        if($website!=null)
+        {
+            $dateObj=new DateTime();
+            $lastmonth=$dateObj->modify('-30 day')->format('Y-m-d');
+            $now_time=Carbon::now();
+            $month_mintues=$now_time->diffInMinutes($lastmonth);
+            // $month_mintues=43800;
+           
+                $percentage=null;
+                if($website->getSiteLogs!=null)
+                {
+                    $total_time=null;
+                    $logs=$website->getSiteLogs->where('created_at','>',$lastmonth);
+                    foreach($logs  as $log)
+                    {
+    
+    
+                        $down_time=Carbon::parse($log->down_time);
+                        $up_time=Carbon::parse($log->up_time);
+                        $time_difference=null;
+                        if($up_time!=null)
+                        {
+                            $time_difference=$up_time->diffInMinutes($down_time);
+                        }
+                        else
+                        {
+                            $time_difference=$now_time->diffInMinutes($down_time);
+                        }
+                        $total_time+=$time_difference;
+                    }
+                    $percentage=100-number_format(($total_time/$month_mintues)*100,2);
+                    // dd($percentage,$total_time);
+                }
+                $data[]=array(
+                    "id"=>$website->id,
+                    "title"=>($website->getSiteDetails!=null)?$website->getSiteDetails->title:'--',
+                    "url"=>$website->url,
+                    "status"=>$website->uptime_status,
+                    "last_status_change"=>$website->uptime_status_last_change_date,
+                    "last_checked"=>$website->uptime_last_check_date,
+                    "ssl_check"=>($website->certificate_check_enabled==1)?'On':'Off',
+                    "certificate_expiry_date"=>$website->certificate_expiration_date,
+                    "certificate_issuer"=>$website->certificate_issuer,
+                    "monthly_percentage"=>$percentage,
+                    "created_at"=>$website->created_at->format('Y-m-d H:i:s'),
+                    "updated_at"=>$website->updated_at->format('Y-m-d H:i:s'),
+                );
+            return $data;
+        }
+        else
+        {
+            return response()->json([
+                'success' => false,
+                'message' => 'No website against this user',
+            ], 400);
+        }
+       
+     
+    }
     public function getFeaturedMonitor(Request $request)
     {
         $data=null;
