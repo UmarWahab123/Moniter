@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Monitor;
 use App\User;
+use App\UserToken;
 use App\WebsiteLog;
 use Carbon\Carbon;
 use DateTime;
@@ -274,15 +275,26 @@ class ApiController extends Controller
     }
     public function addUserToken(Request $request)
     {
-        $row=User::where('id',$this->user->id)->update(['token'=>$request->fcm_token]);
-        if($row==1)
+        $count=UserToken::where('user_id',$this->user->id)->count();
+        if($count <= 2)
         {
-            return response()->json(['success'=>true]);
+            $user_token=new UserToken();
+            $user_token->user_id=$this->user->id;
+            $user_token->token=$request->fcm_token;
+            if($user_token->save())
+            {
+                return response()->json(['success'=>true]);
+            }
+            else
+            {
+                return response()->json(['success'=>false]);
+            }
         }
         else
         {
-            return response()->json(['success'=>false]);
+            return response()->json(['success'=>false,'msg'=>'You can log in to maximum two devices']);
         }
+       
 
     }
 }
