@@ -18,7 +18,7 @@
     <!-- main content area start -->
     <div class="main-content">
         <!-- header area start -->
-        {{-- @include('admin.assets.header') --}}
+        {{-- @include('user.assets.header') --}}
 
         <!-- header area end -->
         <!-- page title area start -->
@@ -65,7 +65,7 @@
                                             <th>Certificate Expiry Date </th>
                                             <th>Certificate Issuer </th>
                                             <th>Status </th>
-                                            <th>Action</th>
+                                            <th style="min-width:12%">Action</th>
 
                                         </tr>
                                     </thead>
@@ -102,8 +102,8 @@
                                 <input type="text" name="title" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Title">
                             </div>
                               <div class="form-group">
-                                <label for="exampleInputEmail1">Emails </label><small class="text-danger float-right"> (Emails should be comma seprated)</small>
-                                <input type="text" name="emails" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Title">
+                                <label for="exampleInputEmail1">Email </label><small class="text-info float-right d-none"> (Emails should be comma seprated)</small>
+                                <input type="text" name="emails" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Email">
                             </div>
                             <div class="form-check ">
                                 <input name="ssl" type="checkbox" class="form-check-input" id="exampleCheck1">
@@ -149,7 +149,7 @@
                 </div>
             </div>
         </div>
-        @include('admin.assets.javascript')
+        @include('user.assets.javascript')
         <!-- Start datatable js -->
         <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
         <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
@@ -198,6 +198,7 @@
                         data: 'status_change_on',
                         name: 'status_change_on'
                     },
+                   
                     {
                         data: 'last_status_check',
                         name: 'last_status_check'
@@ -355,7 +356,7 @@
                 }, 65000);
                 
             }
-  $(document).on('click','.feature', function(e) {
+            $(document).on('click','.feature', function(e) {
 
                 var id = $(this).val();
                 var status=$(this).data('status');
@@ -397,7 +398,6 @@
                 })
                 
             });
-         
          
 {{-- Highcharts.chart('container', {
 

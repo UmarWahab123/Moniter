@@ -102,8 +102,8 @@
                                 <input type="text" name="title" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Title">
                             </div>
                               <div class="form-group">
-                                <label for="exampleInputEmail1">Emails </label><small class="text-danger float-right"> (Emails should be comma seprated)</small>
-                                <input type="text" name="emails" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Emails">
+                                <label for="exampleInputEmail1">Email </label><small class="text-info float-right d-none"> (Emails should be comma seprated)</small>
+                                <input type="text" name="emails" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Email">
                             </div>
                             <div class="form-check ">
                                 <input name="ssl" type="checkbox" class="form-check-input" id="exampleCheck1">

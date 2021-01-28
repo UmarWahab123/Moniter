@@ -51,5 +51,9 @@ Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth'
     Route::get('feature', 'WebsiteController@featureWebsite')->name('feature');
     Route::get('/website-logs/{id}', 'WebsiteController@websiteLogs')->name('website-logs');
 
+    Route::get('/settings', 'SettingController@index')->name('settings');
+    Route::post('/add-settings', 'SettingController@store')->name('add-settings');
+
+
 
 });

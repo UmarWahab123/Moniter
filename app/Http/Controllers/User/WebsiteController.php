@@ -113,6 +113,7 @@ class WebsiteController extends Controller
         $validator = $request->validate([
             'url' => 'required|regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
             'title' => 'required',
+            'emails'=> 'email',
         ]);
         
             $mailData=$request->all();

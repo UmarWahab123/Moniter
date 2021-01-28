@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\User;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -12,7 +12,7 @@ class SettingController extends Controller
     public function index()
     {
         $setting=Setting::where('user_id',Auth::user()->id)->first();
-        return view('admin.settings.index',compact('setting'));
+        return view('user.settings.index',compact('setting'));
     }
     public function store(Request $request)
     {
@@ -21,6 +21,7 @@ class SettingController extends Controller
         {
             $setting = new Setting();
             $setting->type='email';
+            $setting->user_id=Auth::user()->id;
             $setting->settings=$request->email;
             $setting->save();
             return response()->json(['success'=>true,'msg'=>'Setting saved successfully']);

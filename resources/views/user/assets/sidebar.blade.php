@@ -10,10 +10,12 @@
                         <ul class="metismenu" id="menu">
                             <li class="active">
                                 <a href="{{ url('user/home') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Dashboard</span></a>
-                               
                             </li>
                             <li class="">
                                 <a href="{{ url('user/websites') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Websites</span></a>
+                            </li>
+                            <li class="">
+                                <a href="{{ url('user/settings') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Settings</span></a>
                             </li>
 
                            
