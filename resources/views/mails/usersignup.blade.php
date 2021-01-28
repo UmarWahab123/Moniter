@@ -1,10 +1,10 @@
 @component('mail::message')
 <style>
 .button {
-  background-color: #4CAF50;
+  background-color: #28a745;
   border: none;
   color: white;
-  padding: 15px 32px;
+  padding: 10px 20px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
