@@ -116,7 +116,7 @@
             var table = $('#websitesDetailsDataTable').DataTable({
                 // "bAutoWidth": false,
                 processing: true,
-                searching: true,
+                searching: false,
                 ordering: true,
                 pageLength: {{50}},
                 "processing": true,

@@ -54,6 +54,8 @@ Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth'
     Route::get('/settings', 'SettingController@index')->name('settings');
     Route::post('/add-settings', 'SettingController@store')->name('add-settings');
 
+    Route::get('/profile', 'ProfileController@index')->name('profile');
+    Route::post('/profile', 'ProfileController@update')->name('profile');
 
 
 });

@@ -12,16 +12,16 @@
 <!-- page container area start -->
 <div class="page-container">
     <!-- sidebar menu area start -->
-    @include('admin.assets.sidebar')
+    @include('user.assets.sidebar')
     <!-- sidebar menu area end -->
     <!-- main content area start -->
     <div class="main-content">
         <!-- header area start -->
-        {{-- @include('admin.assets.header') --}}
+        {{-- @include('user.assets.header') --}}
 
         <!-- header area end -->
         <!-- page title area start -->
-        @include('admin.assets.title_area')
+        @include('user.assets.title_area')
 
         <!-- page title area end -->
         <div class="main-content-inner">
@@ -55,11 +55,11 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="exampleInputEmail1">Password</label>
-                                        <input  value="" type="password" class="form-control" name="password" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Password">
+                                        <input   value="" type="password" class="form-control" name="password" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Password">
                                     </div>
                                     <div class="form-group">
                                         <label for="exampleInputEmail1">Confirm Password</label>
-                                        <input  value="" type="password" class="form-control" name="password_confirmation" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Confirm Password">
+                                        <input   value="" type="password" class="form-control" name="password_confirmation" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Confirm Password">
                                     </div>
                                     <button id="updateBtn" type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Update</button>
                                 </form>
@@ -75,7 +75,7 @@
         </div>
 </div>
 </div>
-@include('admin.assets.javascript')
+@include('user.assets.javascript')
 
 <script>
   
@@ -90,7 +90,7 @@
         });
         $.ajax({
             method:"post",
-            url:"{{url('admin/profile')}}",
+            url:"{{url('user/profile')}}",
             data:formData,
             beforeSend: function() {
                 $('#updateBtn').prop('disabled', true);

@@ -15,14 +15,26 @@ class ProfileController extends Controller
     }
     public function update(Request $request)
     {
-        $request->validate([
-            'name'=>'string',
-            'password'=>'required|string|min:6|confirmed',
-        ]);
+        if($request->password != null)
+        {
+            $request->validate([
+                'name'=>'string',
+                'password'=>'|string|min:6|confirmed',
+            ]);
+        }
+        else
+        {
+            $request->validate([
+                'name'=>'string',
+            ]);
+        }
 
         $user=User::find(Auth::user()->id);
         $user->name=$request->name;
-        $user->password=bcrypt($request->password);
+        if($request->password != null)
+        {
+            $user->password=bcrypt($request->password);
+        }
         $user->save();
         return response()->json(['success'=>true]);
     }
