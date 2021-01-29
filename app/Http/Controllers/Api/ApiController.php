@@ -253,9 +253,7 @@ class ApiController extends Controller
        
         if (!$data) {
             return response()->json([
-                'success' => true,
-                'message' => 'No website is featured',
-            ], 400);
+            ]);
         }
      
         return $data;
@@ -283,6 +281,7 @@ class ApiController extends Controller
             $user_token=new UserToken();
             $user_token->user_id=$this->user->id;
             $user_token->token=$request->fcm_token;
+            $user_token->device_id=$request->device_id;
             if($user_token->save())
             {
                 return response()->json(['success'=>true]);
@@ -294,7 +293,7 @@ class ApiController extends Controller
         }
         else
         {
-            return response()->json(['success'=>false,'msg'=>'You can log in to maximum two devices']);
+            return response()->json(['success'=>false,'limit'=>'reached']);
         }
        
 

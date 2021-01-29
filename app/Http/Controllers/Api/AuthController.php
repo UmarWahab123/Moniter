@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
+use App\UserToken;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 class AuthController extends Controller
@@ -41,11 +42,20 @@ class AuthController extends Controller
                 'message' => 'Invalid Credientials',
             ], 401);
         }
- 
-        return response()->json([
-            'success' => true,
-            'token' => $jwt_token,
-        ]);
+        $user = JWTAuth::authenticate($jwt_token);
+        $count=UserToken::where('user_id',$user->id)->count();
+        if($count < 2)
+        {
+            return response()->json([
+                'success' => true,
+                'token' => $jwt_token,
+            ]);
+        }
+        else
+        {
+            return response()->json(['success'=>false,'msg'=>'You can log in to maximum two devices']);
+        }
+        
     }
  
     public function logout(Request $request)
@@ -84,4 +94,5 @@ class AuthController extends Controller
  
         return response()->json(['user' => $user]);
     }
+
 }
