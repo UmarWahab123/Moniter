@@ -21,6 +21,7 @@ class SettingController extends Controller
         {
             $setting = new Setting();
             $setting->type='email';
+            $setting->user_id=Auth::user()->id;
             $setting->settings=$request->email;
             $setting->save();
             return response()->json(['success'=>true,'msg'=>'Setting saved successfully']);

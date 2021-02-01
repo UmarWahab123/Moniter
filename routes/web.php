@@ -47,6 +47,7 @@ Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth'
     Route::get('/websites', 'WebsiteController@index')->name('websites');
     Route::post('/add-website', 'WebsiteController@store')->name('add-website');
     Route::get('/delete-website', 'WebsiteController@destroy')->name('delete-website');
+    Route::get('/edit-website', 'WebsiteController@update')->name('edit-website');
 
     Route::get('feature', 'WebsiteController@featureWebsite')->name('feature');
     Route::get('/website-logs/{id}', 'WebsiteController@websiteLogs')->name('website-logs');

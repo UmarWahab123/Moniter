@@ -49,7 +49,7 @@ class SendEmails extends Command
      */
     public function handle()
     {
-        $sites = Monitor::get();
+        $sites = Monitor::orderBy('id','asc')->get();
 
         foreach ($sites as $site) {
             if ($site->uptime_status == 'up') {
@@ -57,6 +57,32 @@ class SendEmails extends Command
                 $checkLogs = WebsiteLog::where('website_id', $site->id)->where('up_time', null)->first();
                 if ($checkLogs != null) {
                     if ($checkLogs->up_time == null) {
+                        
+                        $website = $site->url;
+                        $mailData['status'] = "Up";
+                        $mailData['site'] = $website;
+                        WebsiteLog::where('website_id', $site->id)->where('up_time', null)->update(['up_time' => $site->uptime_status_last_change_date]);
+                        if ($site->getSiteDetails != null) {
+                            $user_id=$site->getSiteDetails->user_id;
+                            $email = $site->getSiteDetails->emails;
+                            $developer_email = $site->getSiteDetails->developer_email;
+                            $owner_email = $site->getSiteDetails->owner_email;
+                            if ($email != null) {
+                                Mail::to($email)->cc([$developer_email,$owner_email])->send(new SiteUptimeStatus($mailData));
+                                $this->info('Mail sent to customer mail for website sent!' . $mailData['site']);
+
+                            } else {
+                                $setting = Setting::where('user_id',$user_id)->where('type', 'email')->first();
+                                if ($setting == null) {
+                                    // $default_mail = config('uptime-monitor.notifications.mail.to');
+                                    // if ($default_mail != null) {
+                                    //     Mail::to($default_mail[0])->send(new SiteUptimeStatus($mailData));
+                                    // }
+                                } else {
+                                    Mail::to($setting->settings)->cc([$developer_email,$owner_email])->send(new SiteUptimeStatus($mailData));
+                                }
+                            }
+                        } 
                         $user_website = UserWebsite::where('website_id', $site->id)->first();
                         $user_id = ($user_website->user != null) ? $user_website->user->id : null;
                         $device_found = User::where('id', $user_id)->value('token');
@@ -112,49 +138,6 @@ class SendEmails extends Command
                             // notification code ends
 
                         }
-                        $website = $site->url;
-                        $mailData['status'] = "Up";
-                        $mailData['site'] = $website;
-                        WebsiteLog::where('website_id', $site->id)->where('up_time', null)->update(['up_time' => $site->uptime_status_last_change_date]);
-                        if ($site->getSiteDetails != null) {
-                            $emails = $site->getSiteDetails->emails;
-                            if ($emails != null) {
-                                $mails = explode(',', $emails);
-                                foreach ($mails as $mail) {
-                                    Mail::to($mail)->send(new SiteUptimeStatus($mailData));
-                                }
-                                $this->info('Mail sent to customer mail for website sent!' . $mailData['site']);
-
-                            } else {
-                                $setting = Setting::where('type', 'email')->first();
-                                if ($setting == null) {
-                                    $default_mail = config('uptime-monitor.notifications.mail.to');
-                                    if ($default_mail != null) {
-                                        Mail::to($default_mail[0])->send(new SiteUptimeStatus($mailData));
-                                    }
-                                } else {
-                                    Mail::to($setting->settings)->send(new SiteUptimeStatus($mailData));
-                                    // /dd('up',$setting->settings);
-
-                                }
-                            }
-                        } else {
-                            $setting = Setting::where('type', 'email')->first();
-                            if ($setting == null) {
-                                $default_mail = config('uptime-monitor.notifications.mail.to');
-                                if ($default_mail != null) {
-                                    Mail::to($default_mail[0])->send(new SiteUptimeStatus($mailData));
-                                    $this->info('Mail sent to config default mail for website sent!' . $mailData['site']);
-
-                                }
-                            } else {
-                                Mail::to($setting->settings)->send(new SiteUptimeStatus($mailData));
-                                $this->info('Mail sent to setting mail for website sent!' . $mailData['site']);
-
-                            }
-                            $this->info('Mail sent to default mail for website sent!' . $mailData['site']);
-
-                        }
 
                     }
                     // else
@@ -177,7 +160,6 @@ class SendEmails extends Command
             } elseif ($site->uptime_status == 'down') {
                 $checkLogs = WebsiteLog::where('website_id', $site->id)->where('up_time', null)->first();
                 if ($checkLogs != null) {
-
                     // if($checkLogs->up_time==null)
                     // {
                     //     WebsiteLog::where('website_id',$site->id)->where('up_time',null)->update(['up_time'=>$site->uptime_status_last_change_date->toDateTimeString()]);
@@ -191,6 +173,38 @@ class SendEmails extends Command
                     //     $website_log->save();
                     // }
                 } else {
+                   
+                    $website_log = new WebsiteLog();
+                    $website_log->website_id = $site->id;
+                    $website_log->down_time = $site->uptime_status_last_change_date;
+                    $website_log->down_reason = $site->uptime_check_failure_reason;
+                    $website_log->save();
+                    $website = $site->url;
+                    $mailData['status'] = "Down";
+                    $mailData['site'] = $website;
+                    if ($site->getSiteDetails != null) {
+                        $user_id=$site->getSiteDetails->user_id;
+                        $email = $site->getSiteDetails->emails;
+                        $developer_email = $site->getSiteDetails->developer_email;
+                        $owner_email = $site->getSiteDetails->owner_email;
+                        if ($email != null) {
+                            Mail::to($email)->cc([$developer_email,$developer_email])->send(new SiteUptimeStatus($mailData));
+                            $this->info('Mail sent to customer mail for website!' . $mailData['site']);
+
+                        } else {
+                            $setting = Setting::where('useR_id', $user_id)->where('type', 'email')->first();
+                            if ($setting == null) {
+                                // $default_mail = config('uptime-monitor.notifications.mail.to');
+                                // if ($default_mail != null) {
+                                //     Mail::to($default_mail[0])->send(new SiteUptimeStatus($mailData));
+                                // }
+                            } else {
+                                Mail::to($setting->settings)->cc([$developer_email,$developer_email])->send(new SiteUptimeStatus($mailData));
+                                $this->info('Mail sent to customer default email!' . $mailData['site']);
+                            }
+                        }
+                    } 
+
                     $user_website = UserWebsite::where('website_id', $site->id)->first();
                     $user_id = ($user_website->user != null) ? $user_website->user->id : null;
                     $device_found = User::where('id', $user_id)->value('token');
@@ -245,52 +259,6 @@ class SendEmails extends Command
                         $downstreamResponse->tokensWithError();
                         // notification code ends
 
-                    }
-                    $website_log = new WebsiteLog();
-                    $website_log->website_id = $site->id;
-                    $website_log->down_time = $site->uptime_status_last_change_date;
-                    $website_log->down_reason = $site->uptime_check_failure_reason;
-                    $website_log->save();
-                    $website = $site->url;
-                    $mailData['status'] = "Down";
-                    $mailData['site'] = $website;
-                    if ($site->getSiteDetails != null) {
-                        $emails = $site->getSiteDetails->emails;
-                        if ($emails != null) {
-                            $mails = explode(',', $emails);
-                            foreach ($mails as $mail) {
-                                Mail::to($mail)->send(new SiteUptimeStatus($mailData));
-                            }
-                            $this->info('Mail sent to customer mail for website sent!' . $mailData['site']);
-
-                        } else {
-                            $setting = Setting::where('type', 'email')->first();
-                            if ($setting == null) {
-                                $default_mail = config('uptime-monitor.notifications.mail.to');
-                                if ($default_mail != null) {
-                                    Mail::to($default_mail[0])->send(new SiteUptimeStatus($mailData));
-                                }
-                            } else {
-                                Mail::to($setting->settings)->send(new SiteUptimeStatus($mailData));
-                                //dd('down',$setting->settings);
-
-                            }
-                        }
-                    } else {
-                        $setting = Setting::where('type', 'email')->first();
-                        if ($setting == null) {
-                            $default_mail = config('uptime-monitor.notifications.mail.to');
-                            if ($default_mail != null) {
-                                Mail::to($default_mail[0])->send(new SiteUptimeStatus($mailData));
-                                $this->info('Mail sent to config default mail for website sent!' . $mailData['site']);
-
-                            }
-                        } else {
-                            Mail::to($setting->settings)->send(new SiteUptimeStatus($mailData));
-                            $this->info('Mail sent to setting mail for website sent!' . $mailData['site']);
-
-                        }
-                        $this->info('Mail sent to default mail for website sent!' . $mailData['site']);
                     }
 
                 }

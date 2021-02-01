@@ -83,7 +83,7 @@
             {
                 if(data.success)
                 {
-                    toastr.success('Success!', 'Settings save successfully' ,{"positionClass": "toast-bottom-right"});
+                    toastr.success('Success!', 'Settings saved successfully' ,{"positionClass": "toast-bottom-right"});
                 }
                 else
                 {

@@ -84,7 +84,7 @@
             <!-- footer area end-->
         </div>
         <div class="modal fade" id="addWebsiteModal">
-            <div class="modal-dialog">
+            <div class="modal-dialog" style="max-width:800px">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Add New Website</h5>
@@ -93,21 +93,34 @@
                     <div class="modal-body">
                         <form id="addWebsiteForm">
                             @csrf
-                            <div class="form-group">
-                                <label for="exampleInputEmail1">URL</label>
-                                <input type="text" name="url" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Url">
-                            </div>
-                             <div class="form-group">
-                                <label for="exampleInputEmail1">Title</label>
-                                <input type="text" name="title" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Title">
-                            </div>
-                              <div class="form-group">
-                                <label for="exampleInputEmail1">Email </label><small class="text-info float-right d-none"> (Emails should be comma seprated)</small>
-                                <input type="text" name="emails" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Email">
-                            </div>
-                            <div class="form-check ">
-                                <input name="ssl" type="checkbox" class="form-check-input" id="exampleCheck1">
-                                <label class="form-check-label" for="exampleCheck1">SSL Check</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="m-0" >URL</label>
+                                    <input type="text" name="url" class="form-control" id="url" placeholder="Enter Url">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="m-0">Title</label>
+                                    <input type="text" name="title" class="form-control" id="title" placeholder="Enter Title">
+                                </div>
+                                <div class="col-md-6 mt-2">
+                                    <label class="m-0">Email </label><small class="text-info float-right d-none"> (Emails should be comma seprated)</small>
+                                    <input type="text" name="emails" class="form-control" id="email" placeholder="Enter Email">
+                                </div>
+                                <div class="col-md-6 mt-2">
+                                    <label class="m-0">Developer Email </label>
+                                    <input type="text" name="developer_email" class="form-control" id="developer_email" placeholder="Enter Developer Email">
+                                </div>
+                                <div class="col-md-6 mt-2">
+                                    <label class="m-0">Owner Email </label>
+                                    <input type="text" name="owner_email" class="form-control" id="owner_email" placeholder="Enter Owner Email">
+                                </div>
+                                 <div class="col-md-6 mt-2">
+                                   <div class="form-check mt-4">
+                                    <input name="ssl" type="checkbox" class="form-check-input" id="exampleCheck1">
+                                    <label class="form-check-label" for="exampleCheck1">SSL Check</label>
+                                </div>
+                                </div>
+                                
                             </div>
                             <button type="submit" id="websiteSubmitBtn" class="btn btn-primary mt-4 pr-4 pl-4">Submit</button>
                         </form>
@@ -128,14 +141,21 @@
                             @csrf
                             <input type="hidden" name="id" id="editId">
                              <div class="form-group">
-                                <label for="exampleInputEmail1">Title</label>
+                                <label class="m-0" for="exampleInputEmail1">Title</label>
                                 <input type="text" name="title" class="form-control" id="editTitle" aria-describedby="emailHelp" placeholder="Enter Title">
                             </div>
                              <div class="form-group">
-                                <label for="exampleInputEmail1">Emails</label>
+                                <label class="m-0" for="exampleInputEmail1">Email</label>
                                 <input type="text" name="emails" class="form-control" id="editEmails" aria-describedby="emailHelp" placeholder="Enter Title">
                             </div>
-                            
+                            <div class="form-group">
+                                    <label class="m-0">Developer Email </label>
+                                    <input type="text" name="developer_email" class="form-control" id="developer_email" placeholder="Enter Developer Email">
+                                </div>
+                                <div class="form-group">
+                                    <label class="m-0">Owner Email </label>
+                                    <input type="text" name="owner_email" class="form-control" id="owner_email" placeholder="Enter Owner Email">
+                                </div>
 
                          
                             <div class="form-check ">

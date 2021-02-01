@@ -133,6 +133,8 @@ class WebsiteController extends Controller
                     $uweb->user_id=Auth::user()->id;
                     $uweb->title=$request->title;
                     $uweb->emails=$request->emails;
+                    $uweb->developer_email=$request->developer_email;
+                    $uweb->owner_email=$request->owner_email;
                     if(isset($request->ssl))
                     {
                         $ssl=1;
@@ -212,7 +214,7 @@ class WebsiteController extends Controller
         $monitor->certificate_check_enabled=$ssl;
         if($monitor->save())
         {
-            UserWebsite::where('website_id',$request->id)->update(['emails'=>$request->emails,'title'=>$request->title]);
+            UserWebsite::where('website_id',$request->id)->update(['emails'=>$request->emails,'title'=>$request->title,'developer_email'=>$request->developer_email,'owner_email'=>$request->owner_email]);
             return response()->json(['success'=>true]);
         }
         return response()->json(['success'=>false]);
