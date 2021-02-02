@@ -42,19 +42,12 @@ class AuthController extends Controller
                 'message' => 'Invalid Credientials',
             ], 401);
         }
-        $user = JWTAuth::authenticate($jwt_token);
-        $count=UserToken::where('user_id',$user->id)->count();
-        if($count < 2)
-        {
-            return response()->json([
-                'success' => true,
-                'token' => $jwt_token,
-            ]);
-        }
-        else
-        {
-            return response()->json(['success'=>false,'msg'=>'You can log in to maximum two devices']);
-        }
+
+        return response()->json([
+            'success' => true,
+            'token' => $jwt_token,
+        ]);
+      
         
     }
  
