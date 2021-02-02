@@ -12,6 +12,6 @@ Route::group(['middleware' => 'auth.jwt'], function () {
 
 
     
-    Route::get('logout', 'Api\AuthController@logout');
+    Route::post('logout', 'Api\AuthController@logout');
 
 });
