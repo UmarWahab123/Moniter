@@ -69,7 +69,14 @@ class SendEmails extends Command
                             $developer_email = $site->getSiteDetails->developer_email;
                             $owner_email = $site->getSiteDetails->owner_email;
                             if ($email != null) {
-                                Mail::to($email)->cc([$developer_email,$owner_email])->send(new SiteUptimeStatus($mailData));
+                                if($developer_email == null && $owner_email == null)
+                                {
+                                    Mail::to($email)->send(new SiteUptimeStatus($mailData));
+                                }
+                                else
+                                {
+                                    Mail::to($email)->cc([$owner_email,$developer_email])->send(new SiteUptimeStatus($mailData));
+                                }
                                 $this->info('Mail sent to customer mail for website sent!' . $mailData['site']);
 
                             } else {
@@ -80,7 +87,7 @@ class SendEmails extends Command
                                     //     Mail::to($default_mail[0])->send(new SiteUptimeStatus($mailData));
                                     // }
                                 } else {
-                                    Mail::to($setting->settings)->cc([$developer_email,$owner_email])->send(new SiteUptimeStatus($mailData));
+                                    Mail::to($setting->settings)->cc([$owner_email,$developer_email])->send(new SiteUptimeStatus($mailData));
                                 }
                             }
                         } 
@@ -135,7 +142,14 @@ class SendEmails extends Command
                         $developer_email = $site->getSiteDetails->developer_email;
                         $owner_email = $site->getSiteDetails->owner_email;
                         if ($email != null) {
-                            Mail::to($email)->cc([$developer_email,$developer_email])->send(new SiteUptimeStatus($mailData));
+                            if($developer_email == null && $owner_email == null)
+                            {
+                                Mail::to($email)->send(new SiteUptimeStatus($mailData));
+                            }
+                            else
+                            {
+                                Mail::to($email)->cc([$owner_email,$developer_email])->send(new SiteUptimeStatus($mailData));
+                            }
                             $this->info('Mail sent to customer mail for website!' . $mailData['site']);
 
                         } else {
@@ -146,7 +160,7 @@ class SendEmails extends Command
                                 //     Mail::to($default_mail[0])->send(new SiteUptimeStatus($mailData));
                                 // }
                             } else {
-                                Mail::to($setting->settings)->cc([$developer_email,$developer_email])->send(new SiteUptimeStatus($mailData));
+                                Mail::to($setting->settings)->cc([$owner_email,$developer_email])->send(new SiteUptimeStatus($mailData));
                                 $this->info('Mail sent to customer default email!' . $mailData['site']);
                             }
                         }
@@ -156,7 +170,7 @@ class SendEmails extends Command
                 }
             }
         }
-        $this->info('All mails sent!');
+        $this->info('Cron Done');
     }
     private function sendNotification($site_id,$site_url,$status)
     {
