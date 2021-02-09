@@ -29,8 +29,8 @@ class Kernel extends ConsoleKernel
         //          ->hourly();
 
 
-        // $schedule->command('monitor:check-uptime')->withoutOverlapping()->everyMinute()  
-        // ->appendOutputTo('storage/logs/check-uptime.log');
+        $schedule->command('monitor:check-uptime')->withoutOverlapping()->everyMinute()  
+        ->appendOutputTo('storage/logs/check-uptime.log');
         $schedule->command('monitor:send-emails')->withoutOverlapping()->everyMinute()  
         ->appendOutputTo('storage/logs/send-emails.log');
         $schedule->command('monitor:check-certificate')->withoutOverlapping()->daily()

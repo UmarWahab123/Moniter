@@ -182,11 +182,10 @@ class SendEmails extends Command
             foreach($user_tokens as $user_token)
             {
                 // send notification at existing device with firebase
-                $existing_device_token = $user_token;
                 $optionBuilder = new OptionsBuilder();
                 $optionBuilder->setTimeToLive(60 * 20);
-                $notificationBuilder = new PayloadNotificationBuilder('Your site is '.$status.':'.$site_url);
-                $notificationBuilder->setBody('Your website '.$site_url.' status has been changed to Up')
+                $notificationBuilder = new PayloadNotificationBuilder($status);
+                $notificationBuilder->setBody($site_url)
                     ->setSound('default');
                 $dataBuilder = new PayloadDataBuilder();
                 // $dataBuilder->addData(['a_data' => 'my_data']);
@@ -203,7 +202,7 @@ class SendEmails extends Command
                 $notification = $notificationBuilder->build();
                 $data = $dataBuilder->build();
 
-                $token = $existing_device_token;
+                $token = $user_token->token;
                 // $token = $firebase_token;
 
                 $downstreamResponse = FCM::sendTo($token, $option, $notification, $data);
