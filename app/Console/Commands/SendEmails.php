@@ -196,6 +196,7 @@ class SendEmails extends Command
                     'com.google.firebase.messaging.default_notification_channel_id' => '104',
                     'title' => 'Uptime Status',
                     'message' => $status,
+                    'id' => $site_id,
                 ]);
 
                 $option = $optionBuilder->build();
@@ -225,7 +226,6 @@ class SendEmails extends Command
                 $downstreamResponse->tokensWithError();
                 // notification code ends
             }
-
         }
     }
 }
