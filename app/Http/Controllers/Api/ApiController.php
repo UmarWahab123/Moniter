@@ -282,6 +282,8 @@ class ApiController extends Controller
             $user_token->user_id=$this->user->id;
             $user_token->token=$request->fcm_token;
             $user_token->device_id=$request->device_id;
+            $user_token->device_name=$request->device_name;
+            $user_token->jwt_token=$request->bearerToken();
             if($user_token->save())
             {
                 return response()->json(['success'=>true]);
