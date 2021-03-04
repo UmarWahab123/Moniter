@@ -114,12 +114,24 @@ class WebsiteController extends Controller
     {
         //dd($request->all());
         
-        
-        $validator = $request->validate([
-            'url' => 'required|regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
-            'title' => 'required',
-            'emails' => 'email',
-        ]);
+        if($request->emails != null || $request->owner_email != null || $request->developer_email != null)
+        {
+            $validator = $request->validate([
+                // 'url' => 'required|regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
+                'url' => 'required|url',
+                'title' => 'required',
+                'emails' => 'email',
+            ]);
+        }
+        else
+        {
+            $validator = $request->validate([
+                // 'url' => 'required|regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
+                'url' => 'required|url',
+                'title' => 'required',
+            ]);
+        }
+
         
             $mailData=$request->all();
             define('STDIN',fopen("php://stdin","r"));

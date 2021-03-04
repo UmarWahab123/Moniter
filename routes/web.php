@@ -62,5 +62,7 @@ Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth'
     Route::get('/profile', 'ProfileController@index')->name('profile');
     Route::post('/profile', 'ProfileController@update')->name('profile');
 
+    Route::get('/devices', 'DeviceManagementController@index')->name('devices');
+    Route::post('/device-logout', 'DeviceManagementController@deviceLogout')->name('device-logout');
 
 });
