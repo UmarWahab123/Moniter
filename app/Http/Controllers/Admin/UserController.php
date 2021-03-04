@@ -14,7 +14,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $query=User::with('userWebsites')->get();
+        $query=User::with('userWebsites');
         if($request->ajax())
         {
 

@@ -41,7 +41,7 @@ class WebsiteController extends Controller
                         $html_string =' <button   value="'.$item->id.'" data-status="1" class="btn btn-outline-success btn-sm feature"  title="Click to fetaure"><i class="fa fa-star "></i></button>';
                     }
                 }
-                $html_string .=' <button  value="'.$item->id.'" data-emails="'.$item->getSiteDetails->emails.'" data-ssl="'.$item->certificate_check_enabled.'"  class="btn  btn-outline-primary btn-sm edit-site "  title="Edit"><i class="fa fa-pencil"></i></button>';
+                $html_string .=' <button  value="'.$item->id.'" data-developer_email="'.$item->getSiteDetails->developer_email.'" data-emails="'.$item->getSiteDetails->emails.'" data-emails="'.$item->getSiteDetails->emails.'" data-ssl="'.$item->certificate_check_enabled.'"  class="btn  btn-outline-primary btn-sm edit-site "  title="Edit"><i class="fa fa-pencil"></i></button>';
                 $html_string .=' <a  href='.url("admin/website-logs/$item->id").' value="'.$item->id.'"  class="btn btn-outline-info btn-sm"  title="Details"><i class="fa fa-eye "></i></a>';
                 $html_string.=' <button  value="'.$item->id.'"  class="btn btn-outline-danger btn-sm delete-site"  title="Delete"><i class="fa fa-trash-o"></i></button>';
                                                      
@@ -207,7 +207,21 @@ class WebsiteController extends Controller
         }
         
     }
+    public function edit(Request $request)
+    {
+        $monitor=Monitor::find($request->website_id);
+        if($monitor != null)
+        {
+            $data['title']=$monitor->getSiteDetails->title;
+            $data['emails']=$monitor->getSiteDetails->emails;
+            $data['developer_email']=$monitor->getSiteDetails->developer_email;
+            $data['owner_email']=$monitor->getSiteDetails->owner_email;
+            $data['ssl']=$monitor->getSiteDetails->ssl;
+            return response()->json(['success'=>true,'data'=>$data]);
+        }
+        return response()->json(['success'=>false]);
 
+    }
     public function update(Request $request)
     {
         $monitor=Monitor::find($request->id);

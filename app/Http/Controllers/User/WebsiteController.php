@@ -203,6 +203,21 @@ class WebsiteController extends Controller
         
     }
 
+    public function edit(Request $request)
+    {
+        $monitor=Monitor::find($request->website_id);
+        if($monitor != null)
+        {
+            $data['title']=$monitor->getSiteDetails->title;
+            $data['emails']=$monitor->getSiteDetails->emails;
+            $data['developer_email']=$monitor->getSiteDetails->developer_email;
+            $data['owner_email']=$monitor->getSiteDetails->owner_email;
+            $data['ssl']=$monitor->getSiteDetails->ssl;
+            return response()->json(['success'=>true,'data'=>$data]);
+        }
+        return response()->json(['success'=>false]);
+
+    }
     public function update(Request $request)
     {
         $monitor=Monitor::find($request->id);

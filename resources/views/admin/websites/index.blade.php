@@ -130,7 +130,7 @@
             </div>
         </div>
          <div class="modal fade" id="editWebsiteModal">
-            <div class="modal-dialog">
+            <div class="modal-dialog" style="max-width:800px">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Edit Website</h5>
@@ -140,27 +140,31 @@
                         <form id="editWebsiteForm">
                             @csrf
                             <input type="hidden" name="id" id="editId">
-                             <div class="form-group">
-                                <label class="m-0" for="exampleInputEmail1">Title</label>
-                                <input type="text" name="title" class="form-control" id="editTitle" aria-describedby="emailHelp" placeholder="Enter Title">
-                            </div>
-                             <div class="form-group">
-                                <label class="m-0" for="exampleInputEmail1">Email</label>
-                                <input type="text" name="emails" class="form-control" id="editEmails" aria-describedby="emailHelp" placeholder="Enter Title">
-                            </div>
-                            <div class="form-group">
-                                    <label class="m-0">Developer Email </label>
-                                    <input type="text" name="developer_email" class="form-control" id="developer_email" placeholder="Enter Developer Email">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="m-0 mt-2" >Title</label>
+                                    <input type="text" name="title" class="form-control" id="editTitle" aria-describedby="emailHelp" placeholder="Enter Title">
                                 </div>
-                                <div class="form-group">
-                                    <label class="m-0">Owner Email </label>
-                                    <input type="text" name="owner_email" class="form-control" id="owner_email" placeholder="Enter Owner Email">
+                                <div class="col-md-6">
+                                    <label class="m-0 mt-2" >Email</label>
+                                    <input type="text" name="emails" class="form-control" id="editEmails" aria-describedby="emailHelp" placeholder="Enter Title">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="m-0 mt-2">Developer Email </label>
+                                    <input type="text" name="developer_email" class="form-control" id="edit_developer_email" placeholder="Enter Developer Email">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="m-0 mt-2">Owner Email </label>
+                                    <input type="text" name="owner_email" class="form-control" id="edit_owner_email" placeholder="Enter Owner Email">
                                 </div>
 
-                         
-                            <div class="form-check ">
-                                <input name="ssl" type="checkbox" class="form-check-input" id="editSsl">
-                                <label class="form-check-label" for="editSsl">Ssl Check</label>
+                                <div class="col-md-6 mt-2">
+                                <div class="form-check ">
+                                    <input name="ssl" type="checkbox" class="form-check-input" id="editSsl">
+                                    <label class="form-check-label" for="editSsl">Ssl Check</label>
+                                </div>
+                                </div>
+                                
                             </div>
                             <button type="submit" id="editWebsiteSubmitBtn" class="btn btn-primary mt-4 pr-4 pl-4">Update</button>
                         </form>
@@ -328,19 +332,32 @@
                 
             });
                 $(document).on('click','.edit-site', function(e) {
-
-                    $('#editWebsiteModal').modal('show');
-                    $('#editTitle').val($(this).parent().siblings('td:first').html());
-                    $('#editEmails').val($(this).data('emails'));
-                    $('#editId').val($(this).val());
-                    if($(this).data('ssl')==1)
-                    {
-                        $('#editSsl').prop('checked',true);
-                    }
-                    else
-                    {
-                        $('#editSsl').prop('checked',false);
-                    }
+                    var website_id=$(this).val();
+                    $.ajax({
+                        url: '{{ url('admin/edit-website') }}', 
+                        method: 'get',
+                        data: {website_id:website_id},
+                        success: function(data) {
+                            $('#editWebsiteModal').modal('show');
+                            $('#editTitle').val(data.data['title']);
+                            $('#editEmails').val(data.data['emails']);
+                            $('#edit_developer_email').val(data.data['developer_email']);
+                            $('#edit_owner_email').val(data.data['owner_email']);
+                            $('#editId').val(website_id);
+                            if(data.data['ssl']==1)
+                            {
+                                $('#editSsl').prop('checked',true);
+                            }
+                            else
+                            {
+                                $('#editSsl').prop('checked',false);
+                            }
+                        },
+                        error: function() {
+                            toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
+                        },
+                    })
+                   
                    
                 });
 
@@ -349,11 +366,11 @@
                         var formData=$('#editWebsiteForm').serialize();
                         $.ajax({
                         url: '{{ url('admin/edit-website') }}', 
-                        method: 'get',
+                        method: 'post',
                         data: formData,
                         success: function(data) {
                             $('#editWebsiteModal').modal('hide');
-                            toastr.success('Success!', 'Website deleted successfully' ,{"positionClass": "toast-bottom-right"});
+                            toastr.success('Success!', 'Website updated successfully' ,{"positionClass": "toast-bottom-right"});
                             $('#websitesDataTable').DataTable().ajax.reload();
                         },
                         error: function() {
