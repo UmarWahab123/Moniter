@@ -21,7 +21,7 @@
                              <li class="">
                                 <a href="{{ url('admin/settings') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Settings</span></a>
                             </li>
-                            <li class="d-none">
+                            <li class="">
                                 <a href="{{ url('admin/devices') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Devices</span></a>
                             </li>
 
