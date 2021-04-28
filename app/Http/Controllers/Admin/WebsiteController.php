@@ -98,13 +98,13 @@ class WebsiteController extends Controller
                 return $item->url;
              })
              ->addColumn('domain_creation_date', function ($item) {
-                return $item->domain_creation_date;
+                return( $item->domain_creation_date != null)?$item->domain_creation_date:'--';
              })
              ->addColumn('domain_updated_date', function ($item) {
-                return $item->domain_updated_date;
+                return ($item->domain_updated_date != null)?$item->domain_updated_date:'--';
              })
              ->addColumn('domain_expiry_date', function ($item) {
-                return $item->domain_expiry_date;
+                return ($item->domain_expiry_date != null)?$item->domain_expiry_date:'--';
              })
              ->addColumn('url', function ($item) {
                 return $item->url;
