@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\Mail;
 use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadDataBuilder;
 use LaravelFCM\Message\PayloadNotificationBuilder;
-
 class SendEmails extends Command
 {
     /**
@@ -113,7 +112,7 @@ class SendEmails extends Command
                 // }
             } elseif ($site->uptime_status == 'down') {
                 $checkLogs = WebsiteLog::where('website_id', $site->id)->where('up_time', null)->first();
-                if ($checkLogs != null) {
+                // if ($checkLogs != null) {
                     // if($checkLogs->up_time==null)
                     // {
                     //     WebsiteLog::where('website_id',$site->id)->where('up_time',null)->update(['up_time'=>$site->uptime_status_last_change_date->toDateTimeString()]);
@@ -126,7 +125,8 @@ class SendEmails extends Command
                     //     $website_log->up_time=$site->id;
                     //     $website_log->save();
                     // }
-                } else {
+                // } 
+                if ($checkLogs == null) {
                    
                     $website_log = new WebsiteLog();
                     $website_log->website_id = $site->id;
@@ -228,4 +228,5 @@ class SendEmails extends Command
             }
         }
     }
+
 }
