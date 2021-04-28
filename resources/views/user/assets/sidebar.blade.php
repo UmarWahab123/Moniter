@@ -17,7 +17,9 @@
                             <li class="">
                                 <a href="{{ url('user/settings') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Settings</span></a>
                             </li>
-
+                            <li class="">
+                                <a class="d-none" href="{{ url('user/devices') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Devices</span></a>
+                            </li>
                            
                         </ul>
                     </nav>

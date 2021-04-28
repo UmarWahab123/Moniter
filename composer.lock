@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "69ee6ccfcebc8e37cac5a3b022389cfa",
+    "content-hash": "0919b905f773b63a454a0800c28d3203",
     "packages": [
         {
             "name": "brozot/laravel-fcm",
@@ -789,6 +789,55 @@
             "description": "Highlight PHP code in terminal",
             "abandoned": "php-parallel-lint/php-console-highlighter",
             "time": "2018-09-29T18:48:56+00:00"
+        },
+        {
+            "name": "karlmonson/laravel-ping",
+            "version": "1.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/karlmonson/laravel-ping.git",
+                "reference": "0807263f1cef43df102385b67dba54436570bf85"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/karlmonson/laravel-ping/zipball/0807263f1cef43df102385b67dba54436570bf85",
+                "reference": "0807263f1cef43df102385b67dba54436570bf85",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "~6.0",
+                "illuminate/support": "^5.1 || ^5.7 || ^5.8 || ^6.0 || ^7.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Karlmonson\\Ping\\PingServiceProvider"
+                    ],
+                    "aliases": {
+                        "Ping": "Karlmonson\\Ping\\Facades\\Ping"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Karlmonson\\Ping\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Karl Monson",
+                    "email": "karl@karlmonson.com",
+                    "homepage": "https://github.com/karlmonson",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Simple Ping For Laravel Applications",
+            "time": "2020-08-07T19:50:13+00:00"
         },
         {
             "name": "laravel/framework",
