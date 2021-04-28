@@ -64,6 +64,9 @@
                                             <th>SSL Cerificate Check </th>
                                             <th>Certificate Expiry Date </th>
                                             <th>Certificate Issuer </th>
+                                            <th>Domain Created At </th>
+                                            <th>Domain Updated At </th>
+                                            <th>Domain Expiry Date</th>
                                             <th>Status </th>
                                             <th style="min-width:12%">Action</th>
 
@@ -235,10 +238,23 @@
                         data: 'certificate_expiry_date',
                         name: 'certificate_expiry_date'
                     },
-                     {
+                    {
                         data: 'certificate_issuer',
                         name: 'certificate_issuer'
                     },
+                    {
+                        data: 'domain_creation_date',
+                        name: 'domain_creation_date'
+                    },
+                    {
+                        data: 'domain_updated_date',
+                        name: 'domain_updated_date'
+                    },
+                    {
+                        data: 'domain_expiry_date',
+                        name: 'domain_expiry_date'
+                    },
+                   
                      {
                         data: 'status',
                         name: 'status'

@@ -19,7 +19,6 @@ class WebsiteController extends Controller
 {
     public function index(Request $request)
     {
-
         $query=Monitor::whereHas('getUserWebsites',function($q){
             $q->where('user_id',Auth::user()->id);
         })->get();
@@ -98,6 +97,19 @@ class WebsiteController extends Controller
              ->addColumn('url', function ($item) {
                 return $item->url;
              })
+             ->addColumn('domain_creation_date', function ($item) {
+                return $item->domain_creation_date;
+             })
+             ->addColumn('domain_updated_date', function ($item) {
+                return $item->domain_updated_date;
+             })
+             ->addColumn('domain_expiry_date', function ($item) {
+                return $item->domain_expiry_date;
+             })
+             ->addColumn('url', function ($item) {
+                return $item->url;
+             })
+
              ->addColumn('reason', function ($item) {
                 return ($item->uptime_check_failure_reason!=null)?$item->uptime_check_failure_reason:'--';
              })
