@@ -29,19 +29,19 @@ class Kernel extends ConsoleKernel
         //          ->hourly();
 
 
-        // $schedule->command('monitor:check-uptime')->withoutOverlapping()->everyMinute()  
-        // ->appendOutputTo('storage/logs/check-uptime.log');
-        // $schedule->command('monitor:send-emails')->withoutOverlapping()->everyMinute()  
-        // ->appendOutputTo('storage/logs/send-emails.log');
-        // $schedule->command('monitor:check-certificate')->withoutOverlapping()->daily()
-        // ->appendOutputTo('storage/logs/check-certificate.log');
+        $schedule->command('monitor:check-uptime')->withoutOverlapping()->everyMinute()  
+        ->appendOutputTo('storage/logs/check-uptime.log');
+        $schedule->command('monitor:send-emails')->withoutOverlapping()->everyMinute()  
+        ->appendOutputTo('storage/logs/send-emails.log');
+        $schedule->command('monitor:check-certificate')->withoutOverlapping()->daily()
+        ->appendOutputTo('storage/logs/check-certificate.log');
 
-        // $schedule->command('monitor:check-ssl-certificate-expiry')->withoutOverlapping()->daily()
-        // ->appendOutputTo('storage/logs/check-ssl-certificate-expiry.log');
-        $schedule->command('monitor:check-domain-expiry')->withoutOverlapping()->everyMinute()
+        $schedule->command('monitor:check-ssl-certificate-expiry')->withoutOverlapping()->daily()
+        ->appendOutputTo('storage/logs/check-ssl-certificate-expiry.log');
+        $schedule->command('monitor:check-domain-expiry')->withoutOverlapping()->daily()
         ->appendOutputTo('storage/logs/check-domain-expiry.log');
-        // $schedule->command('monitor:monthly-summry')->withoutOverlapping()->monthly()
-        // ->appendOutputTo('storage/logs/monthly-summry.log');
+        $schedule->command('monitor:monthly-summry')->withoutOverlapping()->monthly()
+        ->appendOutputTo('storage/logs/monthly-summry.log');
 
     }
 
