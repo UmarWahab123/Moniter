@@ -39,8 +39,8 @@ class CheckDomainExpiryCommand extends Command
      */
     public function handle()
     {
-        $monitors=Monitor::orderBy('id','asc')->get();
-        $url = 'http://6a084f3a57de.ngrok.io/domain-expiry';
+        $monitors=Monitor::where('domain_checked',0)->orderBy('id','asc')->get();
+        $url = 'http://70b47a6098de.ngrok.io/domain-expiry';
         $method = 'GET';
        
         foreach($monitors as $monitor)
@@ -49,7 +49,22 @@ class CheckDomainExpiryCommand extends Command
             $content=$this->guzzuleRequest($url, $method, $domain);
             if($content['success'] == true)
             {
-                dd($content);
+                $timestamp = strtotime($content['creation_date']);
+                $creation_date = date('Y-m-d', $timestamp);
+
+                $timestamp = strtotime($content['updated_date']);
+                $updated_date = date('Y-m-d', $timestamp);
+
+                $timestamp = strtotime($content['expiry_date']);
+                $expiry_date = date('Y-m-d', $timestamp);
+                // dd($creation_date);
+                // dump($monitor->url,$content);
+                $monitor->domain_creation_date = $creation_date;
+                $monitor->domain_updated_date = $updated_date;
+                $monitor->domain_expiry_date = $expiry_date;
+                $monitor->domain_checked = 1;
+                $monitor->save();
+
             }
         }
     }

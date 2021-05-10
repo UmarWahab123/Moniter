@@ -161,7 +161,7 @@ class SendEmails extends Command
                                 //     Mail::to($default_mail[0])->send(new SiteUptimeStatus($mailData));
                                 // }
                             } else {
-                                $setting = Setting::where('useR_id', $user_id)->where('type', 'email')->first();
+                                $setting = Setting::where('user_id', $user_id)->where('type', 'email')->first();
                                 if ($setting == null) {
                                     // $default_mail = config('uptime-monitor.notifications.mail.to');
                                     // if ($default_mail != null) {
