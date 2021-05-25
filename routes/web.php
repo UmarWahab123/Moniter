@@ -24,6 +24,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['aut
     Route::get('/edit-website', 'WebsiteController@edit')->name('edit-website');
     Route::get('/delete-website', 'WebsiteController@destroy')->name('delete-website');
     Route::get('/website-logs/{id}', 'WebsiteController@websiteLogs')->name('website-logs');
+    Route::get('/get-down-reason', 'WebsiteController@getDownReason')->name('get-down-reason');
     Route::get('feature', 'WebsiteController@featureWebsite')->name('feature');
     Route::get('/users', 'UserController@index')->name('users');
     Route::post('/add-user', 'UserController@store')->name('add-user');

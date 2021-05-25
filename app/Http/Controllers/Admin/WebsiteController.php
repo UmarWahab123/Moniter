@@ -289,9 +289,17 @@ class WebsiteController extends Controller
                 return '--';
             })
             ->addColumn('down_reason',function($item){
-                return ($item->down_reason!=null?strstr($item->down_reason,":",true):'--');
+                if($item->down_reason!=null)
+                {
+                    $html_string = '<a class="down-reason" data-id="'.$item->id.'" href="javascript:void(0)">'.strstr($item->down_reason,":",true).'</a>';
+                }
+                else
+                {
+                    $html_string = '--';
+                }
+                return $html_string;
             })
-
+            ->rawColumns(['down_reason'])
             ->make(true);
         }
         return view('admin.websites.website-details',compact('website_id','website'));
@@ -319,5 +327,11 @@ class WebsiteController extends Controller
             return response()->json(['success'=>true,'limit'=>2]);
         }
         
+    }
+
+    public function getDownReason(Request $request)
+    {   
+        $down_reason=WebsiteLog::where('id',$request->id)->value('down_reason');
+        return response()->json(['success' => true, 'down_reason' => $down_reason]);
     }
 }

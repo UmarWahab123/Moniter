@@ -83,7 +83,7 @@ class ApiController extends Controller
                 $total_time=null;
                 $details=$website->getSiteLogs->first();
                 $logs=$website->getSiteLogs->where('created_at','>',$lastmonth);
-                $last_down_reason=WebsiteLog::where('website_id',$website->id)->whereNotNull('down_reason')->orderBy('down_time','desc')->value('down_reason');
+                $last_down_reason=WebsiteLog::where('website_id',$website->id)->whereNotNull('down_reason')->orderBy('down_time','desc')->first();
                 foreach($logs  as $log)
                 {
 
@@ -115,8 +115,9 @@ class ApiController extends Controller
                 "certificate_expiry_date"=>$website->certificate_expiration_date,
                 "certificate_issuer"=>$website->certificate_issuer,
                 "monthly_percentage"=>$percentage,
-                "last_down_reason"=>($last_down_reason!=null?strstr($last_down_reason,":",true):'--'),
-                "last_down_reason_full"=>($last_down_reason!=null?$last_down_reason:'--'),
+                "last_down_reason"=>($last_down_reason!=null?strstr($last_down_reason->down_reason,":",true):'--'),
+                "last_down_reason_full"=>($last_down_reason!=null?$last_down_reason->down_reason:'--'),
+                "last_down_reason_image"=>($last_down_reason!=null?$last_down_reason->down_image_url:'--'),
                 "created_at"=>$website->created_at->format('Y-m-d H:i:s'),
                 "updated_at"=>$website->updated_at->format('Y-m-d H:i:s'),
             );
@@ -212,7 +213,7 @@ class ApiController extends Controller
             {
                 $details=$website->getSiteLogs->first();
                 $logs=$website->getSiteLogs->where('created_at','>',$lastmonth);
-                $last_down_reason=WebsiteLog::where('website_id',$website->id)->whereNotNull('down_reason')->orderBy('down_time','desc')->value('down_reason');
+                $last_down_reason=WebsiteLog::where('website_id',$website->id)->whereNotNull('down_reason')->orderBy('down_time','desc')->first();
                 foreach($logs  as $log)
                 {
 
@@ -245,8 +246,9 @@ class ApiController extends Controller
                 "certificate_issuer"=>$website->certificate_issuer,
                 "last_up"=>($details!=null)?date('Y-m-d',strtotime($details->up_time)):'--',
                 "last_down"=>($details!=null)?date('Y-m-d',strtotime($details->down_time)):'--',
-                "last_down_reason"=>($last_down_reason!=null?strstr($last_down_reason,":",true):'--'),
-                "last_down_reason_full"=>($last_down_reason!=null?$last_down_reason:'--'),
+                "last_down_reason"=>($last_down_reason!=null?strstr($last_down_reason->down_reason,":",true):'--'),
+                "last_down_reason_full"=>($last_down_reason!=null?$last_down_reason->down_reason:'--'),
+                "last_down_reason_image"=>($last_down_reason!=null?$last_down_reason->down_image_url:'--'),
                 "monthly_percentage"=>$percentage,
             );
         }

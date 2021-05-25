@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Mail;
 use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadDataBuilder;
 use LaravelFCM\Message\PayloadNotificationBuilder;
+use GuzzleHttp\Client;
+
 class SendEmails extends Command
 {
     /**
@@ -127,12 +129,18 @@ class SendEmails extends Command
                     //     $website_log->save();
                     // }
                 // } 
+                $url = 'https://wstats.websiteuptimerobot.com/headless-screenshot';
+                $content = $this->guzzuleRequest($url, 'GET', $site->url);
                 if ($checkLogs == null) {
                    
                     $website_log = new WebsiteLog();
                     $website_log->website_id = $site->id;
                     $website_log->down_time = $site->uptime_status_last_change_date;
                     $website_log->down_reason = $site->uptime_check_failure_reason;
+                    if($content['success'] == true)
+                    {
+                        $website_log->down_image_url = $content['path'];
+                    }
                     $website_log->save();
                     $website = $site->url;
                     $mailData['status'] = "Down";
@@ -239,6 +247,29 @@ class SendEmails extends Command
                 // notification code ends
             }
         }
+    }
+
+    private function guzzuleRequest($url, $method, $domain)
+    {
+        
+
+        $client = new Client(['verify' => false]);
+        $headers = [
+            // 'Authorization' => 'Bearer ' . $token,
+            'Accept'        => 'application/json',
+        ];
+       
+        $response = $client->request($method,$url,[
+            'headers' => $headers,
+            'json' => [
+                    "domain" => $domain
+                ]
+        ]);
+        $statusCode = $response->getStatusCode();
+        $body = $response->getBody()->getContents();
+        $content = json_decode($response->getBody(), true);
+        // dd( $body);
+        return $content;
     }
 
 }
