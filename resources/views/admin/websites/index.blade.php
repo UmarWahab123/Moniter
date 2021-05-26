@@ -98,11 +98,11 @@
                             @csrf
                             <div class="row">
                                 <div class="col-md-6">
-                                    <label class="m-0" >URL</label>
+                                    <label class="m-0" >URL <span class="text-danger">*</span></label>
                                     <input type="text" name="url" class="form-control" id="url" placeholder="Enter Url">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="m-0">Title</label>
+                                    <label class="m-0">Title <span class="text-danger">*</span></label>
                                     <input type="text" name="title" class="form-control" id="title" placeholder="Enter Title">
                                 </div>
                                 <div class="col-md-6 mt-2">
@@ -303,9 +303,10 @@
                             $('#websiteSubmitBtn').prop('disabled', false);
                             $('#websiteSubmitBtn').html('Submit');
                         }
+                        
                     },
                     error: function(request, status, error) {
-                        toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
+                        // toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
                         $('#websiteSubmitBtn').prop('disabled', false);
                         $('#websiteSubmitBtn').html('Submit');
                         $('.form-control').removeClass('is-invalid');

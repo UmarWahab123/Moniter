@@ -130,21 +130,25 @@ class WebsiteController extends Controller
         {
             $validator = $request->validate([
                 // 'url' => 'required|regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
-                'url' => 'required|url',
+                'url' => 'required|url|unique:monitors,url',
                 'title' => 'required',
                 'emails' => 'email',
+                // 'owner_email' => 'email',
+                // 'developer_email' => 'email',
+            ],[
+                'unique'=>'The url already existed'
             ]);
         }
         else
         {
             $validator = $request->validate([
                 // 'url' => 'required|regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
-                'url' => 'required|url',
+                'url' => 'required|url|unique:monitors,url',
                 'title' => 'required',
+            ],[
+                'unique'=>'The url already existed'
             ]);
         }
-
-        
             $mailData=$request->all();
             define('STDIN',fopen("php://stdin","r"));
             $output=Artisan::call("monitor:create ".$request->url);
@@ -205,10 +209,10 @@ class WebsiteController extends Controller
                         }
                        
                     }
-                    return response()->json(['success'=>true]);
+                    return response()->json(['success'=>true,'']);
                 }
             }
-            return response()->json(['success'=>false]);
+            return response()->json(['error'=>true]);
     }
 
     public function destroy(Request $request)
