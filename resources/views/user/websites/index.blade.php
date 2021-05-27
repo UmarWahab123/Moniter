@@ -64,6 +64,9 @@
                                             <th>SSL Cerificate Check </th>
                                             <th>Certificate Expiry Date </th>
                                             <th>Certificate Issuer </th>
+                                            <th>Domain Created At </th>
+                                            <th>Domain Updated At </th>
+                                            <th>Domain Expiry Date</th>
                                             <th>Status </th>
                                             <th style="min-width:12%">Action</th>
 
@@ -95,15 +98,15 @@
                             @csrf
                             <div class="row">
                                 <div class="col-md-6">
-                                    <label class="m-0" >URL</label>
+                                    <label class="m-0" >URL <span class="text-danger">*</span></label>
                                     <input type="text" name="url" class="form-control" id="url" placeholder="Enter Url">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="m-0">Title</label>
+                                    <label class="m-0">Title <span class="text-danger">*</span></label>
                                     <input type="text" name="title" class="form-control" id="title" placeholder="Enter Title">
                                 </div>
                                 <div class="col-md-6 mt-2">
-                                    <label class="m-0">Email </label><small class="text-info float-right d-none"> (Emails should be comma seprated)</small>
+                                    <label class="m-0">Email <span class="text-danger">*</span></label><small class="text-info float-right d-none"> (Emails should be comma seprated)</small>
                                     <input type="text" name="emails" class="form-control" id="email" placeholder="Enter Email">
                                 </div>
                                 <div class="col-md-6 mt-2">
@@ -142,11 +145,11 @@
                             <input type="hidden" name="id" id="editId">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <label class="m-0 mt-2" >Title</label>
+                                    <label class="m-0 mt-2" >Title <span class="text-danger">*</span></label>
                                     <input type="text" name="title" class="form-control" id="editTitle" aria-describedby="emailHelp" placeholder="Enter Title">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="m-0 mt-2" >Email</label>
+                                    <label class="m-0 mt-2" >Email <span class="text-danger">*</span></label>
                                     <input type="text" name="emails" class="form-control" id="editEmails" aria-describedby="emailHelp" placeholder="Enter Title">
                                 </div>
                                 <div class="col-md-6">
@@ -235,10 +238,23 @@
                         data: 'certificate_expiry_date',
                         name: 'certificate_expiry_date'
                     },
-                     {
+                    {
                         data: 'certificate_issuer',
                         name: 'certificate_issuer'
                     },
+                    {
+                        data: 'domain_creation_date',
+                        name: 'domain_creation_date'
+                    },
+                    {
+                        data: 'domain_updated_date',
+                        name: 'domain_updated_date'
+                    },
+                    {
+                        data: 'domain_expiry_date',
+                        name: 'domain_expiry_date'
+                    },
+                   
                      {
                         data: 'status',
                         name: 'status'
@@ -287,9 +303,10 @@
                             $('#websiteSubmitBtn').prop('disabled', false);
                             $('#websiteSubmitBtn').html('Submit');
                         }
+                        
                     },
                     error: function(request, status, error) {
-                        toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
+                        // toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
                         $('#websiteSubmitBtn').prop('disabled', false);
                         $('#websiteSubmitBtn').html('Submit');
                         $('.form-control').removeClass('is-invalid');

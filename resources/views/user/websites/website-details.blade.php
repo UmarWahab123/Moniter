@@ -87,6 +87,7 @@
                                             <th>Down Time </th>
                                             <th>Up Time </th>
                                             <th>Down Reason </th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -103,7 +104,43 @@
 
             <!-- footer area end-->
         </div>
-
+<!-- Modal -->
+<div class="modal fade" id="downReasonModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Down Reason</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body down-reason-div">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="downReasonImageModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Down Reason Image</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body down-reason-image-div">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
         @include('user.assets.javascript')
         <!-- Start datatable js -->
 
@@ -152,26 +189,61 @@
                         data: 'down_reason',
                         name: 'down_reason'
                     },
+                    {
+                        data: 'down_reason_image',
+                        name: 'down_reason_image'
+                    },
 
                 ],
 
             });
 
-            $(document).ready(function(){
-                    reloadDatatable();                
-            });
+            // $(document).ready(function(){
+            //         reloadDatatable();                
+            // });
 
-            function reloadDatatable()
-            {
-                 setTimeout(function(){           
-                    $('#websitesDetailsDataTable').DataTable().ajax.reload();
-                    reloadDatatable();              
+            // function reloadDatatable()
+            // {
+            //      setTimeout(function(){           
+            //         $('#websitesDetailsDataTable').DataTable().ajax.reload();
+            //         reloadDatatable();              
 
-                }, 65000);
+            //     }, 65000);
                 
-            }
+            // }
 
-         
+         $(document).on('click','.down-reason',function(){
+             var id = $(this).data('id');
+             $.ajax({
+                url: '{{ url('user/get-down-reason') }}', 
+                method: 'get',
+                data: {id:id},
+                success: function(data) {
+                    $('.down-reason-div').text(data.down_reason);
+                    $('#downReasonModel').modal('show');
+                },
+                error: function() {
+                    toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
+                },
+            });
+         });
+
+         $(document).on('click','.view-image',function(){
+             var id = $(this).data('id');
+             $.ajax({
+                url: '{{ url('user/get-down-reason-image') }}', 
+                method: 'get',
+                data: {id:id},
+                success: function(data) {
+                    $('.down-reason-image-div').html(data.html_string);
+                    $('#downReasonImageModel').modal('show');
+                },
+                error: function() {
+                    toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
+                },
+            });
+         });
+
 
         </script>
         @endsection

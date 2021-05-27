@@ -67,4 +67,7 @@ Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth'
     Route::get('/devices', 'DeviceManagementController@index')->name('devices');
     Route::post('/device-logout', 'DeviceManagementController@deviceLogout')->name('device-logout');
 
+    Route::get('/get-down-reason', 'WebsiteController@getDownReason')->name('get-down-reason');
+    Route::get('/get-down-reason-image', 'WebsiteController@getDownReasonImage')->name('get-down-reason-image');
+
 });

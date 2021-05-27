@@ -38,7 +38,7 @@ class WebsiteController extends Controller
                         $html_string =' <button   value="'.$item->id.'" data-status="1" class="btn btn-outline-success btn-sm feature"  title="Click to fetaure"><i class="fa fa-star "></i></button>';
                     }
                 }
-                $html_string .=' <button  value="'.$item->id.'" data-emails="'.$item->getSiteDetails->emails.'" data-ssl="'.$item->certificate_check_enabled.'"  class="btn  btn-outline-primary btn-sm edit-site "  title="Edit"><i class="fa fa-pencil"></i></button>';
+                $html_string .=' <button  value="'.$item->id.'" data-developer_email="'.$item->getSiteDetails->developer_email.'" data-emails="'.$item->getSiteDetails->emails.'" data-emails="'.$item->getSiteDetails->emails.'" data-ssl="'.$item->certificate_check_enabled.'"  class="btn  btn-outline-primary btn-sm edit-site "  title="Edit"><i class="fa fa-pencil"></i></button>';
                 $html_string .=' <a  href='.url("user/website-logs/$item->id").' value="'.$item->id.'"  class="btn btn-outline-info btn-sm"  title="Details"><i class="fa fa-eye "></i></a>';
                 $html_string.=' <button  value="'.$item->id.'"  class="btn btn-outline-danger btn-sm delete-site"  title="Delete"><i class="fa fa-trash-o"></i></button>';
                                                      
@@ -95,6 +95,22 @@ class WebsiteController extends Controller
              ->addColumn('url', function ($item) {
                 return $item->url;
              })
+             ->addColumn('domain_creation_date', function ($item) {
+                return( $item->domain_creation_date != null)?$item->domain_creation_date:'--';
+             })
+             ->addColumn('domain_updated_date', function ($item) {
+                return ($item->domain_updated_date != null)?$item->domain_updated_date:'--';
+             })
+             ->addColumn('domain_expiry_date', function ($item) {
+                return ($item->domain_expiry_date != null)?$item->domain_expiry_date:'--';
+             })
+             ->addColumn('url', function ($item) {
+                return $item->url;
+             })
+
+             ->addColumn('reason', function ($item) {
+                return ($item->uptime_check_failure_reason!=null)?$item->uptime_check_failure_reason:'--';
+             })
             ->setRowId(function ($item) {
                 return $item->id;
             })
@@ -107,12 +123,15 @@ class WebsiteController extends Controller
     public function store(Request $request)
     {
         //dd($request->all());
-        
-        
         $validator = $request->validate([
-            'url' => 'required|regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
+            // 'url' => 'required|regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
+            'url' => 'required|url|unique:monitors,url,NULL,id,user_id,'.Auth::user()->id,
             'title' => 'required',
-            'emails'=> 'email',
+            'emails' => 'email|required',
+            // 'owner_email' => 'email',
+            // 'developer_email' => 'email',
+        ],[
+            'unique'=>'The url already existed'
         ]);
         
             $mailData=$request->all();
@@ -147,7 +166,7 @@ class WebsiteController extends Controller
                     }
                     $uweb->ssl=$ssl;
                     $uweb->save();
-                    Monitor::where('id',$web->id)->update(['certificate_check_enabled'=>$ssl]);
+                    Monitor::where('id',$web->id)->update(['certificate_check_enabled'=>$ssl,'user_id'=>Auth::user()->id]);
                     $mails=$request->emails;
                     if($mails!=null)
                     {
@@ -175,10 +194,10 @@ class WebsiteController extends Controller
                         }
                        
                     }
-                    return response()->json(['success'=>true]);
+                    return response()->json(['success'=>true,'']);
                 }
             }
-            return response()->json(['success'=>false]);
+            return response()->json(['error'=>true]);
     }
 
     public function destroy(Request $request)
@@ -201,7 +220,6 @@ class WebsiteController extends Controller
         }
         
     }
-
     public function edit(Request $request)
     {
         $monitor=Monitor::find($request->website_id);
@@ -233,35 +251,13 @@ class WebsiteController extends Controller
         }
         return response()->json(['success'=>false]);
     }
-    public function featureWebsite(Request $request)
-    {
-        $count=UserWebsite::where('user_id',Auth::user()->id)->where('is_featured',1)->count();
-        if($request->status==1)
-        {
-            if($count < 4)
-            {
 
-                UserWebsite::where('id',$request->id)->update(['is_featured'=>$request->status]);
-                return response()->json(['success'=>true,'limit'=>0]);
-            }
-            else
-            {
-                return response()->json(['success'=>true,'limit'=>1]);
-            }
-        }
-        else
-        {
-            UserWebsite::where('id',$request->id)->update(['is_featured'=>$request->status]);
-            return response()->json(['success'=>true,'limit'=>2]);
-        }
-        
-    }
     public function websiteLogs(Request $request,$website_id)
     {
         $website=Monitor::where('id',$website_id)->first();
         if($request->ajax())
         {
-            $query=WebsiteLog::where('website_id',$website_id);
+            $query=WebsiteLog::where('website_id',$website_id)->orderBy('created_at','desc');
             return Datatables::of($query)
             ->addIndexColumn()
             ->addColumn('action', function ($item) {
@@ -282,12 +278,69 @@ class WebsiteController extends Controller
                 return '--';
             })
             ->addColumn('down_reason',function($item){
-                return ($item->down_reason!=null?strstr($item->down_reason,":",true):'--');
+                if($item->down_reason!=null)
+                {
+                    $html_string = '<a class="down-reason" data-id="'.$item->id.'" href="javascript:void(0)">'.strstr($item->down_reason,":",true).'</a>';
+                }
+                else
+                {
+                    $html_string = '--';
+                }
+                return $html_string;
             })
-            ->rawColumns(['action','status','certificate_check'])
+            ->addColumn('down_reason_image',function($item){
+                if($item->down_image_url!=null)
+                {
+                    $html_string = '<button data-id="'.$item->id.'" class="view-image btn btn-primary btn-sm"><i class="fa fa-eye"></i></button>';
+                }
+                else
+                {
+                    $html_string = '--';
+                }
+                return $html_string;
+            })
+            ->rawColumns(['down_reason','down_reason_image'])
             ->make(true);
         }
         return view('user.websites.website-details',compact('website_id','website'));
     }
 
+    public function featureWebsite(Request $request)
+    {
+        $count=UserWebsite::where('user_id',Auth::user()->id)->where('is_featured',1)->count();
+        if($request->status==1)
+        {
+            if($count < 10)
+            {
+
+                UserWebsite::where('id',$request->id)->update(['is_featured'=>$request->status]);
+                return response()->json(['success'=>true,'limit'=>0]);
+            }
+            else
+            {
+                return response()->json(['success'=>true,'limit'=>1]);
+            }
+        }
+        else
+        {
+            UserWebsite::where('id',$request->id)->update(['is_featured'=>$request->status]);
+            return response()->json(['success'=>true,'limit'=>2]);
+        }
+        
+    }
+
+    public function getDownReason(Request $request)
+    {   
+        $down_reason=WebsiteLog::where('id',$request->id)->value('down_reason');
+        return response()->json(['success' => true, 'down_reason' => $down_reason]);
+    }
+
+    public function getDownReasonImage(Request $request)
+    {   
+        $down_image_url=WebsiteLog::where('id',$request->id)->value('down_image_url');
+        $html_string = '<img src="'.$down_image_url.'" alt="">';
+        return response()->json(['success' => true, 'html_string' => $html_string]);
+    }
+
+    
 }
