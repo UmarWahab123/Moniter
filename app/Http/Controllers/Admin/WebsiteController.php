@@ -125,30 +125,17 @@ class WebsiteController extends Controller
     public function store(Request $request)
     {
         //dd($request->all());
+        $validator = $request->validate([
+            // 'url' => 'required|regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
+            'url' => 'required|url|unique:monitors,url,NULL,id,user_id,'.Auth::user()->id,
+            'title' => 'required',
+            'emails' => 'email|required',
+            // 'owner_email' => 'email',
+            // 'developer_email' => 'email',
+        ],[
+            'unique'=>'The url already existed'
+        ]);
         
-        if($request->emails != null || $request->owner_email != null || $request->developer_email != null)
-        {
-            $validator = $request->validate([
-                // 'url' => 'required|regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
-                'url' => 'required|url|unique:monitors,url',
-                'title' => 'required',
-                'emails' => 'email',
-                // 'owner_email' => 'email',
-                // 'developer_email' => 'email',
-            ],[
-                'unique'=>'The url already existed'
-            ]);
-        }
-        else
-        {
-            $validator = $request->validate([
-                // 'url' => 'required|regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
-                'url' => 'required|url|unique:monitors,url',
-                'title' => 'required',
-            ],[
-                'unique'=>'The url already existed'
-            ]);
-        }
             $mailData=$request->all();
             define('STDIN',fopen("php://stdin","r"));
             $output=Artisan::call("monitor:create ".$request->url);
@@ -181,7 +168,7 @@ class WebsiteController extends Controller
                     }
                     $uweb->ssl=$ssl;
                     $uweb->save();
-                    Monitor::where('id',$web->id)->update(['certificate_check_enabled'=>$ssl]);
+                    Monitor::where('id',$web->id)->update(['certificate_check_enabled'=>$ssl,'user_id'=>Auth::user()->id]);
                     $mails=$request->emails;
                     if($mails!=null)
                     {
@@ -303,7 +290,18 @@ class WebsiteController extends Controller
                 }
                 return $html_string;
             })
-            ->rawColumns(['down_reason'])
+            ->addColumn('down_reason_image',function($item){
+                if($item->down_image_url!=null)
+                {
+                    $html_string = '<button data-id="'.$item->id.'" class="view-image btn btn-primary btn-sm"><i class="fa fa-eye"></i></button>';
+                }
+                else
+                {
+                    $html_string = '--';
+                }
+                return $html_string;
+            })
+            ->rawColumns(['down_reason','down_reason_image'])
             ->make(true);
         }
         return view('admin.websites.website-details',compact('website_id','website'));
@@ -338,4 +336,13 @@ class WebsiteController extends Controller
         $down_reason=WebsiteLog::where('id',$request->id)->value('down_reason');
         return response()->json(['success' => true, 'down_reason' => $down_reason]);
     }
+
+    public function getDownReasonImage(Request $request)
+    {   
+        $down_image_url=WebsiteLog::where('id',$request->id)->value('down_image_url');
+        $html_string = '<img src="'.$down_image_url.'" alt="">';
+        return response()->json(['success' => true, 'html_string' => $html_string]);
+    }
+
+    
 }

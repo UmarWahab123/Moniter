@@ -87,6 +87,7 @@
                                             <th>Down Time </th>
                                             <th>Up Time </th>
                                             <th>Down Reason </th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -114,6 +115,24 @@
           </button>
         </div>
         <div class="modal-body down-reason-div">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="downReasonImageModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Down Reason Image</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body down-reason-image-div">
           ...
         </div>
         <div class="modal-footer">
@@ -170,6 +189,10 @@
                         data: 'down_reason',
                         name: 'down_reason'
                     },
+                    {
+                        data: 'down_reason_image',
+                        name: 'down_reason_image'
+                    },
 
                 ],
 
@@ -198,6 +221,22 @@
                 success: function(data) {
                     $('.down-reason-div').text(data.down_reason);
                     $('#downReasonModel').modal('show');
+                },
+                error: function() {
+                    toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
+                },
+            });
+         });
+
+         $(document).on('click','.view-image',function(){
+             var id = $(this).data('id');
+             $.ajax({
+                url: '{{ url('admin/get-down-reason-image') }}', 
+                method: 'get',
+                data: {id:id},
+                success: function(data) {
+                    $('.down-reason-image-div').html(data.html_string);
+                    $('#downReasonImageModel').modal('show');
                 },
                 error: function() {
                     toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});

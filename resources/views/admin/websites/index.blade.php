@@ -106,7 +106,7 @@
                                     <input type="text" name="title" class="form-control" id="title" placeholder="Enter Title">
                                 </div>
                                 <div class="col-md-6 mt-2">
-                                    <label class="m-0">Email </label><small class="text-info float-right d-none"> (Emails should be comma seprated)</small>
+                                    <label class="m-0">Email <span class="text-danger">*</span></label><small class="text-info float-right d-none"> (Emails should be comma seprated)</small>
                                     <input type="text" name="emails" class="form-control" id="email" placeholder="Enter Email">
                                 </div>
                                 <div class="col-md-6 mt-2">
@@ -145,11 +145,11 @@
                             <input type="hidden" name="id" id="editId">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <label class="m-0 mt-2" >Title</label>
+                                    <label class="m-0 mt-2" >Title <span class="text-danger">*</span></label>
                                     <input type="text" name="title" class="form-control" id="editTitle" aria-describedby="emailHelp" placeholder="Enter Title">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="m-0 mt-2" >Email</label>
+                                    <label class="m-0 mt-2" >Email <span class="text-danger">*</span></label>
                                     <input type="text" name="emails" class="form-control" id="editEmails" aria-describedby="emailHelp" placeholder="Enter Title">
                                 </div>
                                 <div class="col-md-6">
