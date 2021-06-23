@@ -10,7 +10,7 @@
     <script src="{{ asset('public/js/jquery.slicknav.min.js') }}"></script>
     
 
-    <script src="{{ asset('public/js/progressbar.min.js') }}"></script>
+    {{-- <script src="{{ asset('public/js/progressbar.min.js') }}"></script> --}}
 
 
 
