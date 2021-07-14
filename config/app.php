@@ -134,6 +134,8 @@ return [
     |
     */
 
+    'api_path' => env('API_PATH'),
+
     'providers' => [
 
         /*

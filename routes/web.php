@@ -71,3 +71,13 @@ Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth'
     Route::get('/get-down-reason-image', 'WebsiteController@getDownReasonImage')->name('get-down-reason-image');
 
 });
+
+/*here we will use same routes for both admin and users*/
+Route::group(['middleware' => ['auth']], function (){
+
+    /*Server routes*/
+    Route::get('servers', 'ServerController@index')->name('servers');
+    Route::get('get-servers', 'ServerController@getServers')->name('get-servers');
+    Route::post('add-server', 'ServerController@addServer')->name('add-server');
+
+});
