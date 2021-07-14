@@ -38,7 +38,7 @@ class ServerController extends Controller
             ->addColumn('file', function ($item) {
                 if($item->file_path)
                 {
-                    $html_string =' <a download href='.$item->file_path.' class="btn btn-outline-info btn-sm" title="Download" ><i class="fa fa-download"></i></a>';
+                    $html_string =' <a target="_blank" download href='.$item->file_path.' class="btn btn-outline-info btn-sm" title="Download" ><i class="fa fa-download"></i></a>';
                     return $html_string;
                 }
                 else
