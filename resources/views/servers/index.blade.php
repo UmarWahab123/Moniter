@@ -31,12 +31,13 @@
                                 <table id="servers_table" class="table table-stripped text-center">
                                     <thead>
                                         <tr>
-                                            <th>Name </th>
+                                            <th>Name</th>
                                             <th>IP Address</th>
                                             <th>OS</th>
                                             <th>Key</th>
                                             <th>Added By</th>
                                             <th>File</th>
+                                            <th>Server Logs</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -183,6 +184,7 @@
                     { data: 'key', name: 'key' },
                     { data: 'added_by', name: 'added_by' },
                     { data: 'file', name: 'file' },
+                    { data: 'server_logs', name: 'server_logs' },
                 ],
 
             });

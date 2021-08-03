@@ -10,4 +10,9 @@ class Server extends Model
     {
         return $this->belongsTo('App\User', 'user_id', 'id');
     }
+
+    public function serverLogs()
+    {
+        return $this->hasMany('App\ServerDetail', 'server_id', 'id');
+    }
 }

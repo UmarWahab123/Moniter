@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Monitor;
+use App\Server;
+use App\ServerDetail;
 use App\User;
 use App\UserToken;
 use App\WebsiteLog;
 use Carbon\Carbon;
 use DateTime;
+use Illuminate\Http\Request;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
@@ -301,5 +303,31 @@ class ApiController extends Controller
         }
        
 
+    }
+
+    public function getServerDetails(Request $request)
+    {
+        $python_token = config('app.python_token');
+        if($request->access_token == $python_token)
+        {
+            $serializeArray  = serialize($request->all());
+            $identifyRequest = Server::where('ip_address',$request->ip_address)->where('id',$request->server_id)->where('user_id',$request->user_id)->first();
+            if($identifyRequest)
+            {
+                $store_data = new ServerDetail;
+                $store_data->server_id = $identifyRequest->id;
+                $store_data->server_monitoring_data = $serializeArray;
+                $store_data->save();
+                return response()->json(['success' => true, 'request' => $request->all()]);
+            }
+            else
+            {
+                return response()->json(['success' => false, 'errorMsg' => 'No server found!!!']);
+            }
+        }
+        else
+        {
+            return response()->json(['success' => false, 'errorMsg' => 'You are not authorized to access!!!']);
+        }
     }
 }

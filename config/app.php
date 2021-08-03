@@ -135,6 +135,7 @@ return [
     */
 
     'api_path' => env('API_PATH'),
+    'python_token' => env('PYTHON_TOKEN'),
 
     'providers' => [
 

@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Server;
+use App\ServerDetail;
 use App\User;
 use Auth;
-use Yajra\Datatables\Datatables;
 use Illuminate\Http\Request;
+use Yajra\Datatables\Datatables;
 
 class ServerController extends Controller
 {
@@ -17,7 +18,7 @@ class ServerController extends Controller
 
     public function getServers(Request $request)
     {
-        $query = Server::with('userInfo')->orderBy('id','DESC');
+        $query = Server::with('userInfo','serverLogs')->orderBy('id','DESC');
 
         if($request->ajax())
         {
@@ -49,10 +50,21 @@ class ServerController extends Controller
             ->addColumn('os', function ($item) {
                 return $item->os != null ? strtoupper($item->os) : 'N.A' ;
             })
+            ->addColumn('server_logs', function ($item) {
+                if($item->serverLogs->count() > 0)
+                {
+                    $html_string =' <a target="_blank" href='.url("server-logs/$item->id").' class="btn btn-outline-primary btn-sm" title="Server Logs" ><i class="fa fa-eye"></i></a>';
+                    return $html_string;
+                }
+                else
+                {
+                    return "N.A";
+                }
+            })
             ->setRowId(function ($item) {
                 return $item->id;
             })
-            ->rawColumns(['name','ip_address','key','added_by','file','os'])
+            ->rawColumns(['name','ip_address','key','added_by','file','os','server_logs'])
             ->make(true);
         }
     }
@@ -65,7 +77,8 @@ class ServerController extends Controller
             'operating_system' => 'required',
         ]);
 
-        $api_path = config('app.api_path');
+        $api_path     = config('app.api_path');
+        $python_token = config('app.python_token');
         
         $pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $random_key = substr(str_shuffle(str_repeat($pool, 5)), 0, 32);
@@ -81,9 +94,12 @@ class ServerController extends Controller
         $data = array();
         $url  = $api_path.'/add_server';
 
-        $data['ip']      = $create->ip_address;
-        $data['user_id'] = $create->user_id;
-        $data['key']     = $create->key;
+        $data['ip_address']    = $create->ip_address;
+        $data['user_id']       = $create->user_id;
+        $data['server_id']     = $create->id;
+        $data['access_token']  = $python_token;
+
+        // token must be send with server add
 
         $response = $this->curl_call($url,$data);
 
@@ -121,5 +137,412 @@ class ServerController extends Controller
         // }
         curl_close($curl);
         return json_decode($response);
+    }
+
+    public function serverLogs($id)
+    {
+        $server = Server::find($id);
+        return view('servers.server_details', compact('server','id'));
+
+        $getInfo = ServerDetail::where('server_id', $id)->orderBy('id', 'desc')->first();
+        if($getInfo)
+        {
+            $unserialize = unserialize($getInfo->server_monitoring_data);
+            dd($unserialize);
+        }
+        else
+        {
+            dd('out of logic');
+        }
+    }
+
+    public function serverLogsInDetails(Request $request)
+    {
+        $type  = $request->for_type;
+        $dynamic_tab_name = '';
+        if($type == "os_release" || $type == "total_user")
+        {
+            $query = ServerDetail::where('server_id', $request->server_id)->orderBy('id', 'DESC')->take(1)->get();
+        }
+        else
+        {
+            $query = ServerDetail::where('server_id', $request->server_id)->orderBy('id', 'DESC');
+        }
+
+        if($request->for_type == 'cpu_usage')
+        {
+            return Datatables::of($query)
+            ->addIndexColumn()
+            ->addColumn('user', function ($item) use($type, $dynamic_tab_name) {
+                $column = "user";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+             })
+            ->addColumn('nice', function ($item) use($type, $dynamic_tab_name) {
+                $column = "nice";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+            })
+            ->addColumn('system', function ($item) use($type, $dynamic_tab_name) {
+                $column = "system";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+            })
+            ->addColumn('iowait', function ($item) use($type, $dynamic_tab_name) {
+                $column = "iowait";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+            })
+            ->addColumn('steal', function ($item) use($type, $dynamic_tab_name) {
+                $column = "steal";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+            })
+            ->addColumn('idle', function ($item) use($type, $dynamic_tab_name) {
+                $column = "idle";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+            })
+            ->setRowId(function ($item) {
+                return $item->id;
+            })
+            ->rawColumns(['user','nice','system','iowait','steal','idle'])
+            ->make(true);
+        }
+
+        if($request->for_type == 'disk_usage')
+        {
+            return Datatables::of($query)
+            ->addIndexColumn()
+            ->addColumn('size', function ($item) use($type, $dynamic_tab_name) {
+                $column = "size";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+             })
+            ->addColumn('used', function ($item) use($type, $dynamic_tab_name) {
+                $column = "used";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+            })
+            ->addColumn('available', function ($item) use($type, $dynamic_tab_name) {
+                $column = "available";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+            })
+            ->addColumn('used_percentage', function ($item) use($type, $dynamic_tab_name) {
+                $column = "used_percentage";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+            })
+            ->setRowId(function ($item) {
+                return $item->id;
+            })
+            ->rawColumns(['size','used','available','used_percentage'])
+            ->make(true);
+        }
+
+        if($request->for_type == 'ram_usage')
+        {
+            $dynamic_tab_name = $request->for_type_ram;
+
+            if($dynamic_tab_name == 'memory')
+            {
+                return Datatables::of($query)
+                ->addIndexColumn()
+                ->addColumn('total', function ($item) use($type, $dynamic_tab_name) {
+                    $column = "total";
+                    $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                    return $data;
+                 })
+                ->addColumn('used', function ($item) use($type, $dynamic_tab_name) {
+                    $column = "used";
+                    $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                    return $data;
+                })
+                ->addColumn('free', function ($item) use($type, $dynamic_tab_name) {
+                    $column = "free";
+                    $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                    return $data;
+                })
+                ->addColumn('shared', function ($item) use($type, $dynamic_tab_name) {
+                    $column = "shared";
+                    $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                    return $data;
+                })
+                ->addColumn('buff_cache', function ($item) use($type, $dynamic_tab_name) {
+                    $column = "buff/cache";
+                    $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                    return $data;
+                })
+                ->addColumn('available', function ($item) use($type, $dynamic_tab_name) {
+                    $column = "available";
+                    $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                    return $data;
+                })
+                ->setRowId(function ($item) {
+                    return $item->id;
+                })
+                ->rawColumns(['total','used','free','shared','buff_cache','available'])
+                ->make(true);
+            }
+            else
+            {
+                return Datatables::of($query)
+                ->addIndexColumn()
+                ->addColumn('total', function ($item) use($type, $dynamic_tab_name) {
+                    $column = "total";
+                    $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                    return $data;
+                 })
+                ->addColumn('used', function ($item) use($type, $dynamic_tab_name) {
+                    $column = "used";
+                    $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                    return $data;
+                })
+                ->addColumn('free', function ($item) use($type, $dynamic_tab_name) {
+                    $column = "free";
+                    $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                    return $data;
+                })
+                ->setRowId(function ($item) {
+                    return $item->id;
+                })
+                ->rawColumns(['total','used','free'])
+                ->make(true);
+            }
+        }
+
+        if($request->for_type == 'os_release')
+        {
+            return Datatables::of($query)
+            ->addIndexColumn()
+            ->addColumn('name', function ($item) use($type, $dynamic_tab_name) {
+                $column = "0";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+             })
+            ->addColumn('version', function ($item) use($type, $dynamic_tab_name) {
+                $column = "1";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+            })
+            ->addColumn('os_release_id', function ($item) use($type, $dynamic_tab_name) {
+                $column = "2";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+            })
+            ->addColumn('id_like', function ($item) use($type, $dynamic_tab_name) {
+                $column = "3";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+            })
+            ->addColumn('pretty_name', function ($item) use($type, $dynamic_tab_name) {
+                $column = "4";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+            })
+            ->addColumn('version_id', function ($item) use($type, $dynamic_tab_name) {
+                $column = "5";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+            })
+            ->addColumn('home_url', function ($item) use($type, $dynamic_tab_name) {
+                $column = "6";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+            })
+            ->addColumn('support_url', function ($item) use($type, $dynamic_tab_name) {
+                $column = "7";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+            })
+            ->addColumn('bug_report_url', function ($item) use($type, $dynamic_tab_name) {
+                $column = "8";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+            })
+            ->addColumn('privacy_policy_url', function ($item) use($type, $dynamic_tab_name) {
+                $column = "9";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+            })
+            ->addColumn('version_codename', function ($item) use($type, $dynamic_tab_name) {
+                $column = "10";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+            })
+            ->addColumn('ubuntu_codename', function ($item) use($type, $dynamic_tab_name) {
+                $column = "11";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+            })
+            ->setRowId(function ($item) {
+                return $item->id;
+            })
+            ->rawColumns(['name','version','os_release_id','id_like','version_id','home_url','support_url','bug_report_url','privacy_policy_url','version_codename','ubuntu_codename','pretty_name'])
+            ->make(true);
+        }
+
+        if($request->for_type == 'total_user')
+        {
+            return Datatables::of($query)
+            ->addIndexColumn()
+            ->addColumn('name', function ($item) use($type, $dynamic_tab_name) {
+                $column = "0";
+                $data = $this->toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+                return $data;
+             })
+            ->setRowId(function ($item) {
+                return $item->id;
+            })
+            ->rawColumns(['name'])
+            ->make(true);
+        }
+    }
+
+    private function toGetSerializeResponse($serializeArray, $type, $column, $dynamic_tab_name)
+    {
+        $unserialize = unserialize($serializeArray->server_monitoring_data);
+        if($type == "cpu_usage")
+        {
+            if(!empty($unserialize))
+            {
+                if(array_key_exists('cpu_usage', $unserialize))
+                {
+                    $meta_data = $unserialize['cpu_usage'];
+                    if (!is_array($meta_data)) {
+                       $meta_data = [$meta_data];
+                    }
+                    if(array_key_exists($column, $meta_data))
+                    {
+                        return $meta_data[$column];
+                    }
+                    else
+                    {
+                        return "--";
+                    }
+                }
+            }
+            else
+            {
+                return "--";
+            }
+        }
+
+        if($type == "disk_usage")
+        {
+            if(!empty($unserialize))
+            {
+                if(array_key_exists('disk_usage', $unserialize))
+                {
+                    $meta_data = $unserialize['disk_usage'];
+                    if (!is_array($meta_data)) {
+                       $meta_data = [$meta_data];
+                    }
+                    if(array_key_exists($column, $meta_data))
+                    {
+                        return $meta_data[$column];
+                    }
+                    else
+                    {
+                        return "--";
+                    }
+                }
+            }
+            else
+            {
+                return "--";
+            }
+        }
+
+        if($type == "ram_usage")
+        {
+            if(!empty($unserialize))
+            {
+                if(array_key_exists('ram_usage', $unserialize))
+                {
+                    $meta_data = $unserialize['ram_usage'];
+                    if (!is_array($meta_data)) {
+                       $meta_data = [$meta_data];
+                    }
+
+                    if(array_key_exists($dynamic_tab_name, $meta_data))
+                    {
+                        $meta_data = $meta_data[$dynamic_tab_name];
+                        if (!is_array($meta_data)) {
+                           $meta_data = [$meta_data];
+                        }
+                        if(array_key_exists($column, $meta_data))
+                        {
+                            return $meta_data[$column];
+                        }
+                        else
+                        {
+                            return "--";
+                        }
+                    }
+                    else
+                    {
+                        return "--";
+                    }
+                }
+            }
+            else
+            {
+                return "--";
+            }
+        }
+
+        if($type == "os_release")
+        {
+            if(!empty($unserialize))
+            {
+                if(array_key_exists('os_release', $unserialize))
+                {
+                    $meta_data = $unserialize['os_release'];
+                    if (!is_array($meta_data)) {
+                       $meta_data = [$meta_data];
+                    }
+                    if(array_key_exists($column, $meta_data))
+                    {
+                        return $meta_data[$column];
+                    }
+                    else
+                    {
+                        return "--";
+                    }
+                }
+            }
+            else
+            {
+                return "--";
+            }
+        }
+
+        if($type == "total_user")
+        {
+            if(!empty($unserialize))
+            {
+                if(array_key_exists('total_user', $unserialize))
+                {
+                    $meta_data = $unserialize['total_user'];
+                    if (!is_array($meta_data)) {
+                       $meta_data = [$meta_data];
+                    }
+                    if(array_key_exists($column, $meta_data))
+                    {
+                        return $meta_data[$column];
+                    }
+                    else
+                    {
+                        return "--";
+                    }
+                }
+            }
+            else
+            {
+                return "--";
+            }
+        }
     }
 }
