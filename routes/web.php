@@ -76,10 +76,11 @@ Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth'
 Route::group(['middleware' => ['auth']], function (){
 
     /*Server routes*/
+    Route::get('servers/dashboard', 'ServerController@dashboard')->name('servers.dashboard');
     Route::get('servers', 'ServerController@index')->name('servers');
     Route::get('get-servers', 'ServerController@getServers')->name('get-servers');
     Route::post('add-server', 'ServerController@addServer')->name('add-server');
     Route::get('server-logs/{id}', 'ServerController@serverLogs')->name('server-logs');
     Route::get('server-logs-in-details', 'ServerController@serverLogsInDetails')->name('server-logs-in-details');
-
+    Route::get('get-latest-server-logs', 'ServerController@getLatestServerLogs')->name('check-new-entry');
 });

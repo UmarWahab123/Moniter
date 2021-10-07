@@ -8,12 +8,24 @@ use App\User;
 use Auth;
 use Illuminate\Http\Request;
 use Yajra\Datatables\Datatables;
+use Carbon\Carbon;
 
 class ServerController extends Controller
 {
     public function index()
     {
         return view('servers.index');
+    }
+
+    public function dashboard()
+    {
+        $servers = Server::with(['serverLogs' => function ($query) {
+            $query->orderBy('id', 'desc');
+        }])->get();
+        $date = Carbon::now();
+        // $data = unserialize(ServerDetail::first()->server_monitoring_data);
+        // dd($data['disk_usage']);
+        return view('servers.dashboard', compact('servers', 'date'));
     }
 
     public function getServers(Request $request)
@@ -544,5 +556,20 @@ class ServerController extends Controller
                 return "--";
             }
         }
+    }
+
+    public function getLatestServerLogs(Request $request)
+    {
+         $servers = Server::with(['serverLogs' => function ($query) {
+            $query->orderBy('id', 'desc');
+        }])->get();
+        foreach ($servers as $server) {
+            $server_details = $server->serverLogs->first();
+            if (Carbon::now()->diffInMinutes($server_details->created_at) > 5 && $server_details->last_down != null) {
+               $server_details->last_down = Carbon::now();
+               $server_details->save();
+            }
+        }
+        return response()->json(['success' => true]);
     }
 }

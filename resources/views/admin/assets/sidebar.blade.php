@@ -15,7 +15,7 @@
                         <a href="{{ url('admin/websites') }}" aria-expanded="true"><i class="ti-world"></i><span>Websites</span></a>
                     </li>
                     <li class="">
-                        <a href="{{ url('servers') }}" aria-expanded="true"><i class="ti-server"></i><span>Servers</span></a>
+                        <a href="{{ route('servers.dashboard') }}" aria-expanded="true"><i class="ti-server"></i><span>Servers</span></a>
                     </li>
                     <li class="">
                         <a href="{{ url('admin/users') }}" aria-expanded="true"><i class="ti-user"></i><span>Users</span></a>
