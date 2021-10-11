@@ -83,4 +83,7 @@ Route::group(['middleware' => ['auth']], function (){
     Route::get('server-logs/{id}', 'ServerController@serverLogs')->name('server-logs');
     Route::get('server-logs-in-details', 'ServerController@serverLogsInDetails')->name('server-logs-in-details');
     Route::get('get-latest-server-logs', 'ServerController@getLatestServerLogs')->name('check-new-entry');
+    Route::post('servers/delete', 'ServerController@destroy')->name('servers.destroy');
+    Route::get('servers/edit', 'ServerController@edit')->name('servers.edit');
+    Route::post('servers/update', 'ServerController@update')->name('servers.update');
 });

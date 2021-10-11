@@ -31,13 +31,15 @@
                                 <table id="servers_table" class="table table-stripped text-center">
                                     <thead>
                                         <tr>
+                                            <th>ID</th>
                                             <th>Name</th>
                                             <th>IP Address</th>
                                             <th>OS</th>
-                                            <th>Key</th>
+                                            <!-- <th>Key</th> -->
                                             <th>Added By</th>
                                             <th>File</th>
                                             <th>Server Logs</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -80,7 +82,7 @@
                                     <label class="m-0">Operating System <span class="text-danger">*</span></label>
                                     <select name="operating_system" id="operating_system" class="form-control">
                                         <option value="" selected="">Choose OS</option>
-                                        <option value="windows">Windows</option>
+                                        <!-- <option value="windows">Windows</option> -->
                                         <option value="linux">Linux</option>
                                     </select>
                                 </div>
@@ -93,44 +95,36 @@
             </div>
         </div>
         
-        <div class="modal fade" id="editWebsiteModal">
+        <div class="modal fade" id="editServerModal">
             <div class="modal-dialog" style="max-width:800px">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Edit Website</h5>
+                        <h5 class="modal-title">Edit Server</h5>
                         <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
                     </div>
                     <div class="modal-body">
-                        <form id="editWebsiteForm">
+                        <form id="editServerForm">
                             @csrf
-                            <input type="hidden" name="id" id="editId">
+                             <input type="hidden" name="id" id="editId">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <label class="m-0 mt-2" >Title <span class="text-danger">*</span></label>
-                                    <input type="text" name="title" class="form-control" id="editTitle" aria-describedby="emailHelp" placeholder="Enter Title">
+                                    <label class="m-0" >Name <span class="text-danger">*</span></label>
+                                    <input type="text" name="name" class="form-control" id="edit_name" placeholder="Enter Name">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="m-0 mt-2" >Email <span class="text-danger">*</span></label>
-                                    <input type="text" name="emails" class="form-control" id="editEmails" aria-describedby="emailHelp" placeholder="Enter Title">
+                                    <label class="m-0">IP Address <span class="text-danger">*</span></label>
+                                    <input type="text" name="ip_address" class="form-control" id="edit_ip_address" placeholder="Enter IP Address" disabled="true">
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="m-0 mt-2">Developer Email </label>
-                                    <input type="text" name="developer_email" class="form-control" id="edit_developer_email" placeholder="Enter Developer Email">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="m-0 mt-2">Owner Email </label>
-                                    <input type="text" name="owner_email" class="form-control" id="edit_owner_email" placeholder="Enter Owner Email">
-                                </div>
-
                                 <div class="col-md-6 mt-2">
-                                <div class="form-check ">
-                                    <input name="ssl" type="checkbox" class="form-check-input" id="editSsl">
-                                    <label class="form-check-label" for="editSsl">Ssl Check</label>
+                                    <label class="m-0">Operating System <span class="text-danger">*</span></label>
+                                    <select name="operating_system" id="edit_operating_system" class="form-control">
+                                        <option value="" selected="">Choose OS</option>
+                                        <!-- <option value="windows">Windows</option> -->
+                                        <option value="linux">Linux</option>
+                                    </select>
                                 </div>
-                                </div>
-                                
                             </div>
-                            <button type="submit" id="editServerSubmitBtn" class="btn btn-primary mt-4 pr-4 pl-4">Update</button>
+                            <button type="submit" id="EditServerSubmitBtn" class="btn btn-primary mt-4 pr-4 pl-4 pull-right">Submit</button>
                         </form>
                     </div >
                    
@@ -178,13 +172,15 @@
                     } --}}
                 },
                 columns: [
+                    { data: 'id', name: 'id' },
                     { data: 'name', name: 'name' },
                     { data: 'ip_address', name: 'ip_address' },
                     { data: 'os', name: 'os' },
-                    { data: 'key', name: 'key' },
+                    // { data: 'key', name: 'key' },
                     { data: 'added_by', name: 'added_by' },
                     { data: 'file', name: 'file' },
                     { data: 'server_logs', name: 'server_logs' },
+                    { data: 'action', name: 'action' },
                 ],
 
             });
@@ -248,7 +244,7 @@
                 })
             });
 
-            $(document).on('click','.delete-site', function(e) {
+            $(document).on('click','.btn-delete', function(e) {
 
                 var id = $(this).val();
                 Swal.fire({
@@ -262,12 +258,12 @@
                 }).then((result) => {
                 if (result.value) {
                    $.ajax({
-                    url: '{{ url('admin/delete-website') }}', 
-                    method: 'get',
+                    url: "{{ route('servers.destroy') }}", 
+                    method: 'post',
                     data: {id:id},
                     success: function(data) {
-                        toastr.success('Success!', 'Website deleted successfully' ,{"positionClass": "toast-bottom-right"});
-                        $('#websitesDataTable').DataTable().ajax.reload();
+                        toastr.success('Success!', 'Server deleted successfully' ,{"positionClass": "toast-bottom-right"});
+                        $('#servers_table').DataTable().ajax.reload();
                     },
                     error: function() {
                         toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
@@ -278,27 +274,18 @@
                 
             });
 
-            $(document).on('click','.edit-site', function(e) {
-                var website_id=$(this).val();
+            $(document).on('click','.btn-edit', function(e) {
+                var server_id=$(this).val();
                 $.ajax({
-                    url: '{{ url('admin/edit-website') }}', 
+                    url: "{{ route('servers.edit') }}", 
                     method: 'get',
-                    data: {website_id:website_id},
+                    data: {server_id:server_id},
                     success: function(data) {
-                        $('#editWebsiteModal').modal('show');
-                        $('#editTitle').val(data.data['title']);
-                        $('#editEmails').val(data.data['emails']);
-                        $('#edit_developer_email').val(data.data['developer_email']);
-                        $('#edit_owner_email').val(data.data['owner_email']);
-                        $('#editId').val(website_id);
-                        if(data.data['ssl']==1)
-                        {
-                            $('#editSsl').prop('checked',true);
-                        }
-                        else
-                        {
-                            $('#editSsl').prop('checked',false);
-                        }
+                        $('#editServerModal').modal('show');
+                        $('#edit_name').val(data.data['name']);
+                        $('#edit_ip_address').val(data.data['ip_address']);
+                        $('#edit_operating_system').val(data.data['os']);
+                        $('#editId').val(server_id);
                     },
                     error: function() {
                         toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
@@ -308,17 +295,17 @@
                
             });
 
-            $(document).on('click','#editServerSubmitBtn',function(e){
+            $(document).on('submit','#editServerForm',function(e){
                 e.preventDefault();
-                var formData=$('#editWebsiteForm').serialize();
+                var formData=$('#editServerForm').serialize();
                 $.ajax({
-                    url: '{{ url('admin/edit-website') }}', 
+                    url: "{{ route('servers.update') }}", 
                     method: 'post',
                     data: formData,
                     success: function(data) {
-                        $('#editWebsiteModal').modal('hide');
-                        toastr.success('Success!', 'Website updated successfully' ,{"positionClass": "toast-bottom-right"});
-                        $('#websitesDataTable').DataTable().ajax.reload();
+                        $('#editServerModal').modal('hide');
+                        toastr.success('Success!', 'Server updated successfully' ,{"positionClass": "toast-bottom-right"});
+                        $('#servers_table').DataTable().ajax.reload();
                     },
                     error: function() {
                         toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
@@ -333,52 +320,52 @@
             function reloadDatatable()
             {
                 setTimeout(function(){           
-                    $('#websitesDataTable').DataTable().ajax.reload();
+                    $('#servers_table').DataTable().ajax.reload();
                     reloadDatatable();
                 }, 65000);
             }
 
-            $(document).on('click','.feature', function(e) {
+            // $(document).on('click','.feature', function(e) {
 
-                var id = $(this).val();
-                var status=$(this).data('status');
-                Swal.fire({
-                title: 'Are you sure?',
-                text: "You want to feature this website",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, do it!'
-                }).then((result) => {
-                if (result.value) {
-                   $.ajax({
-                    url: '{{ url('admin/feature') }}', 
-                    method: 'get',
-                    data: {id:id,status:status},
-                    success: function(data) {
-                    if(data.limit==0)
-                    {
-                        toastr.success('Success!', 'Website featured successfully' ,{"positionClass": "toast-bottom-right"});
-                    }
-                    else if(data.limit==1)
-                    {
-                        toastr.info('Info!', 'Featured limit reached' ,{"positionClass": "toast-bottom-right"});
-                    }
-                    else if(data.limit==2)
-                    {
-                        toastr.success('Success!', 'Website unfeatured successfully' ,{"positionClass": "toast-bottom-right"});
-                    }
+            //     var id = $(this).val();
+            //     var status=$(this).data('status');
+            //     Swal.fire({
+            //     title: 'Are you sure?',
+            //     text: "You want to feature this website",
+            //     icon: 'warning',
+            //     showCancelButton: true,
+            //     confirmButtonColor: '#3085d6',
+            //     cancelButtonColor: '#d33',
+            //     confirmButtonText: 'Yes, do it!'
+            //     }).then((result) => {
+            //     if (result.value) {
+            //        $.ajax({
+            //         url: '{{ url('admin/feature') }}', 
+            //         method: 'get',
+            //         data: {id:id,status:status},
+            //         success: function(data) {
+            //         if(data.limit==0)
+            //         {
+            //             toastr.success('Success!', 'Website featured successfully' ,{"positionClass": "toast-bottom-right"});
+            //         }
+            //         else if(data.limit==1)
+            //         {
+            //             toastr.info('Info!', 'Featured limit reached' ,{"positionClass": "toast-bottom-right"});
+            //         }
+            //         else if(data.limit==2)
+            //         {
+            //             toastr.success('Success!', 'Website unfeatured successfully' ,{"positionClass": "toast-bottom-right"});
+            //         }
                         
-                        $('#websitesDataTable').DataTable().ajax.reload();
-                    },
-                    error: function() {
-                        toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
-                    },
-                });
-                }
-                })
+            //             $('#websitesDataTable').DataTable().ajax.reload();
+            //         },
+            //         error: function() {
+            //             toastr.error('Error!', 'Something went wrong' ,{"positionClass": "toast-bottom-right"});
+            //         },
+            //     });
+            //     }
+            //     })
                 
-            });
+            // });
         </script>
 @endsection

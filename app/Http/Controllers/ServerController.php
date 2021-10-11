@@ -36,15 +36,18 @@ class ServerController extends Controller
         {
             return Datatables::of($query)
             ->addIndexColumn()
+            ->addColumn('id', function ($item) {
+                return $item->id != null ? $item->id : 'N.A' ;
+             })
             ->addColumn('title', function ($item) {
                 return $item->name != null ? $item->name : 'N.A' ;
              })
             ->addColumn('ip_address', function ($item) {
                 return $item->ip_address != null ? $item->ip_address : 'N.A' ;
             })
-            ->addColumn('key', function ($item) {
-                return $item->key != null ? $item->key : 'N.A' ;
-            })
+            // ->addColumn('key', function ($item) {
+            //     return $item->key != null ? $item->key : 'N.A' ;
+            // })
             ->addColumn('added_by', function ($item) {
                 return $item->user_id != null ? ($item->userInfo != null ? $item->userInfo->name : 'N.A') : 'N.A' ;
             })
@@ -73,10 +76,17 @@ class ServerController extends Controller
                     return "N.A";
                 }
             })
+             ->addColumn('action', function ($item) {
+                $html_string =' <button  value="'.$item->id.'"class="btn  btn-outline-primary btn-sm btn-edit "  title="Edit"><i class="fa fa-pencil"></i></button>';
+                $html_string.=' <button  value="'.$item->id.'"  class="btn btn-outline-danger btn-sm btn-delete"  title="Delete"><i class="fa fa-trash-o"></i></button>';
+                                                     
+                    
+                return $html_string;
+            })
             ->setRowId(function ($item) {
                 return $item->id;
             })
-            ->rawColumns(['name','ip_address','key','added_by','file','os','server_logs'])
+            ->rawColumns(['name','ip_address','added_by','file','os','server_logs', 'action'])
             ->make(true);
         }
     }
@@ -85,7 +95,7 @@ class ServerController extends Controller
     {
         $validator = $request->validate([
             'name'             => 'required',
-            'ip_address'       => 'required',
+            'ip_address'       => 'required|unique:servers',
             'operating_system' => 'required',
         ]);
 
@@ -571,5 +581,44 @@ class ServerController extends Controller
             }
         }
         return response()->json(['success' => true]);
+    }
+
+    public function destroy(Request $request)
+    {
+        $server = Server::find($request->id);
+        if ($server != null) {
+            $serverLogs = ServerDetail::where('server_id', $server->id);
+            if ($serverLogs != null) {
+                $serverLogs->delete();
+            }
+            $server->delete();
+        }
+    }
+
+    public function edit(Request $request)
+    {
+        $server = Server::find($request->server_id);
+        if($server != null)
+        {
+            $data['name']=$server->name;
+            $data['ip_address']=$server->ip_address;
+            $data['os']=$server->os;
+            return response()->json(['success'=>true,'data'=>$data]);
+        }
+        return response()->json(['success'=>false]);
+    }
+
+    public function update(Request $request)
+    {
+        $server = Server::find($request->id);
+        if($server != null)
+        {
+            $server->name = $request->name;
+            $server->ip_address = $request->ip_address;
+            $server->os = $request->operating_system;
+            $server->save();
+            return response()->json(['success'=>true]);
+        }
+        return response()->json(['success'=>false]);
     }
 }
