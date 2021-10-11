@@ -314,6 +314,11 @@ class ApiController extends Controller
             $identifyRequest = Server::where('ip_address',$request->ip_address)->where('id',$request->server_id)->where('user_id',$request->user_id)->first();
             if($identifyRequest)
             {
+                $server_details = ServerDetail::where('server_id', $request->server_id)->skip(99)->take(100)->get();
+                foreach ($server_details as $setail) {
+                    $server_detail->delete();
+                }
+
                 $store_data = new ServerDetail;
                 $store_data->server_id = $identifyRequest->id;
                 $store_data->server_monitoring_data = $serializeArray;

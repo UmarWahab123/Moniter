@@ -34,7 +34,7 @@
                         $cpu_usage = 100 - $data['cpu_usage']['idle'];
                     }
                 @endphp
-                        <a href="{{url('server-logs/$server->id')}}" class="col-xl-3 col-ml-3 col-md-3 mt-5">
+                        <a href="{{route('server-logs', [$server->id])}}" class="col-xl-3 col-ml-3 col-md-3 mt-5">
                             <div class="single-report">
                                 <div class="s-sale-inner pt--30 mb-3">
                                     <div class=" d-flex justify-content-between">
