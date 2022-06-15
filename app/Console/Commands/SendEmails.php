@@ -9,7 +9,7 @@ use App\User;
 use App\UserToken;
 use App\UserWebsite;
 use App\WebsiteLog;
-use FCM;
+use LaravelFCM\Facades\FCM;
 use Ping;
 use Illuminate\Console\Command;
 # FireBase Notifications
@@ -52,7 +52,7 @@ class SendEmails extends Command
      */
     public function handle()
     {
-        $sites = Monitor::orderBy('id','asc')->get();
+        $sites = Monitor::orderBy('id', 'asc')->get();
 
         foreach ($sites as $site) {
             if ($site->uptime_status == 'up') {
@@ -60,41 +60,36 @@ class SendEmails extends Command
                 $checkLogs = WebsiteLog::where('website_id', $site->id)->where('up_time', null)->first();
                 if ($checkLogs != null) {
                     if ($checkLogs->up_time == null) {
-                        
+
                         $website = $site->url;
                         $mailData['status'] = "Up";
                         $mailData['site'] = $website;
                         WebsiteLog::where('website_id', $site->id)->where('up_time', null)->update(['up_time' => $site->uptime_status_last_change_date]);
                         if ($site->getSiteDetails != null) {
-                            $user_id=$site->getSiteDetails->user_id;
+                            $user_id = $site->getSiteDetails->user_id;
                             $email = $site->getSiteDetails->emails;
                             $developer_email = $site->getSiteDetails->developer_email;
                             $owner_email = $site->getSiteDetails->owner_email;
                             if ($email != null) {
-                                if($developer_email == null && $owner_email == null)
-                                {
+                                if ($developer_email == null && $owner_email == null) {
                                     Mail::to($email)->send(new SiteUptimeStatus($mailData));
-                                }
-                                else
-                                {
-                                    Mail::to($email)->cc([$owner_email,$developer_email])->send(new SiteUptimeStatus($mailData));
+                                } else {
+                                    Mail::to($email)->cc([$owner_email, $developer_email])->send(new SiteUptimeStatus($mailData));
                                 }
                                 $this->info('Mail sent to customer mail for website sent!' . $mailData['site']);
-
                             } else {
-                                $setting = Setting::where('user_id',$user_id)->where('type', 'email')->first();
+                                $setting = Setting::where('user_id', $user_id)->where('type', 'email')->first();
                                 if ($setting == null) {
                                     // $default_mail = config('uptime-monitor.notifications.mail.to');
                                     // if ($default_mail != null) {
                                     //     Mail::to($default_mail[0])->send(new SiteUptimeStatus($mailData));
                                     // }
                                 } else {
-                                    Mail::to($setting->settings)->cc([$owner_email,$developer_email])->send(new SiteUptimeStatus($mailData));
+                                    Mail::to($setting->settings)->cc([$owner_email, $developer_email])->send(new SiteUptimeStatus($mailData));
                                 }
                             }
-                        } 
-                        $this->sendNotification($site->id,$site->url,'UP');
-
+                        }
+                        $this->sendNotification($site->id, $site->url, 'UP');
                     }
                     // else
                     // {
@@ -116,29 +111,28 @@ class SendEmails extends Command
             } elseif ($site->uptime_status == 'down') {
                 $checkLogs = WebsiteLog::where('website_id', $site->id)->where('up_time', null)->first();
                 // if ($checkLogs != null) {
-                    // if($checkLogs->up_time==null)
-                    // {
-                    //     WebsiteLog::where('website_id',$site->id)->where('up_time',null)->update(['up_time'=>$site->uptime_status_last_change_date->toDateTimeString()]);
-                    // }
-                    // else
-                    // {
-                    //     $website_log=new WebsiteLog();
-                    //     $website_log->website_id=$site->id;
-                    //     $website_log->down_time=$site->uptime_status_last_change_date->toDateTimeString();
-                    //     $website_log->up_time=$site->id;
-                    //     $website_log->save();
-                    // }
-                // } 
+                // if($checkLogs->up_time==null)
+                // {
+                //     WebsiteLog::where('website_id',$site->id)->where('up_time',null)->update(['up_time'=>$site->uptime_status_last_change_date->toDateTimeString()]);
+                // }
+                // else
+                // {
+                //     $website_log=new WebsiteLog();
+                //     $website_log->website_id=$site->id;
+                //     $website_log->down_time=$site->uptime_status_last_change_date->toDateTimeString();
+                //     $website_log->up_time=$site->id;
+                //     $website_log->save();
+                // }
+                // }
                 $url = 'https://wstats.websiteuptimerobot.com/headless-screenshot';
                 $content = $this->guzzuleRequest($url, 'GET', $site->url);
                 if ($checkLogs == null) {
-                   
+
                     $website_log = new WebsiteLog();
                     $website_log->website_id = $site->id;
                     $website_log->down_time = $site->uptime_status_last_change_date;
                     $website_log->down_reason = $site->uptime_check_failure_reason;
-                    if($content['success'] == true)
-                    {
+                    if ($content['success'] == true) {
                         $website_log->down_image_url = $content['path'];
                     }
                     $website_log->save();
@@ -146,21 +140,17 @@ class SendEmails extends Command
                     $mailData['status'] = "Down";
                     $mailData['site'] = $website;
                     if ($site->getSiteDetails != null) {
-                        $user_id=$site->getSiteDetails->user_id;
+                        $user_id = $site->getSiteDetails->user_id;
                         $email = $site->getSiteDetails->emails;
                         $developer_email = $site->getSiteDetails->developer_email;
                         $owner_email = $site->getSiteDetails->owner_email;
                         if ($email != null) {
-                            if($developer_email == null && $owner_email == null)
-                            {
+                            if ($developer_email == null && $owner_email == null) {
                                 Mail::to($email)->send(new SiteUptimeStatus($mailData));
-                            }
-                            else
-                            {
-                                Mail::to($email)->cc([$owner_email,$developer_email])->send(new SiteUptimeStatus($mailData));
+                            } else {
+                                Mail::to($email)->cc([$owner_email, $developer_email])->send(new SiteUptimeStatus($mailData));
                             }
                             $this->info('Mail sent to customer mail for website!' . $mailData['site']);
-
                         } else {
                             $setting = Setting::where('useR_id', $user_id)->where('type', 'email')->first();
                             if ($setting == null) {
@@ -176,31 +166,29 @@ class SendEmails extends Command
                                     //     Mail::to($default_mail[0])->send(new SiteUptimeStatus($mailData));
                                     // }
                                 } else {
-                                    Mail::to($setting->settings)->cc([$owner_email,$developer_email])->send(new SiteUptimeStatus($mailData));
+                                    Mail::to($setting->settings)->cc([$owner_email, $developer_email])->send(new SiteUptimeStatus($mailData));
                                     $this->info('Mail sent to customer default email!' . $mailData['site']);
                                 }
                             }
-                        } 
-    
-                        $this->sendNotification($site->id,$site->url,'DOWN');
+                        }
+
+                        $this->sendNotification($site->id, $site->url, 'DOWN');
                     }
                 } else {
                     return 'Dead :(';
                 }
-                
             }
         }
         $this->info('Cron Done');
     }
-    private function sendNotification($site_id,$site_url,$status)
+    private function sendNotification($site_id, $site_url, $status)
     {
         $user_website = UserWebsite::where('website_id', $site_id)->first();
         $user_id = ($user_website->user != null) ? $user_website->user->id : null;
         $user_tokens = UserToken::where('user_id', $user_id)->get();
-        
+
         if ($user_tokens->count() > 0) {
-            foreach($user_tokens as $user_token)
-            {
+            foreach ($user_tokens as $user_token) {
                 // send notification at existing device with firebase
                 $optionBuilder = new OptionsBuilder();
                 $optionBuilder->setTimeToLive(60 * 20);
@@ -211,8 +199,8 @@ class SendEmails extends Command
                 // $dataBuilder->addData(['a_data' => 'my_data']);
                 $dataBuilder->addData([
                     // 'data_for' => 'user',
-                    'click_action'=> 'FLUTTER_NOTIFICATION_CLICK',
-                    'sound'=> 'default',
+                    'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
+                    'sound' => 'default',
                     'com.google.firebase.messaging.default_notification_channel_id' => '104',
                     'title' => 'Uptime Status',
                     'message' => $status,
@@ -251,19 +239,19 @@ class SendEmails extends Command
 
     private function guzzuleRequest($url, $method, $domain)
     {
-        
+
 
         $client = new Client(['verify' => false]);
         $headers = [
             // 'Authorization' => 'Bearer ' . $token,
             'Accept'        => 'application/json',
         ];
-       
-        $response = $client->request($method,$url,[
+
+        $response = $client->request($method, $url, [
             'headers' => $headers,
             'json' => [
-                    "domain" => $domain
-                ]
+                "domain" => $domain
+            ]
         ]);
         $statusCode = $response->getStatusCode();
         $body = $response->getBody()->getContents();
@@ -271,5 +259,4 @@ class SendEmails extends Command
         // dd( $body);
         return $content;
     }
-
 }

@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Exception;
+use Throwable;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
@@ -36,7 +37,7 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return void
      */
-    public function report(Exception $exception)
+    public function report(Throwable $exception)
     {
         parent::report($exception);
     }
@@ -48,22 +49,20 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $exception)
+    public function render($request, Throwable $exception)
+
     {
         // detect instance
         if ($exception instanceof UnauthorizedHttpException) {
             // detect previous instance
             if ($exception->getPrevious() instanceof TokenExpiredException) {
-                return response()->json(['msg'=>'Token Expired','status' => 'token_expired'], $exception->getStatusCode());
-            }
-            else if ($exception->getPrevious() instanceof TokenInvalidException) {
-                return response()->json(['msg'=>'Token Invalid','status' => 'token_invalid'], $exception->getStatusCode());
-            }
-            else if ($exception->getPrevious() instanceof TokenBlacklistedException) {
-                return response()->json(['msg'=>'Token Blocked','status' => 'token_blacklisted'], $exception->getStatusCode());
-            }
-            else if ($exception->getPrevious() instanceof JWTException) {
-                return response()->json(['msg'=>'Something went wrong','status' => 'something_went_wrong'], $exception->getStatusCode());
+                return response()->json(['msg' => 'Token Expired', 'status' => 'token_expired'], $exception->getStatusCode());
+            } else if ($exception->getPrevious() instanceof TokenInvalidException) {
+                return response()->json(['msg' => 'Token Invalid', 'status' => 'token_invalid'], $exception->getStatusCode());
+            } else if ($exception->getPrevious() instanceof TokenBlacklistedException) {
+                return response()->json(['msg' => 'Token Blocked', 'status' => 'token_blacklisted'], $exception->getStatusCode());
+            } else if ($exception->getPrevious() instanceof JWTException) {
+                return response()->json(['msg' => 'Something went wrong', 'status' => 'something_went_wrong'], $exception->getStatusCode());
             }
         }
         return parent::render($request, $exception);
