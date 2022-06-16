@@ -10,7 +10,7 @@ use App\UserToken;
 use App\UserWebsite;
 use App\WebsiteLog;
 use LaravelFCM\Facades\FCM;
-use Ping;
+use Crysix\Ping\Facades\Ping;
 use Illuminate\Console\Command;
 # FireBase Notifications
 use Illuminate\Support\Facades\Mail;
