@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\User;
+
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Artisan;
@@ -13,191 +14,167 @@ use Yajra\Datatables\Datatables;
 //use Spatie\UptimeMonitor\Models\Monitor;
 use App\Monitor;
 use App\WebsiteLog;
+
 class WebsiteController extends Controller
 {
     public function index(Request $request)
     {
-        $query=Monitor::whereHas('getUserWebsites',function($q){
-            $q->where('user_id',Auth::user()->id);
+        $query = Monitor::with('getSiteDetails')->whereHas('getUserWebsites', function ($q) {
+            $q->where('user_id', Auth::user()->id);
         })->get();
-        $websites=$query;
-        if($request->ajax())
-        {
+        $websites = $query;
+        if ($request->ajax()) {
             return Datatables::of($query)
-            ->addIndexColumn()
-            ->addColumn('action', function ($item) {
-                if($item->getSiteDetails!=null)
-                {
-                    $html_string=null;
-                    if($item->getSiteDetails->is_featured==1)
-                    {
-                        $html_string =' <button   value="'.$item->id.'" data-status="0" class="btn btn-outline-secondary btn-sm feature"  title="Click to unfetaure"><i class="fa fa-star "></i></button>';
+                ->addIndexColumn()
+                ->addColumn('action', function ($item) {
+                    if ($item->getSiteDetails != null) {
+                        $html_string = null;
+                        if ($item->getSiteDetails->is_featured == 1) {
+                            $html_string = ' <button   value="' . $item->id . '" data-status="0" class="btn btn-outline-secondary btn-sm feature"  title="Click to unfetaure"><i class="fa fa-star "></i></button>';
+                        } else {
+                            $html_string = ' <button   value="' . $item->id . '" data-status="1" class="btn btn-outline-success btn-sm feature"  title="Click to fetaure"><i class="fa fa-star "></i></button>';
+                        }
                     }
+                    $html_string .= ' <button  value="' . $item->id . '" data-developer_email="' . $item->getSiteDetails->developer_email . '" data-emails="' . $item->getSiteDetails->emails . '" data-emails="' . $item->getSiteDetails->emails . '" data-ssl="' . $item->certificate_check_enabled . '"  class="btn  btn-outline-primary btn-sm edit-site "  title="Edit"><i class="fa fa-pencil"></i></button>';
+                    $html_string .= ' <a  href=' . url("user/website-logs/$item->id") . ' value="' . $item->id . '"  class="btn btn-outline-info btn-sm"  title="Details"><i class="fa fa-eye "></i></a>';
+                    $html_string .= ' <button  value="' . $item->id . '"  class="btn btn-outline-danger btn-sm delete-site"  title="Delete"><i class="fa fa-trash-o"></i></button>';
+
+
+                    return $html_string;
+                })
+                ->addColumn('title', function ($item) {
+                    if ($item->getSiteDetails != null)
+                        return $item->getSiteDetails->title;
                     else
-                    {
-                        $html_string =' <button   value="'.$item->id.'" data-status="1" class="btn btn-outline-success btn-sm feature"  title="Click to fetaure"><i class="fa fa-star "></i></button>';
+                        return '--';
+                })
+                ->addColumn('status', function ($item) {
+                    if ($item->uptime_status == 'up')
+                        $html = '<span class="badge badge-success ">Up</span>';
+                    else if ($item->uptime_status == 'down')
+                        $html = '<span class="badge badge-danger ">Down</span>';
+                    else
+                        $html = '<span class="badge badge-info">' . $item->uptime_status . '</span>';
+
+                    return $html;
+                })
+                ->addColumn('status_change_on', function ($item) {
+                    return $item->uptime_status_last_change_date;
+                })
+
+                ->addColumn('last_status_check', function ($item) {
+                    if ($item->uptime_last_check_date == null)
+                        return '--';
+                    return $item->uptime_last_check_date;
+                })
+                ->addColumn('certificate_expiry_date', function ($item) {
+                    if ($item->certificate_expiration_date == null)
+                        return '--';
+                    return $item->certificate_expiration_date;
+                })
+                ->addColumn('certificate_check', function ($item) {
+                    if ($item->certificate_check_enabled == 1) {
+                        return '<span class="badge badge-success ">ON</span>';
+                    } else {
+                        return '<span class="badge badge-danger ">OFF</span>';
                     }
-                }
-                $html_string .=' <button  value="'.$item->id.'" data-developer_email="'.$item->getSiteDetails->developer_email.'" data-emails="'.$item->getSiteDetails->emails.'" data-emails="'.$item->getSiteDetails->emails.'" data-ssl="'.$item->certificate_check_enabled.'"  class="btn  btn-outline-primary btn-sm edit-site "  title="Edit"><i class="fa fa-pencil"></i></button>';
-                $html_string .=' <a  href='.url("user/website-logs/$item->id").' value="'.$item->id.'"  class="btn btn-outline-info btn-sm"  title="Details"><i class="fa fa-eye "></i></a>';
-                $html_string.=' <button  value="'.$item->id.'"  class="btn btn-outline-danger btn-sm delete-site"  title="Delete"><i class="fa fa-trash-o"></i></button>';
-                                                     
-                    
-                return $html_string;
-            })
-            ->addColumn('title', function ($item) {
-                if($item->getSiteDetails!=null)
-                return $item->getSiteDetails->title;
-                else
-                return '--';
-             })
-            ->addColumn('status', function ($item) {
-                if($item->uptime_status=='up')
-                $html= '<span class="badge badge-success ">Up</span>';
-                else if($item->uptime_status=='down')
-                $html='<span class="badge badge-danger ">Down</span>';
-                else
-                $html='<span class="badge badge-info">'.$item->uptime_status.'</span>';
+                })
+                ->addColumn('certificate_issuer', function ($item) {
+                    if ($item->certificate_issuer == null)
+                        return '--';
+                    return $item->certificate_issuer;
+                })
 
-                return $html;
-                
-            })
-            ->addColumn('status_change_on', function ($item) {
-               return $item->uptime_status_last_change_date;
-            })
-            
-            ->addColumn('last_status_check', function ($item) {
-                if($item->uptime_last_check_date==null)
-                return '--';
-                return $item->uptime_last_check_date;
-             })
-             ->addColumn('certificate_expiry_date', function ($item) {
-                if($item->certificate_expiration_date==null)
-                return '--';
-                return $item->certificate_expiration_date;
-             })
-             ->addColumn('certificate_check', function ($item) {
-                if($item->certificate_check_enabled==1)
-                {
-                    return '<span class="badge badge-success ">ON</span>';
-                }
-                else
-                {
-                    return '<span class="badge badge-danger ">OFF</span>';
-                }
-             })
-             ->addColumn('certificate_issuer', function ($item) {
-                 if($item->certificate_issuer==null)
-                 return '--';
-                return $item->certificate_issuer;
-             })
-             
-             ->addColumn('url', function ($item) {
-                return $item->url;
-             })
-             ->addColumn('domain_creation_date', function ($item) {
-                return( $item->domain_creation_date != null)?$item->domain_creation_date:'--';
-             })
-             ->addColumn('domain_updated_date', function ($item) {
-                return ($item->domain_updated_date != null)?$item->domain_updated_date:'--';
-             })
-             ->addColumn('domain_expiry_date', function ($item) {
-                return ($item->domain_expiry_date != null)?$item->domain_expiry_date:'--';
-             })
-             ->addColumn('url', function ($item) {
-                return $item->url;
-             })
+                ->addColumn('url', function ($item) {
+                    return $item->url;
+                })
+                ->addColumn('domain_creation_date', function ($item) {
+                    return ($item->domain_creation_date != null) ? $item->domain_creation_date : '--';
+                })
+                ->addColumn('domain_updated_date', function ($item) {
+                    return ($item->domain_updated_date != null) ? $item->domain_updated_date : '--';
+                })
+                ->addColumn('domain_expiry_date', function ($item) {
+                    return ($item->domain_expiry_date != null) ? $item->domain_expiry_date : '--';
+                })
+                ->addColumn('url', function ($item) {
+                    return $item->url;
+                })
 
-             ->addColumn('reason', function ($item) {
-                return ($item->uptime_check_failure_reason!=null)?$item->uptime_check_failure_reason:'--';
-             })
-            ->setRowId(function ($item) {
-                return $item->id;
-            })
-            ->rawColumns(['action','status','certificate_check'])
-            ->make(true);
+                ->addColumn('reason', function ($item) {
+                    return ($item->uptime_check_failure_reason != null) ? $item->uptime_check_failure_reason : '--';
+                })
+                ->setRowId(function ($item) {
+                    return $item->id;
+                })
+                ->rawColumns(['action', 'status', 'certificate_check'])
+                ->make(true);
         }
-        return view('user.websites.index',compact('websites'));
-        
+        return view('user.websites.index', compact('websites'));
     }
     public function store(Request $request)
     {
         //dd($request->all());
         $validator = $request->validate([
             // 'url' => 'required|regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
-            'url' => 'required|url|unique:monitors,url,NULL,id,user_id,'.Auth::user()->id,
+            'url' => 'required|url|unique:monitors,url,NULL,id,user_id,' . Auth::user()->id,
             'title' => 'required',
             'emails' => 'email|required',
             // 'owner_email' => 'email',
             // 'developer_email' => 'email',
-        ],[
-            'unique'=>'The url already existed'
+        ], [
+            'unique' => 'The url already existed'
         ]);
-        
-            $mailData=$request->all();
-            define('STDIN',fopen("php://stdin","r"));
-            $output=Artisan::call("monitor:create ".$request->url);
-            $websites=Monitor::get();
-            $url=Url::fromString($request->url);
-            $ssl=null;
-            foreach($websites as $web)
-            {
-               // dd($web->url->getHost(),$url->getHost());
-               $webUrl=Url::fromString($web->url);
-                if($webUrl->getHost()==$url->getHost())
-                {
-                    $uweb=new UserWebsite();
-                    $uweb->website_id=$web->id;
-                    $uweb->user_id=Auth::user()->id;
-                    $uweb->title=$request->title;
-                    $uweb->emails=$request->emails;
-                    $uweb->developer_email=$request->developer_email;
-                    $uweb->owner_email=$request->owner_email;
-                    if(isset($request->ssl))
-                    {
-                        $ssl=1;
-                        $mailData['ssl']="True";
-                    }
-                    else
-                    {
-                        $ssl=0;
-                        $mailData['ssl']="False";
 
-                    }
-                    $uweb->ssl=$ssl;
-                    $uweb->save();
-                    Monitor::where('id',$web->id)->update(['certificate_check_enabled'=>$ssl,'user_id'=>Auth::user()->id]);
-                    $mails=$request->emails;
-                    if($mails!=null)
-                    {
-
-                        $mails=explode(",",$request->emails);
-                        foreach($mails as $mail)
-                        {
-                            Mail::to($mail)->send(new SiteStatusMail($mailData)); 
-                        }
-                    }
-                    else
-                    {
-                        $setting=Setting::where('type','email')->first();
-                        if($setting==null)
-                        {
-                            $default_mail=config('uptime-monitor.notifications.mail.to');
-                            if($default_mail!=null)
-                            {
-                                Mail::to($default_mail[0])->send(new SiteStatusMail($mailData));
-                            }
-                        }
-                        else
-                        {
-                            Mail::to($setting->settings)->send(new SiteStatusMail($mailData));
-                        }
-                       
-                    }
-                    return response()->json(['success'=>true,'']);
+        $mailData = $request->all();
+        define('STDIN', fopen("php://stdin", "r"));
+        $output = Artisan::call("monitor:create " . $request->url);
+        $websites = Monitor::get();
+        $url = Url::fromString($request->url);
+        $ssl = null;
+        foreach ($websites as $web) {
+            // dd($web->url->getHost(),$url->getHost());
+            $webUrl = Url::fromString($web->url);
+            if ($webUrl->getHost() == $url->getHost()) {
+                $uweb = new UserWebsite();
+                $uweb->website_id = $web->id;
+                $uweb->user_id = Auth::user()->id;
+                $uweb->title = $request->title;
+                $uweb->emails = $request->emails;
+                $uweb->developer_email = $request->developer_email;
+                $uweb->owner_email = $request->owner_email;
+                if (isset($request->ssl)) {
+                    $ssl = 1;
+                    $mailData['ssl'] = "True";
+                } else {
+                    $ssl = 0;
+                    $mailData['ssl'] = "False";
                 }
+                $uweb->ssl = $ssl;
+                $uweb->save();
+                Monitor::where('id', $web->id)->update(['certificate_check_enabled' => $ssl, 'user_id' => Auth::user()->id]);
+                $mails = $request->emails;
+                if ($mails != null) {
+
+                    $mails = explode(",", $request->emails);
+                    foreach ($mails as $mail) {
+                        Mail::to($mail)->send(new SiteStatusMail($mailData));
+                    }
+                } else {
+                    $setting = Setting::where('type', 'email')->first();
+                    if ($setting == null) {
+                        $default_mail = config('uptime-monitor.notifications.mail.to');
+                        if ($default_mail != null) {
+                            Mail::to($default_mail[0])->send(new SiteStatusMail($mailData));
+                        }
+                    } else {
+                        Mail::to($setting->settings)->send(new SiteStatusMail($mailData));
+                    }
+                }
+                return response()->json(['success' => true, '']);
             }
-            return response()->json(['error'=>true]);
+        }
+        return response()->json(['error' => true]);
     }
 
     public function destroy(Request $request)
@@ -210,137 +187,114 @@ class WebsiteController extends Controller
         //     dd($output);
         //     return response()->json(['success'=>true]);
         // }
-        $output=Monitor::where('id',$request->id)->delete();
-        if($output>0)
-        {
-            UserWebsite::where('website_id',$request->id)->delete();
-            WebsiteLog::where('website_id',$request->id)->delete();
-            return response()->json(['success'=>true]);
-
+        $output = Monitor::where('id', $request->id)->delete();
+        if ($output > 0) {
+            UserWebsite::where('website_id', $request->id)->delete();
+            WebsiteLog::where('website_id', $request->id)->delete();
+            return response()->json(['success' => true]);
         }
-        
     }
     public function edit(Request $request)
     {
-        $monitor=Monitor::find($request->website_id);
-        if($monitor != null)
-        {
-            $data['title']=$monitor->getSiteDetails->title;
-            $data['emails']=$monitor->getSiteDetails->emails;
-            $data['developer_email']=$monitor->getSiteDetails->developer_email;
-            $data['owner_email']=$monitor->getSiteDetails->owner_email;
-            $data['ssl']=$monitor->getSiteDetails->ssl;
-            return response()->json(['success'=>true,'data'=>$data]);
+        $monitor = Monitor::find($request->website_id);
+        if ($monitor != null) {
+            $data['title'] = $monitor->getSiteDetails->title;
+            $data['emails'] = $monitor->getSiteDetails->emails;
+            $data['developer_email'] = $monitor->getSiteDetails->developer_email;
+            $data['owner_email'] = $monitor->getSiteDetails->owner_email;
+            $data['ssl'] = $monitor->getSiteDetails->ssl;
+            return response()->json(['success' => true, 'data' => $data]);
         }
-        return response()->json(['success'=>false]);
-
+        return response()->json(['success' => false]);
     }
     public function update(Request $request)
     {
-        $monitor=Monitor::find($request->id);
-        $ssl=0;
-        if(isset($request->ssl))
-        {
-            $ssl=1;
+        $monitor = Monitor::find($request->id);
+        $ssl = 0;
+        if (isset($request->ssl)) {
+            $ssl = 1;
         }
-        $monitor->certificate_check_enabled=$ssl;
-        if($monitor->save())
-        {
-            UserWebsite::where('website_id',$request->id)->update(['emails'=>$request->emails,'title'=>$request->title,'developer_email'=>$request->developer_email,'owner_email'=>$request->owner_email]);
-            return response()->json(['success'=>true]);
+        $monitor->certificate_check_enabled = $ssl;
+        if ($monitor->save()) {
+            UserWebsite::where('website_id', $request->id)->update(['emails' => $request->emails, 'title' => $request->title, 'developer_email' => $request->developer_email, 'owner_email' => $request->owner_email]);
+            return response()->json(['success' => true]);
         }
-        return response()->json(['success'=>false]);
+        return response()->json(['success' => false]);
     }
 
-    public function websiteLogs(Request $request,$website_id)
+    public function websiteLogs(Request $request, $website_id)
     {
-        $website=Monitor::where('id',$website_id)->first();
-        if($request->ajax())
-        {
-            $query=WebsiteLog::where('website_id',$website_id)->orderBy('created_at','desc');
+        $website = Monitor::with('getSiteDetails', 'getSiteLogs')->where('id', $website_id)->first();
+        if ($request->ajax()) {
+            $query = WebsiteLog::where('website_id', $website_id)->orderBy('created_at', 'desc');
             return Datatables::of($query)
-            ->addIndexColumn()
-            ->addColumn('action', function ($item) {
-                $html_string =' <a  href='.url("user/website-logs/$item->id").' value="'.$item->id.'"  class="btn btn-info btn-sm"  title="Details"><i class="fa fa-eye text-white"></i></a>';
-                $html_string.=' <button  value="'.$item->id.'"  class="btn btn-danger btn-sm delete-site"  title="Delete"><i class="fa fa-trash-o"></i></button>';
-                                                     
-                    
-                return $html_string;
-            })
-            ->addColumn('down_time',function($item){
-                if($item->down_time!=null)
-                return $item->down_time;
-                return '--';
-            })
-            ->addColumn('up_time',function($item){
-                if($item->up_time!=null)
-                return $item->up_time;
-                return '--';
-            })
-            ->addColumn('down_reason',function($item){
-                if($item->down_reason!=null)
-                {
-                    $html_string = '<a class="down-reason" data-id="'.$item->id.'" href="javascript:void(0)">'.strstr($item->down_reason,":",true).'</a>';
-                }
-                else
-                {
-                    $html_string = '--';
-                }
-                return $html_string;
-            })
-            ->addColumn('down_reason_image',function($item){
-                if($item->down_image_url!=null)
-                {
-                    $html_string = '<button data-id="'.$item->id.'" class="view-image btn btn-primary btn-sm"><i class="fa fa-eye"></i></button>';
-                }
-                else
-                {
-                    $html_string = '--';
-                }
-                return $html_string;
-            })
-            ->rawColumns(['down_reason','down_reason_image'])
-            ->make(true);
+                ->addIndexColumn()
+                ->addColumn('action', function ($item) {
+                    $html_string = ' <a  href=' . url("user/website-logs/$item->id") . ' value="' . $item->id . '"  class="btn btn-info btn-sm"  title="Details"><i class="fa fa-eye text-white"></i></a>';
+                    $html_string .= ' <button  value="' . $item->id . '"  class="btn btn-danger btn-sm delete-site"  title="Delete"><i class="fa fa-trash-o"></i></button>';
+
+
+                    return $html_string;
+                })
+                ->addColumn('down_time', function ($item) {
+                    if ($item->down_time != null)
+                        return $item->down_time;
+                    return '--';
+                })
+                ->addColumn('up_time', function ($item) {
+                    if ($item->up_time != null)
+                        return $item->up_time;
+                    return '--';
+                })
+                ->addColumn('down_reason', function ($item) {
+                    if ($item->down_reason != null) {
+                        $html_string = '<a class="down-reason" data-id="' . $item->id . '" href="javascript:void(0)">' . strstr($item->down_reason, ":", true) . '</a>';
+                    } else {
+                        $html_string = '--';
+                    }
+                    return $html_string;
+                })
+                ->addColumn('down_reason_image', function ($item) {
+                    if ($item->down_image_url != null) {
+                        $html_string = '<button data-id="' . $item->id . '" class="view-image btn btn-primary btn-sm"><i class="fa fa-eye"></i></button>';
+                    } else {
+                        $html_string = '--';
+                    }
+                    return $html_string;
+                })
+                ->rawColumns(['down_reason', 'down_reason_image'])
+                ->make(true);
         }
-        return view('user.websites.website-details',compact('website_id','website'));
+        return view('user.websites.website-details', compact('website_id', 'website'));
     }
 
     public function featureWebsite(Request $request)
     {
-        $count=UserWebsite::where('user_id',Auth::user()->id)->where('is_featured',1)->count();
-        if($request->status==1)
-        {
-            if($count < 10)
-            {
+        $count = UserWebsite::where('user_id', Auth::user()->id)->where('is_featured', 1)->count();
+        if ($request->status == 1) {
+            if ($count < 10) {
 
-                UserWebsite::where('id',$request->id)->update(['is_featured'=>$request->status]);
-                return response()->json(['success'=>true,'limit'=>0]);
+                UserWebsite::where('id', $request->id)->update(['is_featured' => $request->status]);
+                return response()->json(['success' => true, 'limit' => 0]);
+            } else {
+                return response()->json(['success' => true, 'limit' => 1]);
             }
-            else
-            {
-                return response()->json(['success'=>true,'limit'=>1]);
-            }
+        } else {
+            UserWebsite::where('id', $request->id)->update(['is_featured' => $request->status]);
+            return response()->json(['success' => true, 'limit' => 2]);
         }
-        else
-        {
-            UserWebsite::where('id',$request->id)->update(['is_featured'=>$request->status]);
-            return response()->json(['success'=>true,'limit'=>2]);
-        }
-        
     }
 
     public function getDownReason(Request $request)
-    {   
-        $down_reason=WebsiteLog::where('id',$request->id)->value('down_reason');
+    {
+        $down_reason = WebsiteLog::where('id', $request->id)->value('down_reason');
         return response()->json(['success' => true, 'down_reason' => $down_reason]);
     }
 
     public function getDownReasonImage(Request $request)
-    {   
-        $down_image_url=WebsiteLog::where('id',$request->id)->value('down_image_url');
-        $html_string = '<img src="'.$down_image_url.'" alt="">';
+    {
+        $down_image_url = WebsiteLog::where('id', $request->id)->value('down_image_url');
+        $html_string = '<img src="' . $down_image_url . '" alt="">';
         return response()->json(['success' => true, 'html_string' => $html_string]);
     }
-
-    
 }
