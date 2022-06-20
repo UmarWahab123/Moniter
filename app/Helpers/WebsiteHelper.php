@@ -22,12 +22,12 @@ class WebsiteHelper
         })->with('getSiteDetails')->get();
         $websites = $query;
         if ($request->ajax()) {
-            return (new WebsiteHelper)->WebsitesDatatable($query);
+            return WebsiteHelper::WebsitesDatatable($query);
         }
         return view('admin.websites.index', compact('websites'));
     }
 
-    private function WebsitesDatatable($query)
+    public static function WebsitesDatatable($query)
     {
         return Datatables::of($query)
             ->addIndexColumn()
@@ -87,9 +87,6 @@ class WebsiteHelper
             })
             ->addColumn('domain_expiry_date', function ($item) {
                 return ($item->domain_expiry_date != null) ? $item->domain_expiry_date : '--';
-            })
-            ->addColumn('url', function ($item) {
-                return $item->url;
             })
             ->addColumn('reason', function ($item) {
                 return ($item->uptime_check_failure_reason != null) ? $item->uptime_check_failure_reason : '--';
