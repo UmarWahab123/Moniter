@@ -1,4 +1,5 @@
 <?php
+
 use App\User;
 /*
 |--------------------------------------------------------------------------
@@ -16,7 +17,7 @@ Route::get('/', function () {
 });
 
 Auth::routes();
-Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['auth','admin']], function (){
+Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['auth', 'admin']], function () {
     Route::get('/home', 'HomeController@index')->name('home');
     Route::get('/websites', 'WebsiteController@index')->name('websites');
     Route::post('/add-website', 'WebsiteController@store')->name('add-website');
@@ -33,7 +34,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['aut
     Route::get('/user-status', 'UserController@userStatus')->name('user-status');
 
     Route::get('/settings', 'SettingController@index')->name('settings');
-    
+
     Route::post('/add-settings', 'SettingController@store')->name('add-settings');
 
 
@@ -43,11 +44,18 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['aut
     Route::get('/devices', 'DeviceManagementController@index')->name('devices');
     Route::post('/device-logout', 'DeviceManagementController@deviceLogout')->name('device-logout');
 
-
-    
+    // Email Template Routes
+    Route::get('/email-templates', 'EmailTemplateController@index')->name('templates.index');
+    Route::get('/get-email-templates-data', 'EmailTemplateController@getTemplatesData')->name('templates.getTemplates');
+    Route::get('/email-templates/create', 'EmailTemplateController@create')->name('templates.create');
+    Route::post('/email-templates/store', 'EmailTemplateController@store')->name('templates.store');
+    Route::post('/email-templates/update', 'EmailTemplateController@update')->name('templates.update');
+    Route::post('/email-templates/delete/{id}', 'EmailTemplateController@delete')->name('templates.delete');
+    Route::get('/email-templates/edit/{id}', 'EmailTemplateController@edit')->name('templates.edit');
+    Route::post('/email-templates/storeKeyword', 'EmailTemplateController@storeKeyword')->name('templates.storeKeyword');
 });
 
-Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth','user']], function (){
+Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth', 'user']], function () {
     Route::get('/home', 'HomeController@index')->name('home');
     Route::get('/websites', 'WebsiteController@index')->name('websites');
     Route::post('/add-website', 'WebsiteController@store')->name('add-website');
@@ -69,11 +77,10 @@ Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth'
 
     Route::get('/get-down-reason', 'WebsiteController@getDownReason')->name('get-down-reason');
     Route::get('/get-down-reason-image', 'WebsiteController@getDownReasonImage')->name('get-down-reason-image');
-
 });
 
 /*here we will use same routes for both admin and users*/
-Route::group(['middleware' => ['auth']], function (){
+Route::group(['middleware' => ['auth']], function () {
 
     /*Server routes*/
     Route::get('servers/dashboard', 'ServerController@dashboard')->name('servers.dashboard');

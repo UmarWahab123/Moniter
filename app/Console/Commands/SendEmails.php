@@ -56,7 +56,6 @@ class SendEmails extends Command
 
         foreach ($sites as $site) {
             if ($site->uptime_status == 'up') {
-
                 $checkLogs = WebsiteLog::where('website_id', $site->id)->where('up_time', null)->first();
                 if ($checkLogs != null) {
                     if ($checkLogs->up_time == null) {
