@@ -1,5 +1,10 @@
 <?php
+
+use App\Http\Controllers\Admin\PackageController;
 use App\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -42,6 +47,13 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['aut
 
     Route::get('/devices', 'DeviceManagementController@index')->name('devices');
     Route::post('/device-logout', 'DeviceManagementController@deviceLogout')->name('device-logout');
+
+    //admin package
+
+    Route::get('/package', [PackageController::class,'index']);
+    Route::post('/add-package', [PackageController::class,'store']);
+
+   // Route::post('add-server', 'ServerController@addServer')->name('add-server');
 
 
     

@@ -18,6 +18,9 @@
                         <a href="{{ route('servers.dashboard') }}" aria-expanded="true"><i class="ti-server"></i><span>Servers</span></a>
                     </li>
                     <li class="">
+                        <a href="{{ url('admin/package') }}" aria-expanded="true"><i class="ti-server"></i><span>Plans</span></a>
+                    </li>
+                    <li class="">
                         <a href="{{ url('admin/users') }}" aria-expanded="true"><i class="ti-user"></i><span>Users</span></a>
                     </li>
                     <li class="">
