@@ -16,7 +16,7 @@ Route::get('/', function () {
     return redirect('login');
 });
 
-Auth::routes();
+Auth::routes(['verify' => true]);
 Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['auth', 'admin']], function () {
     Route::get('/home', 'HomeController@index')->name('home');
     Route::get('/websites', 'WebsiteController@index')->name('websites');

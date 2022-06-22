@@ -1,10 +1,13 @@
 <?php
 
 namespace App;
+
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-class User extends Authenticatable implements JWTSubject
+
+class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 {
     use Notifiable;
 
@@ -14,7 +17,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password'
+        'name', 'email', 'password', 'status', 'role_id'
     ];
 
     /**
@@ -23,7 +26,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password'
     ];
 
     /**
@@ -47,25 +50,24 @@ class User extends Authenticatable implements JWTSubject
 
     public function hasAnyRoles($roles)
     {
-        return null!==$this->roles()->whereIn('name',$roles)->first();
+        return null !== $this->roles()->whereIn('name', $roles)->first();
     }
     public function hasAnyRole($role)
     {
-        return null!==$this->roles()->where('name',$role)->first();
+        return null !== $this->roles()->where('name', $role)->first();
     }
     public function userWebsites()
     {
-        return $this->hasMany('App\UserWebsite','user_id','id');
+        return $this->hasMany('App\UserWebsite', 'user_id', 'id');
     }
 
     public function getJWTIdentifier()
     {
         return $this->getKey();
     }
- 
+
     public function getJWTCustomClaims()
     {
         return [];
     }
-
 }

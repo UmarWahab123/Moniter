@@ -15,14 +15,14 @@ class ServersHelper
     {
         $servers = Server::with(['serverLogs' => function ($query) {
             $query->orderBy('id', 'desc');
-        }])->get();
+        }])->where('user_id', Auth::user()->id)->get();
         $date = Carbon::now();
         return view('servers.dashboard', compact('servers', 'date'));
     }
 
     public static function getServers($request)
     {
-        $query = Server::with('userInfo', 'serverLogs')->orderBy('id', 'DESC');
+        $query = Server::with('userInfo', 'serverLogs')->where('user_id', Auth::user()->id)->orderBy('id', 'DESC');
         if ($request->ajax()) {
             return Datatables::of($query)
                 ->addIndexColumn()

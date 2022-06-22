@@ -19,7 +19,7 @@ class UserSignupMail extends Mailable
      */
     public function __construct($mailData)
     {
-        $this->mailData=$mailData;
+        $this->mailData = $mailData;
     }
 
     /**
@@ -29,7 +29,7 @@ class UserSignupMail extends Mailable
      */
     public function build()
     {
-        $mailData=$this->mailData;
+        $mailData = $this->mailData;
         return $this->markdown('mails.usersignup');
     }
 }

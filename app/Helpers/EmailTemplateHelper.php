@@ -17,7 +17,7 @@ class EmailTemplateHelper
             ->addIndexColumn()
             ->addColumn('action', function ($item) {
                 $html_string = '<div class="icons">' . '
-                              <a href="' . route('templates.edit', ['id' => $item->id]) . '" class="btn btn-outline-success btn-sm" title="Edit"><i class="fa fa-pencil"></i></a>
+                              <a href="javascript:void(0)" data-url="' . route('templates.edit', ['id' => $item->id]) . '" class="btn btn-outline-success btn-sm btn-edit" title="Edit"><i class="fa fa-pencil"></i></a>
                               <a href="javascript:;" data-url="' . route('templates.delete', ['id' => $item->id]) . '" class="btn btn-outline-danger btn-sm btn-delete" title="Delete"><i class="fa fa-trash"></i></a>
                           </div>';
                 return $html_string;

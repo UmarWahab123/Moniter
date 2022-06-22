@@ -20,8 +20,7 @@
                                 <h4 class="maintitle">EMAIL TEMPLATES</h4>
                             </div>
                             <div class="col-md-4 text-right">
-                                <a href="{{ route('templates.create') }}"
-                                    class="btn btn-primary button-st btn-wd btn_add_email">ADD
+                                <a href="javascript:;" class="btn btn-primary button-st btn-wd btn_add_email">ADD
                                     EMAIL TEMPLATE</a>
                             </div>
                         </div>
@@ -112,6 +111,12 @@
 
                 }
                 $(document).on('click', '.btn-delete', function(e) {
+                    @if (Auth::user()->email_verified_at == null)
+                        toastr.info('Info!', 'Please Verify your account first', {
+                            "positionClass": "toast-bottom-right"
+                        });
+                        return;
+                    @endif
                     Swal.fire({
                         title: 'Are you sure?',
                         text: "You want to Delete this Template",
@@ -141,6 +146,24 @@
                             });
                         }
                     })
+                });
+                $(document).on('click', '.btn_add_email', function() {
+                    @if (Auth::user()->email_verified_at == null)
+                        toastr.info('Info!', 'Please Verify your account first', {
+                            "positionClass": "toast-bottom-right"
+                        });
+                        return;
+                    @endif
+                    location.href = "{{ route('templates.create') }}";
+                });
+                $(document).on('click', '.btn-edit', function() {
+                    @if (Auth::user()->email_verified_at == null)
+                        toastr.info('Info!', 'Please Verify your account first', {
+                            "positionClass": "toast-bottom-right"
+                        });
+                        return;
+                    @endif
+                    location.href = $(this).data('url');
                 });
             </script>
         @endsection

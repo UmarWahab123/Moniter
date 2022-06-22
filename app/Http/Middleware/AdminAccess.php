@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Auth;
+
 class AdminAccess
 {
     /**
@@ -15,8 +16,8 @@ class AdminAccess
      */
     public function handle($request, Closure $next)
     {
-        if(Auth::user()->hasAnyRole('admin'))
-        return $next($request);
+        if (Auth::user()->role_id == 1)
+            return $next($request);
         return redirect()->back();
     }
 }
