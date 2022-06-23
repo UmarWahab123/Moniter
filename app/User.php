@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Notifications\ResendEmailNotification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -69,5 +70,10 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function resendEmail()
+    {
+        return $this->notify(new ResendEmailNotification);
     }
 }

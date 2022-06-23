@@ -7,6 +7,7 @@ use App\User;
 use App\Role;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\UserSignupMail;
+use Illuminate\Support\Facades\Auth;
 
 class UserHelper
 {
@@ -83,5 +84,10 @@ class UserHelper
             $user->email = $request->email;
             return ($user->save()) ? response()->json(['success' => true]) : response()->json(['success' => false]);
         }
+    }
+    public static function resendEmail($request)
+    {
+        $user = User::find(Auth::user()->id);
+        return $user->resendEmail();
     }
 }

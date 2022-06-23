@@ -66,12 +66,31 @@
             @if (Auth::user() && Auth::user()->email_verified_at == null)
                 <div class="row mb-4">
                     <div class="alert alert-primary fixed-top col-md-12" role="alert"
-                        style="font-size: 20px; min-height: 24px; text-align: center">
-                        <b> A verification email has been sent to your email address. Please Verify your account!</b>
+                        style="font-size: 20px; min-height: 18px; text-align: center">
+                        <b> A verification email has been sent to your email address. Please Verify your account! <a
+                                href="javascript:void(0);" id="resendEmail">Click Here</a> to resend email, if not
+                            received.</b>
                     </div>
                 </div>
             @endif
             @yield('content')
+            <script>
+                $(document).on('click', '#resendEmail', function() {
+                    $.ajax({
+                        url: "{{ route('emails.resendEmail') }}",
+                        success: function(data) {
+                            toastr.success('Success!', 'Email Resend successfully', {
+                                "positionClass": "toast-bottom-right"
+                            });
+                        },
+                        error: function(data) {
+                            toastr.error('Error!', 'Email not send, please check your internet connection', {
+                                "positionClass": "toast-bottom-right"
+                            });
+                        }
+                    });
+                });
+            </script>
         </main>
     </div>
 

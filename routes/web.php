@@ -1,6 +1,10 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController;
 use App\User;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -93,4 +97,12 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('servers/delete', 'ServerController@destroy')->name('servers.destroy');
     Route::get('servers/edit', 'ServerController@edit')->name('servers.edit');
     Route::post('servers/update', 'ServerController@update')->name('servers.update');
+});
+
+Route::get('emails/resend', [UserController::class, 'resendEmail'])->name('emails.resendEmail');
+Route::get('verify-user-email-address', function () {
+    $user = User::find(Auth::user()->id);
+    $user->email_verified_at = Carbon::now();
+    $user->save();
+    return redirect('/servers/dashboard');
 });

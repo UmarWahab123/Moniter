@@ -24,4 +24,8 @@ class UserController extends Controller
     {
         return UserHelper::update($request);
     }
+    public function resendEmail(Request $request)
+    {
+        return UserHelper::resendEmail($request);
+    }
 }
