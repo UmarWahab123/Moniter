@@ -2,12 +2,14 @@
 
 namespace App\Helpers;
 
-use Yajra\Datatables\Datatables;
-use App\User;
 use App\Role;
-use Illuminate\Support\Facades\Mail;
+use App\User;
+use Illuminate\Support\Str;
 use App\Mail\UserSignupMail;
+use Yajra\Datatables\Datatables;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class UserHelper
 {
@@ -89,5 +91,15 @@ class UserHelper
     {
         $user = User::find(Auth::user()->id);
         return $user->resendEmail();
+    }
+    public static function sendVerificationCodeEmail($request)
+    {
+        $user = User::where('email', $request->email)->where('status', 1)->first();
+        if ($user && Hash::check($request->password, $user->password)) {
+            $user->verification_code = Str::random(128);
+            $user->save();
+            $user->sendVerificationCodeEmail($user->verification_code);
+            return response()->json(['success' => true]);
+        }
     }
 }

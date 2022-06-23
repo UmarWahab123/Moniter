@@ -28,4 +28,8 @@ class UserController extends Controller
     {
         return UserHelper::resendEmail($request);
     }
+    public function sendVerificationCodeEmail(Request $request)
+    {
+        return UserHelper::sendVerificationCodeEmail($request);
+    }
 }

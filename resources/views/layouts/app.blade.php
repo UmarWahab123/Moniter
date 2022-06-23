@@ -74,7 +74,13 @@
                 </div>
             @endif
             @yield('content')
+
             <script>
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                    }
+                });
                 $(document).on('click', '#resendEmail', function() {
                     $.ajax({
                         url: "{{ route('emails.resendEmail') }}",

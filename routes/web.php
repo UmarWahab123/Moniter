@@ -106,3 +106,4 @@ Route::get('verify-user-email-address', function () {
     $user->save();
     return redirect('/servers/dashboard');
 });
+Route::post('emails/send-verification_code', [UserController::class, 'sendVerificationCodeEmail'])->name('emails.send-verification_code');

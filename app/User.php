@@ -2,11 +2,12 @@
 
 namespace App;
 
+use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Notifications\Notifiable;
 use App\Notifications\ResendEmailNotification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Notifications\EmailVerificationCodeNotification;
 
 class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 {
@@ -75,5 +76,10 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     public function resendEmail()
     {
         return $this->notify(new ResendEmailNotification);
+    }
+
+    public function sendVerificationCodeEmail($verification_code)
+    {
+        return $this->notify(new EmailVerificationCodeNotification($verification_code));
     }
 }
