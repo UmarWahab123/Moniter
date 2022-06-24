@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Auth\AuthController;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +23,7 @@ Route::get('/', function () {
 
 Auth::routes(['verify' => true]);
 Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['auth', 'admin']], function () {
-    Route::get('/home', 'HomeController@index')->name('home');
+    Route::get('/home', 'HomeController@index')->name('admin.home');
     Route::get('/websites', 'WebsiteController@index')->name('websites');
     Route::post('/add-website', 'WebsiteController@store')->name('add-website');
     Route::post('/edit-website', 'WebsiteController@update')->name('edit-website');
@@ -60,7 +61,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['aut
 });
 
 Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth', 'user']], function () {
-    Route::get('/home', 'HomeController@index')->name('home');
+    Route::get('/home', 'HomeController@index')->name('user.home');
     Route::get('/websites', 'WebsiteController@index')->name('websites');
     Route::post('/add-website', 'WebsiteController@store')->name('add-website');
     Route::get('/delete-website', 'WebsiteController@destroy')->name('delete-website');
@@ -107,3 +108,5 @@ Route::get('verify-user-email-address', function () {
     return redirect('/servers/dashboard');
 });
 Route::post('emails/send-verification_code', [UserController::class, 'sendVerificationCodeEmail'])->name('emails.send-verification_code');
+Route::post('/do-login', [AuthController::class, "doLogin"])->name('custom_login');
+Route::get('/login/verify-login', [AuthController::class, "createVerfication"])->name('login.custom-verify');

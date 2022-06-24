@@ -96,10 +96,17 @@ class UserHelper
     {
         $user = User::where('email', $request->email)->where('status', 1)->first();
         if ($user && Hash::check($request->password, $user->password)) {
+            if ($user->email_verified_at == null) {
+                return response()->json(['email_verified' => false]);
+            } elseif ($user->remember_token != null) {
+                return response()->json(['direct_login' => true]);
+            }
             $user->verification_code = Str::random(128);
             $user->save();
             $user->sendVerificationCodeEmail($user->verification_code);
             return response()->json(['success' => true]);
+        } else {
+            return response()->json(['success' => false]);
         }
     }
 }

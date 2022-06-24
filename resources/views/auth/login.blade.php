@@ -5,7 +5,7 @@
         <div class="container">
             <div class="login-box ptb--100">
                 {{-- <form method="POST" action="{{ route('login') }}"> --}}
-                <form id="Form_login">
+                <form id="Form_login" action="{{ route('custom_login') }}" method="post">
                     @csrf
                     <div class="login-form-head">
                         <h4>Sign In</h4>
@@ -14,7 +14,7 @@
                     <div class="login-form-body">
                         <div class="form-group">
                             <label for="exampleInputEmail1">Email address</label>
-                            <input name="email" type="email" id="login_emal"
+                            <input name="email" type="email" id="login_email"
                                 class="form-control @error('email') is-invalid @enderror">
                             @error('email')
                                 <span class="invalid-feedback" role="alert">
@@ -55,31 +55,6 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="Modal_Verification_Code">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Verification Code</h5>
-                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                </div>
-                <div class="modal-body">
-                    <div class="submit-btn-area">
-                        <div class="row">
-                            <div class="col-md-12 mb-4">
-                                <input type="text" name="verification_code" id="verification_code" class="form-control"
-                                    placeholder=" Enter Verification Code send to your email">
-                            </div>
-                            <div class="col-md-3"></div>
-                            <div class="col-md-6">
-                                <button id="form_submit" type="button">Verify And Login</button>
-                            </div>
-                            <div class="col-md-3"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="modal" id="loader_modal" role="dialog">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
@@ -93,6 +68,11 @@
     </div>
     @include('admin.assets.javascript')
     <script type="text/javascript">
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+            }
+        });
         $(document).on('click', '#btn_custom_login', function() {
             let formData = $('#Form_login').serialize();
             $.ajax({
@@ -107,36 +87,28 @@
                     $("#loader_modal").modal('show');
                 },
                 success: function(data) {
-                    if (data.success) {
-                        $('#loader_modal').modal('hide');
-                        $('#Modal_Verification_Code').modal('show');
+                    if (data.email_verified == false) {
+                        toastr.info('Info!',
+                        'Email Not Verified. Please Verify your email first', {
+                            "positionClass": "toast-bottom-right"
+                        });
                     }
-                }
-            })
-        });
-        $(document).on('click', '#form_submit', function() {
-            if ($('#verification_code').val() == '') {
-                toastr.info('Info!',
-                    'Please ENter Verification Code', {
-                        "positionClass": "toast-bottom-right"
-                    });
-            }
-            let formData = $('#Form_login').serializeArray();
-            formData.push({
-                name: "verification_code",
-                value: $('#verification_code').val(),
-            });
-            $.ajax({
-                url: "{{ route('login') }}",
-                method: 'post',
-                data: formData,
-                success: function(data) {
-                    if (!data.success) {
-                        toastr.error('Error!',
-                            'Email not send, please check your internet connection', {
-                                "positionClass": "toast-bottom-right"
-                            });
+                    else if(data.direct_login){
+                        $('#Form_login').submit();
                     }
+                    else if (data.success) {
+                        let email = $('#login_email').val();
+                        let password = $('#login_passeord').val();
+                        let checkbox = $('#remember').attr('checked');
+                        checkbox = checkbox == undefined ? '' : 'checked';
+                        location.href = '{{ route("login.custom-verify") }}?email='+email+'&password='+password+'&checkbox='+checkbox;
+                    } else {
+                        toastr.info('Info!',
+                        'Invalid Email/Password', {
+                            "positionClass": "toast-bottom-right"
+                        });
+                    }
+                    $('#loader_modal').modal('hide');
                 }
             })
         });
