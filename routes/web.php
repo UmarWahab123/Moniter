@@ -20,6 +20,19 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/', function () {
     return redirect('login');
 });
+Route::get('/home', function () {
+    $user = User::find(Auth::user()->id);
+    $user->last_seen_at = Carbon::now()->format('Y-m-d H:i:s');
+    $user->save();
+    if (Auth::user()->role_id == 1 && Auth::user()->status == 1) {
+        return redirect('/admin/home');
+    } elseif (Auth::user()->role_id == 2 && Auth::user()->status == 1) {
+        return redirect('/user/home');
+    } else {
+        Auth::logout();
+        return redirect('/login');
+    }
+});
 
 Auth::routes(['verify' => true]);
 Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['auth', 'admin']], function () {

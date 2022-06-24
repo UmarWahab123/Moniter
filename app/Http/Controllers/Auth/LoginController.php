@@ -28,21 +28,15 @@ class LoginController extends Controller
      */
     public function authenticated($request, $user)
     {
-        if ($request->ajax()) {
-            //dd($user->verification_code != $request->verification_code, $request->verification_code, $user->verification_code);
-            if ($user->verification_code != $request->verification_code) {
-                return response()->json(['success' => false]);
-            }
-            $user->last_seen_at = Carbon::now()->format('Y-m-d H:i:s');
-            $user->save();
-            // if (Auth::user()->role_id == 1 && Auth::user()->status == 1) {
-            //     return redirect('/admin/home');
-            // } elseif (Auth::user()->role_id == 2 && Auth::user()->status == 1) {
-            //     return redirect('/user/home');
-            // } else {
-            //     Auth::logout();
-            //     return redirect('/login');
-            // }
+        $user->last_seen_at = Carbon::now()->format('Y-m-d H:i:s');
+        $user->save();
+        if (Auth::user()->role_id == 1 && Auth::user()->status == 1) {
+            return redirect('/admin/home');
+        } elseif (Auth::user()->role_id == 2 && Auth::user()->status == 1) {
+            return redirect('/user/home');
+        } else {
+            Auth::logout();
+            return redirect('/login');
         }
     }
 
