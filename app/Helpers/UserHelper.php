@@ -40,11 +40,15 @@ class UserHelper
                 return $html_string;
             })
             ->addColumn('name', function ($item) {
+                $route = route('users.permissions', $item->id);
+                if (Auth::user()->role_id == 2) {
+                    $route = route('users.users-permissions', $item->id);
+                }
                 if ($item->id == Auth::user()->id) {
                     return $item->name;
                 }
                 $html_string = '
-                        <a href="' . route('users.permissions', $item->id) . '" title="User Permissions">' . $item->name . '</a>
+                        <a href="' . $route . '" title="User Details">' . $item->name . '</a>
                      ';
                 return $html_string;
             })
