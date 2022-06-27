@@ -53,6 +53,10 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['aut
     Route::get('/package', [PackageController::class,'index']);
     Route::post('/add-package', [PackageController::class,'store']);
 
+    Route::post('/update-package', [PackageController::class,'update']);
+
+    Route::get('package/edit',  [PackageController::class,'edit']);
+    Route::get('package/update-status',  [PackageController::class,'updateStatus']);
    // Route::post('add-server', 'ServerController@addServer')->name('add-server');
 
 

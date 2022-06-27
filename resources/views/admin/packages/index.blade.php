@@ -34,7 +34,7 @@
                                                 <th>ID</th>
                                                 <th>Name</th>
                                                 <th>Price</th>
-                                                <th>Group By</th>
+                                                <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -84,17 +84,112 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="row" style="height:25px;"></div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5 class="modal-title">Package Features</h5>
+                                    </div>
+                                </div>
+                                <div class="row" style="height:25px;"></div>
+                                <div class="row">
+                               
+                                @foreach ($systemFeature as $feature)
+                                    <div class="col-md-6">
+                                
+                                    <div class="card-body cardbody" data-id="1" style="border: 1px solid #e3e6f0;height: 65px;margin-bottom: 4px;">
+                                        <h6  data-id="{{$feature['id']}}" class="card-title font-weight-bold" style="color:#000;">{{$feature['name']}}</h6>
+                                        <!-- <label class="card-title font-weight-bold" style="color:#000; font-weight: 700!important;margin-bottom: 0.75rem!important;">{{$feature['name']}}<span class="text-danger"></span></label>
+                                         -->
+                                  
+                                </div>
+                           
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="m-0" style="color:#000; font-weight: 700!important;margin-bottom: 0.75rem!important;">Max Allowed <span class="text-danger">*</span></label>
+                                        <input type="number" name="systemfeature[{{ $feature['id'] }}]" class="form-control" id=""style="margin-bottom: 0.75rem!important;" value="0">
+                                    </div>
+                                    @endforeach
+                
+                                  
+                                </div>
+                               
                                 <button type="submit" id="PackageSubmitBtn"
                                     class="btn btn-primary mt-4 pr-4 pl-4 pull-right">Submit</button>
                             </form>
                         </div>
-
+                       
                     </div>
                 </div>
             </div>
 
-            
-
+            <div class="modal fade" id="editPackageModal">
+                <div class="modal-dialog" style="max-width:800px">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Package</h5>
+                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="updatePackageForm">
+                                @csrf
+                                <input type="text" name="package_id" class="form-control d-none" id="edit_id">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="m-0">Name <span class="text-danger">*</span></label>
+                                        <input type="text" name="name" class="form-control" id="edit_name"
+                                            placeholder="Enter Name" >
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="m-0">Price <span class="text-danger">*</span></label>
+                                        <input type="text" name="price" class="form-control" id="edit_price"
+                                            placeholder="Enter Price" disabled="true">
+                                    </div>
+                                    <div class="col-md-6 mt-2">
+                                        <label class="m-0">Billing Periods <span class="text-danger">*</span></label>
+                                        <select name="duration_in_days" id="edit_duration_in_days" class="form-control" disabled="disabled">
+                                            <option value="" selected="">Please Select</option>
+                                            <option value="30">Monthly</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row" style="height:25px;"></div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5 class="modal-title">Package Features</h5>
+                                    </div>
+                                </div>
+                                <div class="row" style="height:25px;"></div>
+                                <div class="row">
+                               
+                                @foreach ($systemFeature as $feature)
+                                    <div class="col-md-6">
+                                
+                                    <div class="card-body cardbody" data-id="1" style="border: 1px solid #e3e6f0;height: 65px;margin-bottom: 4px;">
+                                        <h6  data-id="{{$feature['id']}}" class="card-title font-weight-bold" style="color:#000;">{{$feature['name']}}</h6>
+                                        <!-- <label class="card-title font-weight-bold" style="color:#000; font-weight: 700!important;margin-bottom: 0.75rem!important;">{{$feature['name']}}<span class="text-danger"></span></label>
+                                         -->
+                                  
+                                </div>
+                           
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="m-0" style="color:#000; font-weight: 700!important;margin-bottom: 0.75rem!important;">Max Allowed <span class="text-danger">*</span></label>
+                                        <input type="number" name="systemfeature[{{ $feature['id'] }}]" class="form-control " id="{{ $feature['id'] }}"style="margin-bottom: 0.75rem!important;" value="0">
+                                    </div>
+                                    @endforeach
+                
+                                  
+                                </div>
+                               
+                                <button type="submit" id="packageEditSubmitBtn"
+                                    class="btn btn-primary mt-4 pr-4 pl-4 pull-right">Update</button>
+                            </form>
+                        </div>
+                       
+                    </div>
+                </div>
+            </div>
+           
             @if (auth()->user()->userRole->role_id == 1)
                 @include('admin.assets.javascript')
             @else
@@ -108,56 +203,163 @@
             <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
             <script src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js"></script>
             <script>
+                
+               
+
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
                     }
                 });
 
+               
                 var table = $('#package_table').DataTable({
+
+                
+                    // "bAutoWidth": false,
                     serverSide: true,
                     processing: true,
                     searching: true,
                     ordering: true,
-                    pageLength: {{ 50 }},
                     "processing": true,
                     'language': {
                         'loadingRecords': '&nbsp;',
                         'processing': 'Loading...'
                     },
+
                     scrollCollapse: true,
-                    ajax: {
-                        url: "{{ url('get-servers') }}",
-                        {{-- beforeSend:function()
-                    {
-                    },
-                    success:function()
-                    {
-                    } --}}
-                    },
-                    columns: [{
+                    ajax: "{{ url('admin/package') }}",
+                    columns: [
+
+                        {
                             data: 'id',
-                            name: 'id'
+                            name: 'ID'
                         },
                         {
                             data: 'name',
-                            name: 'name'
+                            name: 'Name'
                         },
                         {
                             data: 'price',
-                            name: 'price'
+                            name: 'Price'
                         },
-                       
+                        
                         {
-                            data: 'group_by',
-                            name: 'group_by'
+                            data: 'status',
+                            name: 'status'
                         },
-                       
                         {
                             data: 'action',
-                            name: 'action'
+                            name: 'Action'
                         },
+
+
                     ],
+                });
+
+              
+
+                $(document).on('click', '.edit-package', function(e) {
+                    var id = $(this).val();
+                    $.ajax({
+                        url: "{{ url('admin/package/edit') }}",
+                        method: 'get',
+                        data: {
+                            id: id
+                        },
+                        success: function(data) {
+                         
+                            var feature = data.data.packagefeatures;
+                          
+                            console.log(feature);
+
+                           
+                           $.each(feature, function (index, item) {
+                           
+                            // alert(item.system_feature_id);
+
+                             $('#'+ item.system_feature_id).val(item.max_allowed_count);
+
+
+                            });
+                            
+                            $('#editPackageModal').modal('show');
+                            $('#edit_name').val(data.data['name']);
+                            $('#edit_price').val(data.data['price']);
+                            $('#edit_duration_in_days').val(data.data['duration_in_days']);
+                            $('#edit_id').val(id);
+                        },
+                        error: function() {
+                            toastr.error('Error!', 'Something went wrong', {
+                                "positionClass": "toast-bottom-right"
+                            });
+                        },
+                    })
+
+
+                });
+
+                $(document).on('click', '.change-status-active', function(e) {
+                    var id = $(this).val();
+                    var status =  1; 
+                    $.ajax({
+                        url: "{{ url('admin/package/update-status') }}",
+                        method: 'get',
+                        data: {
+                            id: id,
+                            status: status
+                        },
+                        success: function(data) {
+                            toastr.success('Success!', 'Package Status Update successfully', {
+                                    "positionClass": "toast-bottom-right"
+                                });
+                        
+
+                                window.setTimeout( function() {
+                                window.location.reload();
+                                }, 1000);
+                           
+                        },
+                        error: function() {
+                            toastr.error('Error!', 'Something went wrong', {
+                                "positionClass": "toast-bottom-right"
+                            });
+                        },
+                    })
+
+
+                });
+                $(document).on('click', '.change-status-inactive', function(e) {
+                    var id = $(this).val();
+                    var status =  0; 
+                    $.ajax({
+                        url: "{{ url('admin/package/update-status') }}",
+                        method: 'get',
+                        data: {
+                            id: id,
+                            status: status
+                        },
+                        success: function(data) {
+
+                           
+                            toastr.success('Success!', 'Package Status Update successfully', {
+                                    "positionClass": "toast-bottom-right"
+                                });
+                        
+
+                                window.setTimeout( function() {
+                                window.location.reload();
+                                }, 1000);
+                           
+                          
+                        },
+                        error: function() {
+                            toastr.error('Error!', 'Something went wrong', {
+                                "positionClass": "toast-bottom-right"
+                            });
+                        },
+                    })
+
 
                 });
 
@@ -176,6 +378,8 @@
                 });
 
                 $('#addPackageForm').on('submit', function(e) {
+
+                
                     e.preventDefault();
                     var form = $('#addPackageForm').serialize();
 
@@ -188,30 +392,36 @@
                             $('#PackageSubmitBtn').html('Please wait...');
                         },
                         success: function(data) {
+                           
                             if (data.success == true) {
                                 $('#addPackageModal').modal('hide');
                                 $('#addPackageForm')[0].reset();
                                 toastr.success('Success!', 'Server added successfully', {
                                     "positionClass": "toast-bottom-right"
                                 });
-                                $('#servers_table').DataTable().ajax.reload();
+                                $('#package_table').DataTable().ajax.reload();
                                 $('#PackageSubmitBtn').prop('disabled', false);
-                                $('#PackageSubmitBtn').html('Submit');
+                                $('#PackageSubmitBtn').html('Update');
                             } else if (data.success == false) {
                                 toastr.error('Error!', 'Something went wrong', {
                                     "positionClass": "toast-bottom-right"
                                 });
                                 $('#PackageSubmitBtn').prop('disabled', false);
-                                $('#PackageSubmitBtn').html('Submit');
+                                $('#PackageSubmitBtn').html('Update');
                             }
                         },
                         error: function(request, status, error) {
+                         
                             $('#PackageSubmitBtn').prop('disabled', false);
-                            $('#PackageSubmitBtn').html('Submit');
+                            $('#PackageSubmitBtn').html('Update');
                             $('.form-control').removeClass('is-invalid');
                             $('.form-control').next().remove();
                             json = $.parseJSON(request.responseText);
+                            
                             $.each(json.errors, function(key, value) {
+
+                               
+
                                 $('input[name="' + key + '"]').after(
                                     '<span class="invalid-feedback" role="alert"><strong>' + value +
                                     '</strong>');
@@ -225,7 +435,64 @@
                     })
                 });
 
-             
+                $('#updatePackageForm').on('submit', function(e) {
+
+                
+                        e.preventDefault();
+                        var form = $('#updatePackageForm').serialize();
+
+                        $.ajax({
+                            url: '{{ url('admin/update-package') }}',
+                            method: 'post',
+                            data: form,
+                            beforeSend: function() {
+                                $('#packageEditSubmitBtn').prop('disabled', true);
+                                $('#packageEditSubmitBtn').html('Please wait...');
+                            },
+                            success: function(data) {
+                            
+                                if (data.success == true) {
+                                    $('#editPackageModal').modal('hide');
+                                    $('#updatePackageForm')[0].reset();
+                                    toastr.success('Success!', 'Package  Updated successfully', {
+                                        "positionClass": "toast-bottom-right"
+                                    });
+                                    $('#package_table').DataTable().ajax.reload();
+                                    $('#packageEditSubmitBtn').prop('disabled', false);
+                                    $('#packageEditSubmitBtn').html('update');
+                                } else if (data.success == false) {
+                                    toastr.error('Error!', 'Something went wrong', {
+                                        "positionClass": "toast-bottom-right"
+                                    });
+                                    $('#packageEditSubmitBtn').prop('disabled', false);
+                                    $('#packageEditSubmitBtn').html('Submit');
+                                }
+                            },
+                            error: function(request, status, error) {
+                            
+                                $('#packageEditSubmitBtn').prop('disabled', false);
+                                $('#packageEditSubmitBtn').html('Submit');
+                                $('.form-control').removeClass('is-invalid');
+                                $('.form-control').next().remove();
+                                json = $.parseJSON(request.responseText);
+                                
+                                $.each(json.errors, function(key, value) {
+
+                                
+
+                                    $('input[name="' + key + '"]').after(
+                                        '<span class="invalid-feedback" role="alert"><strong>' + value +
+                                        '</strong>');
+                                    $('input[name="' + key + '"]').addClass('is-invalid');
+                                    $('select[name="' + key + '"]').after(
+                                        '<span class="invalid-feedback" role="alert"><strong>' + value +
+                                        '</strong>');
+                                    $('select[name="' + key + '"]').addClass('is-invalid');
+                                });
+                            },
+                        })
+                        });
+
             
 
             
@@ -236,7 +503,7 @@
 
                 function reloadDatatable() {
                     setTimeout(function() {
-                        $('#servers_table').DataTable().ajax.reload();
+                        $('#package_table').DataTable().ajax.reload();
                         reloadDatatable();
                     }, 65000);
                 }

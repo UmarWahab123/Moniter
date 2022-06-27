@@ -5,13 +5,17 @@ namespace App\Http\Controllers\Admin;
 use App\Helpers\PackageHelper;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Package\StorePackage;
+use App\Models\Packages\Package;
+use App\Models\Packages\PackageFeature;
+use App\Models\System\SystemFeature;
 use \Stripe\Stripe;
 use \Stripe\StripeClient;
 
 class PackageController extends Controller
 {
 
-      /**
+    /**
      * Create a new controller instance.
      *
      * @return void
@@ -59,11 +63,10 @@ class PackageController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
        
-        return view('admin.packages.index');
+        return PackageHelper::index($request);
     }
 
     /**
@@ -82,26 +85,21 @@ class PackageController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StorePackage $request)
     {
-        //
+    
+        $stripeClient = $this->stripeApiKey();
 
-         //
+        $stripeProduct = $this->productStripeId();
 
-       //  dd($request->all());
+        $package = PackageHelper::storePackages($request->all(), $stripeClient, $stripeProduct);
 
-         $stripeClient = $this->stripeApiKey();
-        
-         $stripeProduct = $this->productStripeId();
- 
-         $package = PackageHelper::storePackages($request->all(), $stripeClient, $stripeProduct);
-
-         if ($package) {
-             return response()->json([
-                 'success' => true,
-                 'message' => 'packages added successfully',
-             ]);
-         }
+        if ($package) {
+            return response()->json([
+                'success' => true,
+                'message' => 'packages added successfully',
+            ]);
+        }
     }
 
     /**
@@ -121,11 +119,11 @@ class PackageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+   
+    public function edit(Request $request)
     {
-        //
+        return PackageHelper::edit($request);
     }
-
     /**
      * Update the specified resource in storage.
      *
@@ -133,9 +131,16 @@ class PackageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         //
+        return PackageHelper::update($request);
+    }
+  
+    public function updateStatus(Request $request)
+    {
+        //
+        return PackageHelper::updateStatus($request);
     }
 
     /**
@@ -149,4 +154,3 @@ class PackageController extends Controller
         //
     }
 }
-
