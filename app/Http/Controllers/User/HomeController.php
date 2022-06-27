@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Http\Controllers\Controller;
 use App\Monitor;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
 
 class HomeController extends Controller
 {
@@ -16,6 +17,10 @@ class HomeController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        if (Auth::user()) {
+            $user_permissions = unserialize(Auth::user()->permissions);
+            View::share(['user_permissions' => $user_permissions]);
+        }
     }
 
     /**

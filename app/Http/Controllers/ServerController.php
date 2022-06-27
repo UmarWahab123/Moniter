@@ -3,13 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Server;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use App\Helpers\ServersHelper;
 use App\Helpers\ServerLogsHelper;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
 
 class ServerController extends Controller
 {
+    public function __construct()
+    {
+        if (Auth::user()) {
+            $user_permissions = unserialize(Auth::user()->permissions);
+            View::share(['user_permissions' => $user_permissions]);
+        }
+    }
     public function index()
     {
         return view('servers.index');

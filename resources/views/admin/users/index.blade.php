@@ -2,8 +2,8 @@
 
 @section('content')
     <!--[if lt IE 8]>
-                    <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-                <![endif]-->
+                                                    <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+                                                <![endif]-->
     <!-- preloader area start -->
     {{-- <div id="preloader">
         <div class="loader"></div>
@@ -183,6 +183,12 @@
                 });
 
                 $(document).on('click', '.edit-user', function() {
+                    @if (Auth::user()->email_verified_at == null)
+                        toastr.info('Info!', 'Please Verify your account first', {
+                            "positionClass": "toast-bottom-right"
+                        });
+                        return;
+                    @endif
                     $('#editUserModal').modal('show');
                     $('#editID').val($(this).val());
                     $('#editName').val($(this).parent().prev().prev().prev().prev().html());
@@ -219,6 +225,12 @@
                     })
                 });
                 $(document).on('click', '#addUserBtn', function() {
+                    @if (Auth::user()->email_verified_at == null)
+                        toastr.info('Info!', 'Please Verify your account first', {
+                            "positionClass": "toast-bottom-right"
+                        });
+                        return;
+                    @endif
                     $('#addUserModal').modal('show');
 
                 });
@@ -254,7 +266,12 @@
                     })
                 });
                 $(document).on('click', '.user-status', function(e) {
-
+                    @if (Auth::user()->email_verified_at == null)
+                        toastr.info('Info!', 'Please Verify your account first', {
+                            "positionClass": "toast-bottom-right"
+                        });
+                        return;
+                    @endif
                     var id = $(this).val();
                     var status = $(this).data('status');
                     Swal.fire({

@@ -9,9 +9,17 @@ use Illuminate\Http\Request;
 use App\Helpers\WebsiteHelper;
 use App\Helpers\WebsiteLogHelper;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\View;
 
 class WebsiteController extends Controller
 {
+    public function __construct()
+    {
+        if (Auth::user()) {
+            $user_permissions = unserialize(Auth::user()->permissions);
+            View::share(['user_permissions' => $user_permissions]);
+        }
+    }
     public function index(Request $request)
     {
         $query = Monitor::with('getSiteDetails')->whereHas('getUserWebsites', function ($q) {

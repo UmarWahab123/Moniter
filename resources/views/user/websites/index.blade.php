@@ -2,8 +2,8 @@
 
 @section('content')
     <!--[if lt IE 8]>
-                    <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-                <![endif]-->
+                            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+                        <![endif]-->
     <!-- preloader area start -->
     {{-- <div id="preloader">
         <div class="loader"></div>
@@ -288,6 +288,12 @@
                     $(this).next().remove();
                 });
                 $('#addWebsiteBtn').on('click', function() {
+                    @if (Auth::user()->email_verified_at == null)
+                        toastr.info('Info!', 'Please Verify your account first', {
+                            "positionClass": "toast-bottom-right"
+                        });
+                        return;
+                    @endif
                     $('#addWebsiteModal').modal('show');
                 });
                 $('#addWebsiteForm').on('submit', function(e) {

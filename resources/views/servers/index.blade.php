@@ -2,7 +2,7 @@
 @section('content')
     <div class="page-container">
         <!-- sidebar menu area start -->
-        @if (auth()->user()->userRole->role_id == 1)
+        @if (Auth::user()->role_id == 1)
             @include('admin.assets.sidebar')
         @else
             @include('user.assets.sidebar')
@@ -12,7 +12,7 @@
         <!-- main content area start -->
         <div class="main-content">
             <!-- page title area start -->
-            @if (auth()->user()->userRole->role_id == 1)
+            @if (Auth::user()->role_id == 1)
                 @include('admin.assets.title_area')
             @else
                 @include('user.assets.title_area')
@@ -50,7 +50,7 @@
                 </div>
                 <!-- main content area end -->
                 <!-- footer area start-->
-                @if (auth()->user()->userRole->role_id == 1)
+                @if (Auth::user()->role_id == 1)
                     @include('admin.assets.footer')
                 @else
                     @include('user.assets.footer')
@@ -138,7 +138,7 @@
                 </div>
             </div>
 
-            @if (auth()->user()->userRole->role_id == 1)
+            @if (Auth::user()->role_id == 1)
                 @include('admin.assets.javascript')
             @else
                 @include('user.assets.javascript')
@@ -226,6 +226,12 @@
                 });
 
                 $('#addServer').on('click', function() {
+                    @if (Auth::user()->email_verified_at == null)
+                        toastr.info('Info!', 'Please Verify your account first', {
+                            "positionClass": "toast-bottom-right"
+                        });
+                        return;
+                    @endif
                     $('#addServerModal').modal('show');
                 });
 

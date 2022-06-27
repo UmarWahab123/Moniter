@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Auth;
 use Carbon\Carbon;
+
 class LoginController extends Controller
 {
     /*
@@ -25,20 +26,15 @@ class LoginController extends Controller
      *
      * @var string
      */
-    public function authenticated($request,$user)
+    public function authenticated($request, $user)
     {
         $user->last_seen_at = Carbon::now()->format('Y-m-d H:i:s');
         $user->save();
-        if(Auth::user()->hasAnyRole('admin')&&Auth::user()->status==1)
-        {
-            return redirect('admin/home');
-        }
-        elseif(Auth::user()->hasAnyRole('user')&&Auth::user()->status==1)
-        {
+        if (Auth::user()->role_id == 1 && Auth::user()->status == 1) {
+            return redirect('/admin/home');
+        } elseif (Auth::user()->role_id == 2 && Auth::user()->status == 1) {
             return redirect('/user/home');
-        }
-        else
-        {
+        } else {
             Auth::logout();
             return redirect('/login');
         }
