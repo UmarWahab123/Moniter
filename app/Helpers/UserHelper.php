@@ -18,7 +18,10 @@ class UserHelper
         if ($request->ajax()) {
             return (new UserHelper)->UserDatatable();
         }
-        return view('admin.users.index');
+        if (Auth::user()->role_id == 1) {
+            return view('admin.users.index');
+        }
+        return view('user.users.index');
     }
     private function UserDatatable()
     {
@@ -34,6 +37,15 @@ class UserHelper
                 } else if ($item->status == 0) {
                     $html_string .= '<button class="btn btn-sm btn-outline-success user-status" data-status=1 value="' . $item->id . '"   title="Activate User"  ><i class="fa fa-check-circle"></i></button>';
                 }
+                return $html_string;
+            })
+            ->addColumn('name', function ($item) {
+                if ($item->id == Auth::user()->id) {
+                    return $item->name;
+                }
+                $html_string = '
+                        <a href="' . route('users.permissions', $item->id) . '" title="User Permissions">' . $item->name . '</a>
+                     ';
                 return $html_string;
             })
             ->addColumn('counter', function ($item) {
@@ -52,7 +64,7 @@ class UserHelper
             ->setRowId(function ($item) {
                 return $item->id;
             })
-            ->rawColumns(['action', 'status'])
+            ->rawColumns(['action', 'status', 'name'])
             ->make(true);
     }
     public static function store($request)
@@ -106,5 +118,40 @@ class UserHelper
         } else {
             return response()->json(['success' => false]);
         }
+    }
+    public static function userPermissions($user_id)
+    {
+        $user = User::find($user_id);
+        $permissions = unserialize($user->permissions);
+        if (Auth::user()->role_id == 1) {
+            return view('admin.users.permissions', compact('permissions', 'user'));
+        }
+        return view('user.users.permissions', compact('permissions', 'user'));
+    }
+    public static function saveUserPermissions($request)
+    {
+        $user = User::find($request->id);
+        $permissions = [];
+        if ($request->dashboard == 1) {
+            array_push($permissions, 'dashboard');
+        }
+        if ($request->websites == 1) {
+            array_push($permissions, 'websites');
+        }
+        if ($request->email_templates == 1) {
+            array_push($permissions, 'email_templates');
+        }
+        if ($request->servers == 1) {
+            array_push($permissions, 'servers');
+        }
+        if ($request->users == 1) {
+            array_push($permissions, 'users');
+        }
+        if ($request->settings == 1) {
+            array_push($permissions, 'settings');
+        }
+        $user->permissions = serialize($permissions);
+        $user->save();
+        return response()->json(['success' => true]);
     }
 }

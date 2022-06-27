@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Monitor;
 use Auth;
 use DateTime;
+use App\Monitor;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\View;
 
 class HomeController extends Controller
 {
@@ -18,6 +19,10 @@ class HomeController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        if (Auth::user()) {
+            $user_permissions = unserialize(Auth::user()->permissions);
+            View::share(['user_permissions' => $user_permissions]);
+        }
     }
 
     /**

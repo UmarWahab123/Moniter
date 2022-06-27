@@ -50,6 +50,8 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['aut
     Route::post('/add-user', 'UserController@store')->name('add-user');
     Route::post('/edit-user', 'UserController@update')->name('edit-user');
     Route::get('/user-status', 'UserController@userStatus')->name('user-status');
+    Route::get('/{id}/user-permissions', 'UserController@userPermissions')->name('users.permissions');
+    Route::post('save-permissions', 'UserController@saveUserPermissions')->name('users.save-permissions');
 
     Route::get('/settings', 'SettingController@index')->name('settings');
 
@@ -95,6 +97,22 @@ Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth'
 
     Route::get('/get-down-reason', 'WebsiteController@getDownReason')->name('get-down-reason');
     Route::get('/get-down-reason-image', 'WebsiteController@getDownReasonImage')->name('get-down-reason-image');
+
+    Route::get('/users', 'UserController@index')->name('users.users');
+    Route::post('/add-user', 'UserController@store')->name('users.add-user');
+    Route::post('/edit-user', 'UserController@update')->name('users.edit-user');
+    Route::get('/user-status', 'UserController@userStatus')->name('users.user-status');
+    Route::get('/{id}/user-permissions', 'UserController@userPermissions')->name('users.users-permissions');
+    Route::post('save-permissions', 'UserController@saveUserPermissions')->name('users.users-save-permissions');
+
+    // Email Template Routes
+    Route::get('/email-templates', 'EmailTemplateController@index')->name('users.templates.index');
+    Route::get('/get-email-templates-data', 'EmailTemplateController@getTemplatesData')->name('users.templates.getTemplates');
+    Route::get('/email-templates/create', 'EmailTemplateController@create')->name('users.templates.create');
+    Route::post('/email-templates/store', 'EmailTemplateController@store')->name('users.templates.store');
+    Route::post('/email-templates/update', 'EmailTemplateController@update')->name('users.templates.update');
+    Route::post('/email-templates/delete/{id}', 'EmailTemplateController@delete')->name('users.templates.delete');
+    Route::get('/email-templates/edit/{id}', 'EmailTemplateController@edit')->name('users.templates.edit');
 });
 
 /*here we will use same routes for both admin and users*/
