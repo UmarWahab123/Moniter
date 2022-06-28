@@ -129,6 +129,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('servers/delete', 'ServerController@destroy')->name('servers.destroy');
     Route::get('servers/edit', 'ServerController@edit')->name('servers.edit');
     Route::post('servers/update', 'ServerController@update')->name('servers.update');
+    Route::post('servers/binded-websites', 'ServerController@bindedWebsites')->name('servers.binded-websites');
+    Route::get('servers/get-biinded-websites', 'ServerController@getBindedWebsites')->name('get-binded-websites');
+    Route::post('servers/save-biinded-websites', 'ServerController@saveBindedWebsites')->name('save-binded-websites');
 });
 
 Route::get('emails/resend', [UserController::class, 'resendEmail'])->name('emails.resendEmail');

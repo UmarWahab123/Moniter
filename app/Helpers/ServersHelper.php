@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Monitor;
 use App\Server;
 use App\ServerDetail;
 use Auth;
@@ -57,6 +58,10 @@ class ServersHelper
                         return "N.A";
                     }
                 })
+                ->addColumn('binded_websites', function ($item) {
+                    $html_string = ' <button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm btn_binded_websites"  title="Binded Websites"><i class="fa fa-eye"></i></button>';
+                    return $html_string;
+                })
                 ->addColumn('action', function ($item) {
                     $html_string = ' <button  value="' . $item->id . '"class="btn  btn-outline-primary btn-sm btn-edit "  title="Edit"><i class="fa fa-pencil"></i></button>';
                     $html_string .= ' <button  value="' . $item->id . '"  class="btn btn-outline-danger btn-sm btn-delete"  title="Delete"><i class="fa fa-trash-o"></i></button>';
@@ -65,7 +70,7 @@ class ServersHelper
                 ->setRowId(function ($item) {
                     return $item->id;
                 })
-                ->rawColumns(['name', 'ip_address', 'added_by', 'file', 'os', 'server_logs', 'action'])
+                ->rawColumns(['name', 'ip_address', 'added_by', 'file', 'os', 'server_logs', 'action', 'binded_websites'])
                 ->make(true);
         }
     }
@@ -159,5 +164,56 @@ class ServersHelper
             return response()->json(['success' => true]);
         }
         return response()->json(['success' => false]);
+    }
+
+    public static function bindedWebsites($request)
+    {
+        $server = Server::where('user_id', Auth::user()->id)->first();
+        if (Auth::user() && Auth::user()->role_id == 2) {
+            $server = Server::where('user_id', Auth::user()->parent_id)->first();
+        }
+        if ($server != null) {
+            $monitors = Monitor::all();
+            if ($monitors != null) {
+                $html = "<option value='' selected disabled>Select Website</option>";
+                foreach ($monitors as $monitor) {
+                    $html .= "<option value='" . $monitor->id . "'>" . $monitor->getSiteDetails->title . "</option>";
+                }
+                return response()->json(['success' => true, 'html' => $html, 'server_id' => $request->server_id]);
+            }
+        }
+    }
+
+    public static function getBindedWebsites($request)
+    {
+        $query = Monitor::with('getSiteDetails')->where('server_id', $request->id);
+        if ($request->ajax()) {
+            return Datatables::of($query)
+                ->addIndexColumn()
+                ->addColumn('title', function ($item) {
+                    return $item->getSiteDetails != null ? $item->getSiteDetails->title : 'N.A';
+                })
+                ->addColumn('url', function ($item) {
+                    return $item->url != null ? $item->url : 'N.A';
+                })
+                ->setRowId(function ($item) {
+                    return $item->id;
+                })
+                ->rawColumns(['title', 'url'])
+                ->make(true);
+        }
+    }
+
+    public static function saveBindedWebsites($request)
+    {
+        $monitor = Monitor::find($request->website_id);
+        if ($monitor != null) {
+            if ($monitor->server_id == $request->server_id) {
+                return response()->json(['success' => false]);
+            }
+            $monitor->server_id = $request->server_id;
+            $monitor->save();
+            return response()->json(['success' => true]);
+        }
     }
 }
