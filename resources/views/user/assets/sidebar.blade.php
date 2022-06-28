@@ -21,6 +21,9 @@ if (Auth::user()) {
                                 <a href="{{ url('user/websites') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Websites</span></a>
                             </li>
                             <li class="">
+                                <a href="{{ url('user/subscription') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Subscription</span></a>
+                            </li>
+                            <li class="">
                                 <a href="{{ url('user/settings') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Settings</span></a>
                             </li>
                             @endif

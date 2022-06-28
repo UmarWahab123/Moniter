@@ -165,7 +165,7 @@
                                     <div class="col-md-6">
                                 
                                     <div class="card-body cardbody" data-id="1" style="border: 1px solid #e3e6f0;height: 65px;margin-bottom: 4px;">
-                                        <h6  data-id="{{$feature['id']}}" class="card-title font-weight-bold" style="color:#000;">{{$feature['name']}}</h6>
+                                        <h6  data-id="feature{{$feature['id']}}" class="card-title font-weight-bold" style="color:#000;">{{$feature['name']}}</h6>
                                         <!-- <label class="card-title font-weight-bold" style="color:#000; font-weight: 700!important;margin-bottom: 0.75rem!important;">{{$feature['name']}}<span class="text-danger"></span></label>
                                          -->
                                   
@@ -174,7 +174,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label class="m-0" style="color:#000; font-weight: 700!important;margin-bottom: 0.75rem!important;">Max Allowed <span class="text-danger">*</span></label>
-                                        <input type="number" name="systemfeature[{{ $feature['id'] }}]" class="form-control " id="{{ $feature['id'] }}"style="margin-bottom: 0.75rem!important;" value="0">
+                                        <input type="number" name="systemfeature[{{ $feature['id'] }}]" class="form-control feature{{ $feature['id'] }} " id=""style="margin-bottom: 0.75rem!important;" value="0">
                                     </div>
                                     @endforeach
                 
@@ -271,16 +271,17 @@
                          
                             var feature = data.data.packagefeatures;
                           
-                            console.log(feature);
+                           // console.log(feature);
 
-                           
+                          
                            $.each(feature, function (index, item) {
-                           
-                            // alert(item.system_feature_id);
+                         
+                            // alert(('#feature.' + item.system_feature_id ));
+                            
+                            // alert(item.max_allowed_count);
 
-                             $('#'+ item.system_feature_id).val(item.max_allowed_count);
-
-
+                             $('.feature' + item.system_feature_id).val(item.max_allowed_count);
+                            
                             });
                             
                             $('#editPackageModal').modal('show');
@@ -396,7 +397,7 @@
                             if (data.success == true) {
                                 $('#addPackageModal').modal('hide');
                                 $('#addPackageForm')[0].reset();
-                                toastr.success('Success!', 'Server added successfully', {
+                                toastr.success('Success!', 'New Plan added successfully', {
                                     "positionClass": "toast-bottom-right"
                                 });
                                 $('#package_table').DataTable().ajax.reload();

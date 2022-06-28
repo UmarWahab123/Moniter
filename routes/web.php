@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\User\Subscription\SubscriptionController;
 use Carbon\Carbon;
 
 
@@ -96,6 +97,9 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['aut
 Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth', 'user']], function () {
     Route::get('/home', 'HomeController@index')->name('user.home');
     Route::get('/websites', 'WebsiteController@index')->name('websites');
+    Route::get('subscription/',  [SubscriptionController::class,'index']);
+    Route::post('createSubscription',  [SubscriptionController::class,'create']);
+    Route::post('sucessSubscription',  [SubscriptionController::class,'sucessSubscription']);
     Route::post('/add-website', 'WebsiteController@store')->name('add-website');
     Route::get('/delete-website', 'WebsiteController@destroy')->name('delete-website');
     Route::post('/edit-website', 'WebsiteController@update')->name('edit-website');

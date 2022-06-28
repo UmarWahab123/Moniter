@@ -17,7 +17,10 @@ class Package extends Model
         'group_tag',
         'duration_in_days'
     ];
-
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
    
     public function packagefeatures()
     {
