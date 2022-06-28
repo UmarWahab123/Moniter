@@ -33,7 +33,7 @@ class HomeController extends Controller
     public function index()
     {
         $monitors = Monitor::whereHas('getUserWebsites', function ($q) {
-            $q->where('is_featured', 1)->where('user_id', Auth::user()->id);
+            $q->where('is_featured', 1);
         })->with('getSiteDetails', 'getSiteLogs',)->get();
         return view('admin.index', compact('monitors'));
     }

@@ -124,6 +124,15 @@
                                             placeholder="Enter Owner Email">
                                     </div>
                                     <div class="col-md-6 mt-2">
+                                        <label class="m-0">Choose Server </label>
+                                        <select name="server" id="add_server" class="form-control" style="min-height:45px;">
+                                            <option value="" selected disabled>Choose Server</option>
+                                            @foreach ($servers as $server)
+                                            <option value="{{ $server->id }}">{{ $server->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mt-2">
                                         <div class="form-check mt-4">
                                             <input name="ssl" type="checkbox" class="form-check-input"
                                                 id="exampleCheck1">
@@ -172,7 +181,15 @@
                                         <input type="text" name="owner_email" class="form-control"
                                             id="edit_owner_email" placeholder="Enter Owner Email">
                                     </div>
-
+                                    <div class="col-md-6 mt-2">
+                                        <label class="m-0">Choose Server </label>
+                                        <select name="server" id="edit_server" class="form-control" style="min-height:45px;">
+                                            <option value="" selected disabled>Choose Server</option>
+                                            @foreach ($servers as $server)
+                                            <option value="{{ $server->id }}">{{ $server->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                     <div class="col-md-6 mt-2">
                                         <div class="form-check ">
                                             <input name="ssl" type="checkbox" class="form-check-input"
@@ -395,6 +412,7 @@
                             $('#edit_developer_email').val(data.data['developer_email']);
                             $('#edit_owner_email').val(data.data['owner_email']);
                             $('#editId').val(website_id);
+                            $('#edit_server').val(data.data['server']);
                             if (data.data['ssl'] == 1) {
                                 $('#editSsl').prop('checked', true);
                             } else {

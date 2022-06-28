@@ -11,6 +11,7 @@ use App\Mail\SiteStatusMail;
 use Yajra\Datatables\Datatables;
 use App\WebsiteLog;
 use App\Monitor;
+use App\Server;
 use App\Setting;
 
 class WebsiteHelper
@@ -24,7 +25,8 @@ class WebsiteHelper
         if ($request->ajax()) {
             return WebsiteHelper::WebsitesDatatable($query);
         }
-        return view('admin.websites.index', compact('websites'));
+        $servers = Server::select('id', 'name')->where('user_id', Auth::user()->id)->get();
+        return view('admin.websites.index', compact('websites', 'servers'));
     }
 
     public static function WebsitesDatatable($query)
@@ -132,7 +134,7 @@ class WebsiteHelper
                 }
                 $uweb->ssl = $ssl;
                 $uweb->save();
-                Monitor::where('id', $web->id)->update(['certificate_check_enabled' => $ssl, 'user_id' => Auth::user()->id]);
+                Monitor::where('id', $web->id)->update(['certificate_check_enabled' => $ssl, 'user_id' => Auth::user()->id, 'server_id' => $mailData['server']]);
                 $mails = $request->emails;
                 if ($mails != null) {
                     $mails = explode(",", $request->emails);
@@ -175,6 +177,7 @@ class WebsiteHelper
             $data['developer_email'] = $monitor->getSiteDetails->developer_email;
             $data['owner_email'] = $monitor->getSiteDetails->owner_email;
             $data['ssl'] = $monitor->getSiteDetails->ssl;
+            $data['server'] = $monitor->server_id;
             return response()->json(['success' => true, 'data' => $data]);
         }
         return response()->json(['success' => false]);
@@ -188,6 +191,7 @@ class WebsiteHelper
             $ssl = 1;
         }
         $monitor->certificate_check_enabled = $ssl;
+        $monitor->server_id = $request['server'];
         if ($monitor->save()) {
             UserWebsite::where('website_id', $request->id)->update(['emails' => $request->emails, 'title' => $request->title, 'developer_email' => $request->developer_email, 'owner_email' => $request->owner_email]);
             return response()->json(['success' => true]);

@@ -53,20 +53,6 @@
                                 </span>
                             @enderror
                         </div>
-                        <div class="form-group">
-                            <label for="role">Role</label>
-                            <select name="role" class="form-control @error('role') is-invalid @enderror" id="role"
-                                style="min-height: 45px;">
-                                <option value="" selected="selected">Choose Role</option>
-                                <option value="1">Admin</option>
-                                <option value="2">User</option>
-                            </select>
-                            @error('role')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-                        </div>
                         <div class="submit-btn-area">
                             <button id="form_submit" type="submit">Submit <i class="ti-arrow-right"></i></button>
                         </div>
