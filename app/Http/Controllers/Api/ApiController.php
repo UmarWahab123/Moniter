@@ -335,4 +335,10 @@ class ApiController extends Controller
             return response()->json(['success' => false, 'errorMsg' => 'You are not authorized to access!!!']);
         }
     }
+
+    public function commandExecuted(Request $request)
+    {
+        \Log::info($request->all());
+        return response()->json(['success' => true, 'data' => $request->all()]);
+    }
 }
