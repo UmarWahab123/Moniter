@@ -54,7 +54,6 @@ class RegisterController extends Controller
             'email' => ['required', 'email', 'unique:users'],
             'password' => ['required', 'min:6', 'same:password_confirmation'],
             'password_confirmation' => ['required', 'min:6'],
-            'role' => ['required']
         ]);
     }
 
@@ -70,7 +69,7 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'status' => 1,
-            'role_id' => $data['role'],
+            'role_id' => 1,
             'password' => Hash::make($data['password']),
         ]);
     }

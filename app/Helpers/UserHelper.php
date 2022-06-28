@@ -25,7 +25,7 @@ class UserHelper
     }
     private function UserDatatable()
     {
-        $query = User::with('userWebsites');
+        $query = User::with('userWebsites')->where('parent_id', Auth::user()->id);
         return Datatables::of($query)
             ->addIndexColumn()
             ->addColumn('action', function ($item) {
@@ -77,9 +77,8 @@ class UserHelper
             $user->email = $request->email;
             $user->password = bcrypt(12345678);
             $user->status = 1;
+            $user->parent_id = Auth::user()->id;
             if ($user->save()) {
-                $userRole = Role::where('name', 'user')->first();
-                $user->roles()->attach($userRole);
                 Mail::to($request->email)->send(new UserSignupMail($mailData));
                 return response()->json(['success' => true]);
             }
