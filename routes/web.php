@@ -134,12 +134,17 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('servers/save-biinded-websites', 'ServerController@saveBindedWebsites')->name('save-binded-websites');
 });
 
+Route::group(['namespace' => 'SuperAdmin', 'prefix' => 'superAdmin', 'middleware' => ['auth', 'superAdmin']], function () {
+    Route::get('dashboard', 'DashboardController@index')->name('superAdmin.dashboard');
+    Route::get('dashboard/user-records', 'DashboardController@getUsersTotalRecords')->name('superAdmin.get-users-total-records');
+});
+
 Route::get('emails/resend', [UserController::class, 'resendEmail'])->name('emails.resendEmail');
 Route::get('verify-user-email-address', function () {
     $user = User::find(Auth::user()->id);
     $user->email_verified_at = Carbon::now();
     $user->save();
-    return redirect('/servers/dashboard');
+    return redirect('/home');
 });
 Route::post('emails/send-verification_code', [UserController::class, 'sendVerificationCodeEmail'])->name('emails.send-verification_code');
 Route::post('/do-login', [AuthController::class, "doLogin"])->name('custom_login');

@@ -40,6 +40,8 @@ class AuthController extends Controller
                     return redirect('/admin/home');
                 } elseif (Auth::user()->role_id == 2 && Auth::user()->status == 1) {
                     return redirect('/user/home');
+                } elseif (Auth::user()->role_id == 3 && Auth::user()->status == 1) {
+                    return redirect('/superAdmin/dashboard');
                 } else {
                     Auth::logout();
                     return redirect('/login');

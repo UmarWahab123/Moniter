@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use App\Role;
+
 class RolesTableSeeder extends Seeder
 {
     /**
@@ -13,8 +14,8 @@ class RolesTableSeeder extends Seeder
     {
         //
         Role::truncate();
-        Role::create(['name'=>'admin']);
-        Role::create(['name'=>'user']);
-
+        Role::create(['name' => 'Admin']);
+        Role::create(['name' => 'User']);
+        Role::create(['name' => 'SuperAdmin']);
     }
 }
