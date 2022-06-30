@@ -20,6 +20,11 @@ class Monitor extends Model
         return $this->hasMany('App\WebsiteLog', 'website_id', 'id')->orderBy('created_at', 'desc');
     }
 
+    public function user()
+    {
+        return $this->belongsTo('App\User', 'user_id', 'id');
+    }
+
     public function UserWebsitePivot()
     {
         return $this->hasMany('App\UserWebsitePermission', 'website_id', 'id');

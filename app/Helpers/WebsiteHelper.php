@@ -22,7 +22,11 @@ class WebsiteHelper
     {
         $query = Monitor::whereHas('getUserWebsites', function ($q) {
             $q->where('user_id', Auth::user()->id);
-        })->with('getSiteDetails', 'UserWebsitePivot')->get();
+        })
+            ->orWhereHas('user', function ($q) {
+                $q->where('parent_id', Auth::user()->id);
+            })
+            ->with('getSiteDetails', 'UserWebsitePivot')->get();
         $websites = $query;
         if ($request->ajax()) {
             return WebsiteHelper::WebsitesDatatable($query);
@@ -43,7 +47,7 @@ class WebsiteHelper
             ->addColumn('action', function ($item) {
                 $html_string = null;
                 $user_website_permission = $item->UserWebsitePivot->where('user_id', Auth::user()->id)->first();
-                if ($item->user_id == Auth::user()->id || $user_website_permission->permission == 1 || Auth::user()->role_id == 1) {
+                if ($item->user_id == Auth::user()->id || ($user_website_permission && $user_website_permission->permission == 1) || Auth::user()->role_id == 1) {
                     if ($item->getSiteDetails != null) {
                         if ($item->getSiteDetails->is_featured == 1) {
                             $html_string = ' <button   value="' . $item->id . '" data-status="0" class="btn btn-outline-secondary btn-sm feature"  title="Click to unfetaure"><i class="fa fa-star "></i></button>';
