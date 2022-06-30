@@ -23,12 +23,13 @@ class WebsiteController extends Controller
     }
     public function index(Request $request)
     {
-        $query = Monitor::with('getSiteDetails');
-        if (Auth::user() && Auth::user()->role_id == 2) {
-            $query = $query->whereHas('getUserWebsites', function ($q) {
-                $q->where('user_id', Auth::user()->id);
-            });
-        }
+        $query = Monitor::with('getSiteDetails', 'UserWebsitePivot');
+        $query = $query->whereHas('getUserWebsites', function ($q) {
+            $q->where('user_id', Auth::user()->id);
+        });
+        $query = $query->orWhereHas('UserWebsitePivot', function ($q) {
+            $q->where('user_id', Auth::user()->id);
+        });
         $query = $query->get();
         $websites = $query;
         if ($request->ajax()) {

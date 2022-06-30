@@ -50,6 +50,7 @@
                         <div class="card">
 
                             <div class="card-body">
+                                <button class="btn btn-primary btn-sm float-left mb-2 d-none" id="assign_to_users">Assign User</button>
                                 <button class="btn btn-primary btn-sm float-right mb-2" id="addWebsiteBtn"> <i
                                         class="fa fa-plus"></i> Add Website</button>
                                 <div class="table-responsive">
@@ -57,6 +58,9 @@
                                     <table id="websitesDataTable" class="table table-stripped text-center">
                                         <thead>
                                             <tr>
+                                                <th>
+                                                    <input type="checkbox" class="checkbox" name="all_checkboxes" id="all_checkboxes" value="all_checkboxes">
+                                                </th>
                                                 <th>Title </th>
                                                 <th>Website </th>
                                                 <th>Status Changed On </th>
@@ -64,6 +68,7 @@
                                                 <th>SSL Cerificate Check </th>
                                                 <th>Certificate Expiry Date </th>
                                                 <th>Certificate Issuer </th>
+                                                <th>Assigned Users </th>
                                                 <th>Domain Created At </th>
                                                 <th>Domain Updated At </th>
                                                 <th>Domain Expiry Date</th>
@@ -207,6 +212,71 @@
                     </div>
                 </div>
             </div>
+            <div class="modal fade" id="assign_user_Modal">
+                <div class="modal-dialog" style="max-width:800px">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Assign Website and Permission to User</h5>
+                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="users">Select User</label>
+                                    <select name="sub_users" id="sub_users" class="form-control" style="height:45px !important;">
+                                        <option value="" selected disabled>Select User</option>
+                                        @foreach ($users as $user)
+                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="permission">Select Permission</label>
+                                    <select name="permission" id="permission" class="form-control" style="height:45px !important;">
+                                        <option value="" selected disabled>Select Permission</option>
+                                        <option value="0">Read</option>
+                                        <option value="1">Read/Write</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-primary btn_save_assign_user">Assign User</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="show_assign_user_Modal">
+                <div class="modal-dialog" style="max-width:800px">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Assigned Users</h5>
+                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="table-responsive">
+
+                                    <table id="websitesDataTable" class="table table-stripped text-center">
+                                        <thead>
+                                            <tr>
+                                                <th>User</th>
+                                                <th>Permission</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="assigned_user_tbody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
             @include('admin.assets.javascript')
             <!-- Start datatable js -->
             <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
@@ -246,6 +316,12 @@
 
 
                         {
+                            data: 'checkbox',
+                            name: 'checkbox',
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
                             data: 'title',
                             name: 'title'
                         },
@@ -273,6 +349,10 @@
                         {
                             data: 'certificate_issuer',
                             name: 'certificate_issuer'
+                        },
+                        {
+                            data: 'assigned_users',
+                            name: 'assigned_users'
                         },
                         {
                             data: 'domain_creation_date',
@@ -464,6 +544,80 @@
                     }, 65000);
 
                 }
+
+                $(document).on('change', '#all_checkboxes', function() {
+                    if (this.checked) {
+                        $('.checkbox').prop('checked', true);;
+                        $('#assign_to_users').removeClass('d-none');
+                    }
+                    else{
+                        $('.checkbox').prop('checked', false);;
+                        $('#assign_to_users').addClass('d-none');
+                    }
+                });
+
+                $(document).on('change', '.checkbox', function() {
+                    if (this.checked) {
+                        $('#assign_to_users').removeClass('d-none');
+                    }
+                    else{
+                        $('#assign_to_users').addClass('d-none');
+                    }
+                });
+
+                $(document).on('click', '#assign_to_users', function() {
+                    $('#assign_user_Modal').modal('show');
+                });
+
+                $(document).on('click', '.btn_save_assign_user', function() {
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You want Assign Selected Websites to a Sub User?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, do it!'
+                    }).then((result) => {
+                        if (result.value) {
+                            let sub_user_id = $('#sub_users').val();
+                            let permission = $('#permission').val();
+                            var selected_items = [];
+                            $("input.checkbox:checked").each(function() {
+                                selected_items.push($(this).val());
+                            });
+                            $.ajax({
+                                url: "{{ route('assign-websites-to-user') }}",
+                                method: "POST",
+                                data: {selected_items:selected_items, sub_user_id:sub_user_id, permission:permission},
+                                success: function(data){
+                                    if (data.success) {
+                                        toastr.success('Success!', 'User Assign successfully', {
+                                            "positionClass": "toast-bottom-right"
+                                        });
+                                        $('#assign_user_Modal').modal('hide');
+                                    }
+                                }
+                            });
+                        }
+                    })
+                });
+
+                $(document).on('click', '.btn_view_assigned_users',function(){
+                    let id = $(this).val();
+                    $.ajax({
+                        url: '{{ route('show_assigned_users') }}',
+                        data: {id: id},
+                        success: function(data) {
+                            if (data.success){
+                                $('.assigned_user_tbody').html("");
+                                $('.assigned_user_tbody').append(data.html);
+                                $('#show_assign_user_Modal').modal('show');
+                            }
+                        }
+                    });
+                });
+
                 $(document).on('click', '.feature', function(e) {
 
                     var id = $(this).val();
