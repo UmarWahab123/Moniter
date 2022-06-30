@@ -18,6 +18,10 @@
                         <a href="{{ route('superAdmin.dashboard') }}" aria-expanded="true"><i
                                 class="ti-dashboard"></i><span>dashboard</span></a>
                     </li>
+                    <li class="active">
+                        <a href="{{ route('superAdmin.users') }}" aria-expanded="true"><i
+                                class="ti-user"></i><span>Users</span></a>
+                    </li>
                      <li class="">
                          <a class="d-none" href="{{ url('admin/devices') }}" aria-expanded="true"><i
                                  class="ti-dashboard"></i><span>Devices</span></a>

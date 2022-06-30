@@ -139,6 +139,10 @@ Route::group(['middleware' => ['auth']], function () {
 Route::group(['namespace' => 'SuperAdmin', 'prefix' => 'superAdmin', 'middleware' => ['auth', 'superAdmin']], function () {
     Route::get('dashboard', 'DashboardController@index')->name('superAdmin.dashboard');
     Route::get('dashboard/user-records', 'DashboardController@getUsersTotalRecords')->name('superAdmin.get-users-total-records');
+    Route::get('/user', 'UserController@index')->name('superAdmin.users');
+    Route::get('/user/get-data', 'UserController@getData')->name('superAdmin.get-data');
+    Route::get('/user-status', 'UserController@userStatus')->name('superAdmin.user-status');
+    Route::post('/user-delete', 'UserController@delete')->name('superAdmin.user-delete');
 });
 
 Route::get('emails/resend', [UserController::class, 'resendEmail'])->name('emails.resendEmail');
