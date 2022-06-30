@@ -89,13 +89,13 @@
                 success: function(data) {
                     if (data.deleted_user) {
                         toastr.info('Info!',
-                        'Your Account has been deleted by Super Admin. Please contact Super Admin', {
+                        'Your Account has been deleted by Administrator. Please contact Administrator', {
                             "positionClass": "toast-bottom-right"
                         });
                     }
                     else if (data.suspended_user) {
                         toastr.info('Info!',
-                        'Your Account has been Suspended by Super Admin. Please contact Super Admin', {
+                        'Your Account has been Suspended by Administrator. Please contact Administrator', {
                             "positionClass": "toast-bottom-right"
                         });
                     }
