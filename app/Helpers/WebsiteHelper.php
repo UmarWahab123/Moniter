@@ -130,7 +130,9 @@ class WebsiteHelper
             'unique' => 'The url already existed'
         ]);
         $mailData = $request->all();
-        define('STDIN', fopen("php://stdin", "r"));
+        if (!defined('STDIN')) {
+            define('STDIN', fopen("php://stdin", "r"));
+        }
         $output = Artisan::call("monitor:create " . $request->url);
         $websites = Monitor::get();
         $url = Url::fromString($request->url);
@@ -224,13 +226,13 @@ class WebsiteHelper
         $count = UserWebsite::where('user_id', Auth::user()->id)->where('is_featured', 1)->count();
         if ($request->status == 1) {
             if ($count < 10) {
-                UserWebsite::where('id', $request->id)->update(['is_featured' => $request->status]);
+                UserWebsite::where('website_id', $request->id)->update(['is_featured' => $request->status]);
                 return response()->json(['success' => true, 'limit' => 0]);
             } else {
                 return response()->json(['success' => true, 'limit' => 1]);
             }
         } else {
-            UserWebsite::where('id', $request->id)->update(['is_featured' => $request->status]);
+            UserWebsite::where('website_id', $request->id)->update(['is_featured' => $request->status]);
             return response()->json(['success' => true, 'limit' => 2]);
         }
     }

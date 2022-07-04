@@ -96,6 +96,7 @@ class UserHelper
             $user->email = $request->email;
             $user->password = bcrypt(12345678);
             $user->status = 1;
+            $user->role_id = 2;
             $user->parent_id = Auth::user()->id;
             if ($user->save()) {
                 Mail::to($request->email)->send(new UserSignupMail($mailData));

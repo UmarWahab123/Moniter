@@ -32,9 +32,6 @@
                         <div class="card">
                             <div class="card-body">
                                 <span class="h4">Users</span>
-                                <button class="btn btn-primary btn-sm float-right" id="addUserBtn"> <i
-                                        class="fa fa-plus"></i> Add User</button>
-                                <div class="table-responsive mt-3">
                                     <table id="usersDataTable" class=" table table-stripped text-center">
                                         <thead>
                                             <tr>
