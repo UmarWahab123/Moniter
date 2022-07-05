@@ -5,6 +5,8 @@ namespace App\Helpers;
 use App\Monitor;
 use App\Server;
 use App\ServerDetail;
+use App\UserWebsite;
+use App\UserWebsitePermission;
 use Auth;
 use Yajra\Datatables\Datatables;
 use Carbon\Carbon;
@@ -133,6 +135,18 @@ class ServersHelper
     {
         $server = Server::find($request->id);
         if ($server != null) {
+            $monitors = Monitor::where('server_id', $server->id)->get();
+            foreach ($monitors as $monitor) {
+                $websites = UserWebsite::where('website_id', $monitor->id)->get();
+                foreach ($websites as $website) {
+                    $website->delete();
+                }
+                $user_website_permissions = UserWebsitePermission::where('website_id', $monitor->id)->get();
+                foreach ($user_website_permissions as $pivot) {
+                    $pivot->delete();
+                }
+                $monitor->delete();
+            }
             $serverLogs = ServerDetail::where('server_id', $server->id);
             if ($serverLogs != null) {
                 $serverLogs->delete();

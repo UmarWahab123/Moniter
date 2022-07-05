@@ -186,6 +186,10 @@ class WebsiteHelper
         if ($output > 0) {
             UserWebsite::where('website_id', $request->id)->delete();
             WebsiteLog::where('website_id', $request->id)->delete();
+            $permissions = UserWebsitePermission::where('website_id', $request->id)->get();
+            foreach ($permissions as $permission) {
+                $permission->delete();
+            }
             return response()->json(['success' => true]);
         }
     }
