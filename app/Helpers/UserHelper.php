@@ -23,23 +23,40 @@ class UserHelper
         }
         return view('user.users.index');
     }
-    private function UserDatatable()
+    public static function UserDatatable()
     {
         $query = User::with('userWebsites');
+        if (Auth::user()->role_id == 1) {
+            $query = $query->where('parent_id', Auth::user()->id);
+        } else if (Auth::user()->role_id == 3) {
+            $query = $query->where('role_id', 1);
+        }
         return Datatables::of($query)
             ->addIndexColumn()
             ->addColumn('action', function ($item) {
-                $html_string = '
-                        <button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm edit-user"  title="Edit"><i class="fa fa-pencil"></i></button>
-                     ';
+                if ($item->is_deleted == 1) {
+                    return '--';
+                }
+                $html_string = "";
+                if (Auth::user()->role_id == 1) {
+                    $html_string .= '
+                            <button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm edit-user"  title="Edit"><i class="fa fa-pencil"></i></button>
+                         ';
+                }
                 if ($item->status == 1) {
                     $html_string .= '<button class="btn btn-sm btn-outline-danger user-status" data-status=0 value="' . $item->id . '"   title="Suspend User"><i class="fa fa-ban"></i></button>';
                 } else if ($item->status == 0) {
                     $html_string .= '<button class="btn btn-sm btn-outline-success user-status" data-status=1 value="' . $item->id . '"   title="Activate User"  ><i class="fa fa-check-circle"></i></button>';
                 }
+                if (Auth::user()->role_id == 3) {
+                    $html_string .= '<button class="btn btn-sm btn-outline-danger btn_delete" value="' . $item->id . '"   title="Delete User"  ><i class="fa fa-trash"></i></button>';
+                }
                 return $html_string;
             })
             ->addColumn('name', function ($item) {
+                if (Auth::user()->role_id == 3) {
+                    return $item->name;
+                }
                 $route = route('users.permissions', $item->id);
                 if (Auth::user()->role_id == 2) {
                     $route = route('users.users-permissions', $item->id);
@@ -56,7 +73,9 @@ class UserHelper
                 return $item->userWebsites->count('id');
             })
             ->addColumn('status', function ($item) {
-                if ($item->status == 1) {
+                if ($item->is_deleted == 1) {
+                    return '<span class="badge badge-danger ">Deleted</span>';
+                } else if ($item->status == 1) {
                     return '<span class="badge badge-success ">Active</span>';
                 } else {
                     return '<span class="badge badge-danger ">Suspended</span>';
@@ -77,9 +96,9 @@ class UserHelper
             $user->email = $request->email;
             $user->password = bcrypt(12345678);
             $user->status = 1;
+            $user->role_id = 2;
+            $user->parent_id = Auth::user()->id;
             if ($user->save()) {
-                $userRole = Role::where('name', 'user')->first();
-                $user->roles()->attach($userRole);
                 Mail::to($request->email)->send(new UserSignupMail($mailData));
                 return response()->json(['success' => true]);
             }
@@ -88,8 +107,19 @@ class UserHelper
     }
     public static function userStatus($request)
     {
-        $user = User::where('id', $request->id)->update(['status' => $request->status]);
-        return ($user == 1) ? response()->json(['success' => true]) : response()->json(['success' => false]);
+        $user = User::find($request->id);
+        $user->status = $request->status;
+        $user->save();
+        if (Auth::user()->role_id == 3) {
+            if ($user->parent_id == null) {
+                $users = User::where('parent_id', $user->id)->get();
+                foreach ($users as $sub_users) {
+                    $sub_users->status = $user->status;
+                    $sub_users->save();
+                }
+            }
+        }
+        return ($user) ? response()->json(['success' => true]) : response()->json(['success' => false]);
     }
     public static function update($request)
     {
@@ -107,9 +137,13 @@ class UserHelper
     }
     public static function sendVerificationCodeEmail($request)
     {
-        $user = User::where('email', $request->email)->where('status', 1)->first();
+        $user = User::where('email', $request->email)->first();
         if ($user && Hash::check($request->password, $user->password)) {
-            if ($user->remember_token != null) {
+            if ($user->is_deleted == 1) {
+                return response()->json(['deleted_user' => true]);
+            } else if ($user->status == 0) {
+                return response()->json(['suspended_user' => true]);
+            } else if ($user->remember_token != null) {
                 return response()->json(['direct_login' => true]);
             }
             $user->verification_code = Str::random(128);
@@ -154,5 +188,22 @@ class UserHelper
         $user->permissions = serialize($permissions);
         $user->save();
         return response()->json(['success' => true]);
+    }
+
+    public static function delete($request)
+    {
+        $user = User::find($request->id);
+        if ($user) {
+            $user->is_deleted = 1;
+            $user->save();
+            if ($user->parent_id == null) {
+                $users = User::where('parent_id', $user->id)->get();
+                foreach ($users as $sub_users) {
+                    $sub_users->is_deleted = 1;
+                    $sub_users->save();
+                }
+            }
+            return response()->json(['success' => true]);
+        }
     }
 }

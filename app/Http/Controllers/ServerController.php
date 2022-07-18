@@ -68,4 +68,19 @@ class ServerController extends Controller
     {
         return ServersHelper::update($request);
     }
+
+    public function bindedWebsites(Request $request)
+    {
+        return ServersHelper::bindedWebsites($request);
+    }
+
+    public function getBindedWebsites(Request $request)
+    {
+        return ServersHelper::getBindedWebsites($request);
+    }
+
+    public function saveBindedWebsites(Request $request)
+    {
+        return ServersHelper::saveBindedWebsites($request);
+    }
 }

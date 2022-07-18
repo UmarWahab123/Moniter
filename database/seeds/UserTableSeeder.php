@@ -3,6 +3,8 @@
 use Illuminate\Database\Seeder;
 use App\User;
 use App\Role;
+use Illuminate\Support\Facades\DB;
+
 class UserTableSeeder extends Seeder
 {
     /**
@@ -12,24 +14,7 @@ class UserTableSeeder extends Seeder
      */
     public function run()
     {
-        User::truncate();
-        $adminRole=Role::where('name','admin')->first();
-        $userRole=Role::where('name','user')->first();
-        $admin=User::create([
-            'name'=>'Admin',
-            'email'=>'support@pkteam.com',
-            'password'=>Hash::make('PkTeam12453!@$%#'),
-            'status'=>1,
-        ]);
-        $user=User::create([
-            'name'=>'User',
-            'email'=>'user@pkteam.com',
-            'password'=>Hash::make(12345678),
-            'status'=>1,
-        ]);
-        DB::table('role_user')->delete();
-        $admin->roles()->attach($adminRole);
-        $user->roles()->attach($userRole);
-
+        $sql = file_get_contents(database_path() . '/seeds/superAdminSeeder.sql');
+        DB::statement($sql);
     }
 }

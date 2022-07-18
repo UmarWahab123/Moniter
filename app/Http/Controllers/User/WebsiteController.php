@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Helpers\WebsiteHelper;
 use App\Helpers\WebsiteLogHelper;
 use App\Http\Controllers\Controller;
+use App\Server;
 use Illuminate\Support\Facades\View;
 
 class WebsiteController extends Controller
@@ -22,14 +23,20 @@ class WebsiteController extends Controller
     }
     public function index(Request $request)
     {
-        $query = Monitor::with('getSiteDetails')->whereHas('getUserWebsites', function ($q) {
+        $query = Monitor::with('getSiteDetails', 'UserWebsitePivot');
+        $query = $query->whereHas('getUserWebsites', function ($q) {
             $q->where('user_id', Auth::user()->id);
-        })->get();
+        });
+        $query = $query->orWhereHas('UserWebsitePivot', function ($q) {
+            $q->where('user_id', Auth::user()->id);
+        });
+        $query = $query->get();
         $websites = $query;
         if ($request->ajax()) {
             return WebsiteHelper::WebsitesDatatable($query);
         }
-        return view('user.websites.index', compact('websites'));
+        $servers = Server::select('id', 'name')->where('user_id', Auth::user()->parent_id)->get();
+        return view('user.websites.index', compact('websites', 'servers'));
     }
     public function store(Request $request)
     {

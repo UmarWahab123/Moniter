@@ -191,7 +191,7 @@
                     @endif
                     $('#editUserModal').modal('show');
                     $('#editID').val($(this).val());
-                    $('#editName').val($(this).parent().prev().prev().prev().prev().html());
+                    $('#editName').val($(this).parent().prev().prev().prev().prev().text().trim());
                     $('#editEmail').val($(this).parent().prev().prev().prev().html());
                 });
                 $('#editUserForm').on('submit', function(e) {

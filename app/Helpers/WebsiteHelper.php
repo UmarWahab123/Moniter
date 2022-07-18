@@ -2,16 +2,19 @@
 
 namespace App\Helpers;
 
-use Artisan;
 use Auth;
-use Spatie\Url\Url;
-use App\UserWebsite;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\SiteStatusMail;
-use Yajra\Datatables\Datatables;
-use App\WebsiteLog;
+use Artisan;
+use App\User;
+use App\Server;
 use App\Monitor;
 use App\Setting;
+use App\WebsiteLog;
+use Spatie\Url\Url;
+use App\UserWebsite;
+use App\Mail\SiteStatusMail;
+use App\UserWebsitePermission;
+use Yajra\Datatables\Datatables;
+use Illuminate\Support\Facades\Mail;
 
 class WebsiteHelper
 {
@@ -19,30 +22,49 @@ class WebsiteHelper
     {
         $query = Monitor::whereHas('getUserWebsites', function ($q) {
             $q->where('user_id', Auth::user()->id);
-        })->with('getSiteDetails')->get();
+        })
+            ->orWhereHas('user', function ($q) {
+                $q->where('parent_id', Auth::user()->id);
+            })
+            ->with('getSiteDetails', 'UserWebsitePivot')->get();
         $websites = $query;
         if ($request->ajax()) {
             return WebsiteHelper::WebsitesDatatable($query);
         }
-        return view('admin.websites.index', compact('websites'));
+        $servers = Server::select('id', 'name')->where('user_id', Auth::user()->id)->get();
+        $users = User::where('role_id', 2)->where('parent_id', Auth::user()->id)->select('id', 'name')->get();
+        return view('admin.websites.index', compact('websites', 'servers', 'users'));
     }
 
     public static function WebsitesDatatable($query)
     {
         return Datatables::of($query)
             ->addIndexColumn()
+            ->addColumn('checkbox', function ($item) {
+                $html_string = '<input type="checkbox" name="' . $item->id . '"" id="' . $item->id . '"" value="' . $item->id . '" class="checkbox dt_checkboxes">';
+                return $html_string;
+            })
             ->addColumn('action', function ($item) {
-                if ($item->getSiteDetails != null) {
-                    $html_string = null;
-                    if ($item->getSiteDetails->is_featured == 1) {
-                        $html_string = ' <button   value="' . $item->id . '" data-status="0" class="btn btn-outline-secondary btn-sm feature"  title="Click to unfetaure"><i class="fa fa-star "></i></button>';
-                    } else {
-                        $html_string = ' <button   value="' . $item->id . '" data-status="1" class="btn btn-outline-success btn-sm feature"  title="Click to fetaure"><i class="fa fa-star "></i></button>';
+                $html_string = null;
+                $user_website_permission = $item->UserWebsitePivot->where('user_id', Auth::user()->id)->first();
+                if ($item->user_id == Auth::user()->id || ($user_website_permission && $user_website_permission->permission == 1) || Auth::user()->role_id == 1) {
+                    if ($item->getSiteDetails != null) {
+                        if ($item->getSiteDetails->is_featured == 1) {
+                            $html_string = ' <button   value="' . $item->id . '" data-status="0" class="btn btn-outline-secondary btn-sm feature"  title="Click to unfetaure"><i class="fa fa-star "></i></button>';
+                        } else {
+                            $html_string = ' <button   value="' . $item->id . '" data-status="1" class="btn btn-outline-success btn-sm feature"  title="Click to fetaure"><i class="fa fa-star "></i></button>';
+                        }
                     }
+                    $html_string .= ' <button  value="' . $item->id . '" data-developer_email="' . $item->getSiteDetails->developer_email . '" data-emails="' . $item->getSiteDetails->emails . '" data-emails="' . $item->getSiteDetails->emails . '" data-ssl="' . $item->certificate_check_enabled . '"  class="btn  btn-outline-primary btn-sm edit-site "  title="Edit"><i class="fa fa-pencil"></i></button>';
+
+                    $html_string .= ' <button  value="' . $item->id . '"  class="btn btn-outline-danger btn-sm delete-site"  title="Delete"><i class="fa fa-trash-o"></i></button>';
                 }
-                $html_string .= ' <button  value="' . $item->id . '" data-developer_email="' . $item->getSiteDetails->developer_email . '" data-emails="' . $item->getSiteDetails->emails . '" data-emails="' . $item->getSiteDetails->emails . '" data-ssl="' . $item->certificate_check_enabled . '"  class="btn  btn-outline-primary btn-sm edit-site "  title="Edit"><i class="fa fa-pencil"></i></button>';
+
                 $html_string .= ' <a  href=' . url("admin/website-logs/$item->id") . ' value="' . $item->id . '"  class="btn btn-outline-info btn-sm"  title="Details"><i class="fa fa-eye "></i></a>';
-                $html_string .= ' <button  value="' . $item->id . '"  class="btn btn-outline-danger btn-sm delete-site"  title="Delete"><i class="fa fa-trash-o"></i></button>';
+                return $html_string;
+            })
+            ->addColumn('assigned_users', function ($item) {
+                $html_string = ' <button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm btn_view_assigned_users"  title="View Assigned Users"><i class="fa fa-eye"></i></button>';
                 return $html_string;
             })
             ->addColumn('title', function ($item) {
@@ -94,7 +116,7 @@ class WebsiteHelper
             ->setRowId(function ($item) {
                 return $item->id;
             })
-            ->rawColumns(['action', 'status', 'certificate_check'])
+            ->rawColumns(['action', 'status', 'certificate_check', 'checkbox', 'assigned_users'])
             ->make(true);
     }
 
@@ -108,7 +130,9 @@ class WebsiteHelper
             'unique' => 'The url already existed'
         ]);
         $mailData = $request->all();
-        define('STDIN', fopen("php://stdin", "r"));
+        if (!defined('STDIN')) {
+            define('STDIN', fopen("php://stdin", "r"));
+        }
         $output = Artisan::call("monitor:create " . $request->url);
         $websites = Monitor::get();
         $url = Url::fromString($request->url);
@@ -132,7 +156,7 @@ class WebsiteHelper
                 }
                 $uweb->ssl = $ssl;
                 $uweb->save();
-                Monitor::where('id', $web->id)->update(['certificate_check_enabled' => $ssl, 'user_id' => Auth::user()->id]);
+                Monitor::where('id', $web->id)->update(['certificate_check_enabled' => $ssl, 'user_id' => Auth::user()->id, 'server_id' => $mailData['server']]);
                 $mails = $request->emails;
                 if ($mails != null) {
                     $mails = explode(",", $request->emails);
@@ -162,6 +186,10 @@ class WebsiteHelper
         if ($output > 0) {
             UserWebsite::where('website_id', $request->id)->delete();
             WebsiteLog::where('website_id', $request->id)->delete();
+            $permissions = UserWebsitePermission::where('website_id', $request->id)->get();
+            foreach ($permissions as $permission) {
+                $permission->delete();
+            }
             return response()->json(['success' => true]);
         }
     }
@@ -175,6 +203,7 @@ class WebsiteHelper
             $data['developer_email'] = $monitor->getSiteDetails->developer_email;
             $data['owner_email'] = $monitor->getSiteDetails->owner_email;
             $data['ssl'] = $monitor->getSiteDetails->ssl;
+            $data['server'] = $monitor->server_id;
             return response()->json(['success' => true, 'data' => $data]);
         }
         return response()->json(['success' => false]);
@@ -188,6 +217,7 @@ class WebsiteHelper
             $ssl = 1;
         }
         $monitor->certificate_check_enabled = $ssl;
+        $monitor->server_id = $request['server'];
         if ($monitor->save()) {
             UserWebsite::where('website_id', $request->id)->update(['emails' => $request->emails, 'title' => $request->title, 'developer_email' => $request->developer_email, 'owner_email' => $request->owner_email]);
             return response()->json(['success' => true]);
@@ -200,14 +230,48 @@ class WebsiteHelper
         $count = UserWebsite::where('user_id', Auth::user()->id)->where('is_featured', 1)->count();
         if ($request->status == 1) {
             if ($count < 10) {
-                UserWebsite::where('id', $request->id)->update(['is_featured' => $request->status]);
+                UserWebsite::where('website_id', $request->id)->update(['is_featured' => $request->status]);
                 return response()->json(['success' => true, 'limit' => 0]);
             } else {
                 return response()->json(['success' => true, 'limit' => 1]);
             }
         } else {
-            UserWebsite::where('id', $request->id)->update(['is_featured' => $request->status]);
+            UserWebsite::where('website_id', $request->id)->update(['is_featured' => $request->status]);
             return response()->json(['success' => true, 'limit' => 2]);
+        }
+    }
+
+    public static function assignWebsiteToSubUser($request)
+    {
+        $websites = Monitor::whereIn('id', $request->selected_items)->get();
+        foreach ($websites as $website) {
+            $permission = UserWebsitePermission::where('website_id', $website->id)->where('user_id', $request->sub_user_id)->first();
+            if ($permission != null) {
+                $permission->permission = $request->permission;
+            } else {
+                $permission = new UserWebsitePermission();
+                $permission->user_id = $request->sub_user_id;
+                $permission->website_id = $website->id;
+                $permission->permission = $request->permission;
+            }
+            $permission->save();
+        }
+        return response()->json(['success' => true]);
+    }
+
+    public static function showAssignedUser($request)
+    {
+        $website = Monitor::find($request->id);
+        if ($website != null) {
+            $html = "";
+            foreach ($website->UserWebsitePivot as $item) {
+                $permission = ($item->permission == 0) ? 'Read' : 'Read/Write';
+                $html .= "<tr>";
+                $html .= "<td>" . $item->user->name . "</td>";
+                $html .= "<td>" . $permission . "</td>";
+                $html .= "</tr>";
+            }
+            return response()->json(['success' => true, 'html' => $html]);
         }
     }
 }

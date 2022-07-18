@@ -13,3 +13,5 @@ Route::group(['middleware' => 'auth.jwt'], function () {
 
 /*to get server details*/
 Route::get('get-server-details', 'Api\ApiController@getServerDetails');
+
+Route::post('/command-executed','Api\ApiController@commandExecuted')->name('command-executed');

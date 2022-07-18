@@ -39,6 +39,7 @@
                                                 <th>Added By</th>
                                                 <th>File</th>
                                                 <th>Server Logs</th>
+                                                <th>Binded Websites</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -138,6 +139,41 @@
                 </div>
             </div>
 
+            <div class="modal fade" id="binded_websites">
+                <div class="modal-dialog" style="max-width:800px">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Binded Websites</h5>
+                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="websites">Select Webiste to bind to this Server</label>
+                                    <select name="websites" id="binded_websites_select" class="form-control" style="min-height: 45px;">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="table-responsive mt-2 w-100">
+                                        <table id="binded_websites_table" class="table table-stripped text-center">
+                                            <thead>
+                                                <tr>
+                                                    <th>Title</th>
+                                                    <th>URL</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
             @if (Auth::user()->role_id == 1)
                 @include('admin.assets.javascript')
             @else
@@ -206,6 +242,10 @@
                         {
                             data: 'server_logs',
                             name: 'server_logs'
+                        },
+                        {
+                            data: 'binded_websites',
+                            name: 'binded_websites'
                         },
                         {
                             data: 'action',
@@ -290,7 +330,7 @@
                     var id = $(this).val();
                     Swal.fire({
                         title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
+                        text: "You want to delete this? Websites binded with this server will also be deleted!",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
@@ -378,7 +418,79 @@
                         reloadDatatable();
                     }, 65000);
                 }
+                let server_id;
+                $(document).on('click', '.btn_binded_websites', function(e) {
+                    server_id = $(this).val();
+                    $.ajax({
+                        url: "{{ route('servers.binded-websites') }}",
+                        method: 'post',
+                        data: {server_id: server_id},
+                        success: function(data) {
+                            if (data.success) {
+                                $('#binded_websites').modal('show');
+                                server_id = data.server_id;
+                                $('#binded_websites_table').DataTable().ajax.reload();
+                                $('#binded_websites_select').html("");
+                                $('#binded_websites_select').append(data.html);
+                            }
+                        },
+                        error: function() {
+                            toastr.error('Error!', 'Something went wrong', {
+                                "positionClass": "toast-bottom-right"
+                            });
+                        },
+                    })
+                });
+                $('#binded_websites_table').DataTable({
+                    serverSide: true,
+                    processing: true,
+                    searching: true,
+                    ordering: true,
+                    pageLength: {{ 50 }},
+                    "processing": true,
+                    'language': {
+                        'loadingRecords': '&nbsp;',
+                        'processing': 'Loading...'
+                    },
+                    scrollCollapse: true,
+                    ajax: {
+                        url: "{{ route('get-binded-websites') }}",
+                        data: function(data){data.id = server_id},
+                    },
+                    columns: [
+                        {
+                            data: 'title',
+                            title: 'title'
+                        },
+                        {
+                            data: 'url',
+                            name: 'url'
+                        }
+                    ],
 
+                });
+
+                $(document).on('change','#binded_websites_select', function(e) {
+                    let website_id = $(this).val();
+                    $.ajax({
+                        url: '{{ route("save-binded-websites") }}',
+                        method: 'post',
+                        data: {website_id:website_id, server_id:server_id},
+                        success: function(data) {
+                            if (data.success){
+                                toastr.success('Success!', 'Wesite added to Specified server Successfully', {
+                                    "positionClass": "toast-bottom-right"
+                                });
+                                $('#binded_websites_table').DataTable().ajax.reload();
+                            }
+                            else {
+                                toastr.info('Info!', 'Website already added to this Server', {
+                                    "positionClass": "toast-bottom-right"
+                                });
+                            }
+                        }
+                    });
+                });
                 // $(document).on('click','.feature', function(e) {
 
                 //     var id = $(this).val();

@@ -51,6 +51,16 @@ class WebsiteController extends Controller
         return WebsiteHelper::featureWebsite($request);
     }
 
+    public function assignWebsiteToSubUser(Request $request)
+    {
+        return WebsiteHelper::assignWebsiteToSubUser($request);
+    }
+
+    public function showAssignedUser(Request $request)
+    {
+        return WebsiteHelper::showAssignedUser($request);
+    }
+
     public function getDownReason(Request $request)
     {
         $down_reason = WebsiteLog::where('id', $request->id)->value('down_reason');

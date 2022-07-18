@@ -87,7 +87,19 @@
                     $("#loader_modal").modal('show');
                 },
                 success: function(data) {
-                    if (data.email_verified == false) {
+                    if (data.deleted_user) {
+                        toastr.info('Info!',
+                        'Your Account has been deleted by Administrator. Please contact Administrator', {
+                            "positionClass": "toast-bottom-right"
+                        });
+                    }
+                    else if (data.suspended_user) {
+                        toastr.info('Info!',
+                        'Your Account has been Suspended by Administrator. Please contact Administrator', {
+                            "positionClass": "toast-bottom-right"
+                        });
+                    }
+                    else if (data.email_verified == false) {
                         toastr.info('Info!',
                         'Email Not Verified. Please Verify your email first', {
                             "positionClass": "toast-bottom-right"

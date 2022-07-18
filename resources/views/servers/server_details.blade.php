@@ -2,9 +2,13 @@
 
 @section('content')
     <div class="page-container">
+        @if (Auth::user() && Auth::user()->role_id == 1)
         @include('admin.assets.sidebar')
+        @else
+        @include('user.assets.sidebar')
+        @endif
         <div class="main-content">
-            @if (auth()->user()->userRole->role_id == 1)
+            @if (Auth::user() && Auth::user()->role_id == 1)
                 @include('admin.assets.title_area')
             @else
                 @include('user.assets.title_area')
@@ -214,13 +218,13 @@
 
                     </div>
                 </div>
-                @if (auth()->user()->userRole->role_id == 1)
+                @if (Auth::user() && Auth::user()->role_id == 1)
                     @include('admin.assets.footer')
                 @else
                     @include('user.assets.footer')
                 @endif
             </div>
-            @if (auth()->user()->userRole->role_id == 1)
+            @if (Auth::user() && Auth::user()->role_id == 1)
                 @include('admin.assets.javascript')
             @else
                 @include('user.assets.javascript')

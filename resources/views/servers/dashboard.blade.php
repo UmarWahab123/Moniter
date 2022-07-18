@@ -3,7 +3,11 @@
 @section('content')
     <div class="page-container">
         <!-- sidebar menu area start -->
+        @if (Auth::user() && Auth::user()->role_id == 1)
         @include('admin.assets.sidebar')
+        @else
+        @include('user.assets.sidebar')
+        @endif
         <!-- sidebar menu area end -->
         <!-- main content area start -->
         <div class="main-content">
@@ -12,8 +16,11 @@
 
             <!-- header area end -->
             <!-- page title area start -->
+            @if (Auth::user() && Auth::user()->role_id == 1)
             @include('admin.assets.title_area')
-
+            @else
+            @include('user.assets.title_area')
+            @endif
             <!-- page title area end -->
             <div class="main-content-inner">
                 <h3 class="pt-3">Servers Dashboard</h3>
@@ -358,10 +365,18 @@
         </div>
         <!-- main content area end -->
         <!-- footer area start-->
+        @if (Auth::user() && Auth::user()->role_id == 1)
         @include('admin.assets.footer')
+        @else
+        @include('user.assets.footer')
+        @endif
         <!-- footer area end-->
     </div>
+    @if (Auth::user() && Auth::user()->role_id == 1)
     @include('admin.assets.javascript')
+    @else
+    @include('user.assets.javascript')
+    @endif
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/series-label.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
