@@ -15,9 +15,8 @@ class CreateStripePayment extends Migration
     {
         Schema::create('stripe_payment', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('user_id')->nullable()->default(NULL)->constrained('users');
             $table->foreignId('package_id')->nullable()->default(NULL)->constrained('packages');
-          
             $table->string('currency')->nullable();
             $table->string('detail')->nullable();
             $table->string('customer_id')->nullable();

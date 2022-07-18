@@ -99,7 +99,8 @@ Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth'
     Route::get('/websites', 'WebsiteController@index')->name('websites');
     Route::get('subscription/',  [SubscriptionController::class,'index']);
     Route::post('createSubscription',  [SubscriptionController::class,'create']);
-    Route::post('sucessSubscription',  [SubscriptionController::class,'sucessSubscription']);
+    Route::get('sucessSubscription',  [SubscriptionController::class,'sucessSubscription']);
+    Route::get('cancelSubscription',  [SubscriptionController::class,'cancelSubscription']);
     Route::post('/add-website', 'WebsiteController@store')->name('add-website');
     Route::get('/delete-website', 'WebsiteController@destroy')->name('delete-website');
     Route::post('/edit-website', 'WebsiteController@update')->name('edit-website');

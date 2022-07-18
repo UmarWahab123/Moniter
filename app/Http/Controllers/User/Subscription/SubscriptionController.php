@@ -64,7 +64,7 @@ class SubscriptionController extends Controller
      */
     public function index(Request $request)
     {
-       
+
         return SubscriptionHelper::index();
     }
 
@@ -79,7 +79,8 @@ class SubscriptionController extends Controller
         $stripeClient = $this->stripeApiKey();
 
         $stripeProduct = $this->productStripeId();
-        return SubscriptionHelper::createSubscription($request,$stripeClient,$stripeProduct);
+
+        return SubscriptionHelper::createSubscription($request, $stripeClient, $stripeProduct);
     }
     public function sucessSubscription(Request $request)
     {
@@ -87,7 +88,13 @@ class SubscriptionController extends Controller
         $stripeClient = $this->stripeApiKey();
 
         $stripeProduct = $this->productStripeId();
-        return SubscriptionHelper::sucessSubscription($request,$stripeClient,$stripeProduct);
+
+        return SubscriptionHelper::sucessSubscription($request, $stripeClient, $stripeProduct);
+    }
+    public function cancelSubscription(Request $request)
+    {
+
+        return SubscriptionHelper::cancelSubscription();
     }
 
     /**
@@ -98,7 +105,7 @@ class SubscriptionController extends Controller
      */
     public function store(StorePackage $request)
     {
-    
+
         $stripeClient = $this->stripeApiKey();
 
         $stripeProduct = $this->productStripeId();
@@ -130,7 +137,7 @@ class SubscriptionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-   
+
     public function edit(Request $request)
     {
         return PackageHelper::edit($request);
@@ -145,9 +152,15 @@ class SubscriptionController extends Controller
     public function update(Request $request)
     {
         //
-        return PackageHelper::update($request);
+        return SubscriptionHelper::updatePackage($request);
     }
-  
+    public function pause(Request $request)
+    {
+        //
+        $stripeClient = $this->stripeApiKey();
+        return SubscriptionHelper::pauseSubscription($request,$stripeClient);
+    }
+
     public function updateStatus(Request $request)
     {
         //

@@ -402,19 +402,19 @@
                                 });
                                 $('#package_table').DataTable().ajax.reload();
                                 $('#PackageSubmitBtn').prop('disabled', false);
-                                $('#PackageSubmitBtn').html('Update');
+                                $('#PackageSubmitBtn').html('Submit');
                             } else if (data.success == false) {
                                 toastr.error('Error!', 'Something went wrong', {
                                     "positionClass": "toast-bottom-right"
                                 });
                                 $('#PackageSubmitBtn').prop('disabled', false);
-                                $('#PackageSubmitBtn').html('Update');
+                                $('#PackageSubmitBtn').html('Submit');
                             }
                         },
                         error: function(request, status, error) {
                          
                             $('#PackageSubmitBtn').prop('disabled', false);
-                            $('#PackageSubmitBtn').html('Update');
+                            $('#PackageSubmitBtn').html('Submit');
                             $('.form-control').removeClass('is-invalid');
                             $('.form-control').next().remove();
                             json = $.parseJSON(request.responseText);

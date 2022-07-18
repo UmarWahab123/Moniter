@@ -25,4 +25,8 @@ class StripePayment extends Model
     
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
+    public function package()
+    {
+        return $this->belongsTo(Package::class);
+    }
 }

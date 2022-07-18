@@ -26,4 +26,8 @@ class Package extends Model
     {
         return $this->hasMany(PackageFeature::class);
     }
+    public function stripeSubscription()
+    {
+        return $this->hasOne(StripePayment::class);
+    }
 }
