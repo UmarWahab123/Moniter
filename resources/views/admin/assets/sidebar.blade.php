@@ -65,6 +65,11 @@
                                  class="ti-server"></i><span>Servers</span></a>
                      </li>
                      @endif
+                     @if ($user_permissions && in_array('plans',$user_permissions))
+                     <li class="">
+                        <a href="{{ url('admin/package') }}" aria-expanded="true"><i class="ti-server"></i><span>Plans</span></a>
+                    </li>
+                     @endif
                      @if ($user_permissions && in_array('users',$user_permissions))
                      <li class="">
                          <a href="{{ url('admin/users') }}" aria-expanded="true"><i

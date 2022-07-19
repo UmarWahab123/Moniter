@@ -77,6 +77,13 @@
                                                 <input type="checkbox" @if ($permissions && in_array('servers',$permissions)) checked @endif @if ($permissions && in_array('servers',$permissions)) value="1" @else value = "0" @endif name="servers"> Servers
                                             </div>
                                             <div class="form-group">
+                                                @if ($user->role_id == 1)
+                                                <input type="checkbox" @if ($permissions && in_array('plans',$permissions)) checked @endif @if ($permissions && in_array('plans',$permissions)) value="1" @else value = "0" @endif name="plans"> Plans
+                                                @elseif ($user->role_id == 2)
+                                                <input type="checkbox" @if ($permissions && in_array('subscription',$permissions)) checked @endif @if ($permissions && in_array('subscription',$permissions)) value="1" @else value = "0" @endif name="subscription"> Subscription
+                                                @endif
+                                            </div>
+                                            <div class="form-group">
                                                 <input type="checkbox" @if ($permissions && in_array('users',$permissions)) checked @endif @if ($permissions && in_array('users',$permissions))  value="1" @else value = "0" @endif name="users"> Users
                                             </div>
                                             <div class="form-group">

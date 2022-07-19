@@ -73,18 +73,38 @@
                     </div>
                 </div>
             @endif
+            <div class="modal" id="loader_modal" role="dialog">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <h3 style="text-align:center;">Please wait</h3>
+                            <p style="text-align:center;"><img src="{{ asset('public/images/Spin-1s-200px.gif') }}" height="100px"
+                                    width="100px"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
             @yield('content')
 
             <script>
                 $(document).on('click', '#resendEmail', function() {
                     $.ajax({
+                        beforeSend: function() {
+                            $('#loader_modal').modal({
+                                backdrop: 'static',
+                                keyboard: false
+                            });
+                            $("#loader_modal").modal('show');
+                        },
                         url: "{{ route('emails.resendEmail') }}",
                         success: function(data) {
+                            $('#loader_modal').modal('hide');
                             toastr.success('Success!', 'Email Resend successfully', {
                                 "positionClass": "toast-bottom-right"
                             });
                         },
                         error: function(data) {
+                            $('#loader_modal').modal('hide');
                             toastr.error('Error!', 'Email not send, please check your internet connection', {
                                 "positionClass": "toast-bottom-right"
                             });

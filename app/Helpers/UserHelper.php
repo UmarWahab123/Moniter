@@ -179,6 +179,12 @@ class UserHelper
         if ($request->servers == 1) {
             array_push($permissions, 'servers');
         }
+        if ($request->plans == 1) {
+            array_push($permissions, 'plans');
+        }
+        if ($request->subscription == 1) {
+            array_push($permissions, 'subscription');
+        }
         if ($request->users == 1) {
             array_push($permissions, 'users');
         }

@@ -37,6 +37,11 @@ if (Auth::user()) {
                                 <a href="{{ url('user/websites') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Websites</span></a>
                             </li>
                             @endif
+                            @if ($user_permissions && in_array('subscription',$user_permissions))
+                            <li class="">
+                                <a href="{{ url('user/subscription') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Subscription</span></a>
+                            </li>
+                            @endif
                             @if ($user_permissions && in_array('email_templates',$user_permissions))
                             <li class="">
                                 <a href="{{ route('users.templates.index') }}" aria-expanded="true"><i
