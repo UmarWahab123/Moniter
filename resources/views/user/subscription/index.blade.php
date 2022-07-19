@@ -80,7 +80,7 @@
                                     <br>
                                     <div class="row">
                                         <div class="col">
-                                            <button class="btn btn-primary btn-sm mb-2 addSubcriptionBtn" name="{{$pk->id}}" id="">Pause</button>
+                                            <button class="btn btn-primary btn-sm mb-2" name="{{$pk->id}}" id="">Pause</button>
 
                                         </div>
                                     </div>
@@ -127,21 +127,14 @@
                                         </div>
                                     </div>
                                     <br>
-                                    @if (isset($pk['stripeSubscription']))
+                                  
                                     <div class="row">
                                         <div class="col">
                                             <button class="btn btn-primary btn-sm mb-2 addSubcriptionBtn" name="{{$pk->id}}" id="">Create Subscription</button>
 
                                         </div>
                                     </div>
-                                    @else
-                                    <div class="row">
-                                        <div class="col">
-                                            <button class="btn btn-primary btn-sm mb-2 addSubcriptionBtn" name="{{$pk->id}}" id="">Update Subscription</button>
-
-                                        </div>
-                                    </div>
-                                    @endif
+                                  
                                 </div>
                             </div>
 
