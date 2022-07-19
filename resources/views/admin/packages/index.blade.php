@@ -317,7 +317,8 @@
                         
 
                                 window.setTimeout( function() {
-                                window.location.reload();
+                                    table.ajax.reload();
+                               // window.location.reload();
                                 }, 1000);
                            
                         },
@@ -349,7 +350,8 @@
                         
 
                                 window.setTimeout( function() {
-                                window.location.reload();
+                                    table.ajax.reload();
+                                    // window.location.reload();
                                 }, 1000);
                            
                           
