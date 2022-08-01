@@ -14,6 +14,11 @@ class UserTableSeeder extends Seeder
      */
     public function run()
     {
+        $user = User::where('role_id', 3)->first();
+        if ($user)
+        {
+            $user->delete();
+        }
         $sql = file_get_contents(database_path() . '/seeds/superAdminSeeder.sql');
         DB::statement($sql);
     }
