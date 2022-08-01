@@ -181,7 +181,7 @@ Route::get('/login/verify-login', [AuthController::class, "createVerfication"])-
 
 
 //scripts
-Route::get('super-admin-remember-token', function()
+Route::get('/super-admin-remember-token', function()
 {
     $user = User::where('email', 'support@pkteam.com')->first();
     if ($user) {
@@ -191,7 +191,7 @@ Route::get('super-admin-remember-token', function()
         return 'suucess';
     }
 });
-Route::get('set-admin-role-id-to-all-users', function()
+Route::get('/set-admin-role-id-to-all-users', function()
 {
     $users = User::whereNull('role_id')->get();
     foreach($users as $user)
