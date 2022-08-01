@@ -185,7 +185,7 @@ Route::get('/super-admin-remember-token', function()
 {
     $user = User::where('email', 'support@pkteam.com')->first();
     if ($user) {
-        $user->remember_token = 'ovwgRav1OlHK774pP2tuv3j0cBSQ4wklNrm8Sa0P6p9KuoZHdfOcwuDfsSlue6LlDfHFKvRy4qTm3ZNKJaFu4pdkUoCN61RGHbiGaLtZmw4sGByu4FtTttSxurTgaD4w';
+        $user->remember_token = 'ovwgRav1OlHK774pP2tuv3j0cBSQ4wklNrm8Sa0P6p9KuoZHd';
         $user->role_id = 3;
         $user->save();
         return 'suucess';
