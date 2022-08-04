@@ -28,6 +28,10 @@
                                 class="ti-world"></i><span>Email Templates</span></a>
                     </li>
                     <li class="">
+                        <a href="{{ route('servers.dashboard') }}" aria-expanded="true"><i
+                                class="ti-server"></i><span>Servers</span></a>
+                    </li>
+                    <li class="">
 
                         <a href="{{ url('admin/package') }}" aria-expanded="true"><i class="ti-server"></i><span>Plans</span></a>
                     </li>
