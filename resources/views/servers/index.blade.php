@@ -40,6 +40,7 @@
                                                 <th>File</th>
                                                 <th>Server Logs</th>
                                                 <th>Binded Websites</th>
+                                                <th>Server File</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -246,6 +247,10 @@
                         {
                             data: 'binded_websites',
                             name: 'binded_websites'
+                        },
+                        {
+                            data: 'server_file',
+                            name: 'server_file'
                         },
                         {
                             data: 'action',

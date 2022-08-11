@@ -64,6 +64,14 @@ class ServersHelper
                     $html_string = ' <button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm btn_binded_websites"  title="Binded Websites"><i class="fa fa-eye"></i></button>';
                     return $html_string;
                 })
+                ->addColumn('server_file', function ($item) {
+                    if ($item->server_file_path) {
+                        $html_string = ' <a target="_blank" download href=' . $item->server_file_path . ' class="btn btn-outline-info btn-sm" title="Download" ><i class="fa fa-download"></i></a>';
+                        return $html_string;
+                    } else {
+                        return $item->server_file_path != null ? $item->server_file_path : 'N.A';
+                    }
+                })
                 ->addColumn('action', function ($item) {
                     $html_string = ' <button  value="' . $item->id . '"class="btn  btn-outline-primary btn-sm btn-edit "  title="Edit"><i class="fa fa-pencil"></i></button>';
                     $html_string .= ' <button  value="' . $item->id . '"  class="btn btn-outline-danger btn-sm btn-delete"  title="Delete"><i class="fa fa-trash-o"></i></button>';
@@ -72,7 +80,7 @@ class ServersHelper
                 ->setRowId(function ($item) {
                     return $item->id;
                 })
-                ->rawColumns(['name', 'ip_address', 'added_by', 'file', 'os', 'server_logs', 'action', 'binded_websites'])
+                ->rawColumns(['name', 'ip_address', 'added_by', 'file', 'os', 'server_logs', 'action', 'binded_websites', 'server_file'])
                 ->make(true);
         }
     }
@@ -105,6 +113,12 @@ class ServersHelper
         $response = ServersHelper::curl_call($url, $data);
         if ($response) {
             $create->file_path  = $response->file_path;
+            $create->save();
+        }
+        $url  = $api_path . '/add_server_new';
+        $response = ServersHelper::curl_call($url, $data);
+        if ($response) {
+            $create->server_file_path  = $response->file_path;
             $create->save();
         }
         return response()->json([
