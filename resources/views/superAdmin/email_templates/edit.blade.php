@@ -9,12 +9,12 @@
     <!-- page container area start -->
     <div class="page-container">
         <!-- sidebar menu area start -->
-        @include('admin.assets.sidebar')
+        @include('superAdmin.assets.sidebar')
         <!-- sidebar menu area end -->
         <!-- main content area start -->
         <div class="main-content">
             <!-- page title area start -->
-            @include('admin.assets.title_area')
+            @include('superAdmin.assets.title_area')
 
             <!-- page title area end -->
             <div class="main-content-inner">
@@ -85,11 +85,11 @@
                 </div>
                 <!-- main content area end -->
                 <!-- footer area start-->
-                @include('admin.assets.footer')
+                @include('superAdmin.assets.footer')
 
                 <!-- footer area end-->
             </div>
-            @include('admin.assets.javascript')
+            @include('superAdmin.assets.javascript')
             <!-- Start datatable js -->
             <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
             <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>

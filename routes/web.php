@@ -84,16 +84,6 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['aut
     Route::get('package/update-status',  [PackageController::class,'updateStatus']);
    // Route::post('add-server', 'ServerController@addServer')->name('add-server');
 
-
-    // Email Template Routes
-    Route::get('/email-templates', 'EmailTemplateController@index')->name('templates.index');
-    Route::get('/get-email-templates-data', 'EmailTemplateController@getTemplatesData')->name('templates.getTemplates');
-    Route::get('/email-templates/create', 'EmailTemplateController@create')->name('templates.create');
-    Route::post('/email-templates/store', 'EmailTemplateController@store')->name('templates.store');
-    Route::post('/email-templates/update', 'EmailTemplateController@update')->name('templates.update');
-    Route::post('/email-templates/delete/{id}', 'EmailTemplateController@delete')->name('templates.delete');
-    Route::get('/email-templates/edit/{id}', 'EmailTemplateController@edit')->name('templates.edit');
-    Route::post('/email-templates/storeKeyword', 'EmailTemplateController@storeKeyword')->name('templates.storeKeyword');
 });
 
 Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth', 'user']], function () {
@@ -130,14 +120,7 @@ Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth'
     Route::get('/{id}/user-permissions', 'UserController@userPermissions')->name('users.users-permissions');
     Route::post('save-permissions', 'UserController@saveUserPermissions')->name('users.users-save-permissions');
 
-    // Email Template Routes
-    Route::get('/email-templates', 'EmailTemplateController@index')->name('users.templates.index');
-    Route::get('/get-email-templates-data', 'EmailTemplateController@getTemplatesData')->name('users.templates.getTemplates');
-    Route::get('/email-templates/create', 'EmailTemplateController@create')->name('users.templates.create');
-    Route::post('/email-templates/store', 'EmailTemplateController@store')->name('users.templates.store');
-    Route::post('/email-templates/update', 'EmailTemplateController@update')->name('users.templates.update');
-    Route::post('/email-templates/delete/{id}', 'EmailTemplateController@delete')->name('users.templates.delete');
-    Route::get('/email-templates/edit/{id}', 'EmailTemplateController@edit')->name('users.templates.edit');
+
 });
 
 /*here we will use same routes for both admin and users*/
@@ -166,6 +149,16 @@ Route::group(['namespace' => 'SuperAdmin', 'prefix' => 'superAdmin', 'middleware
     Route::get('/user/get-data', 'UserController@getData')->name('superAdmin.get-data');
     Route::get('/user-status', 'UserController@userStatus')->name('superAdmin.user-status');
     Route::post('/user-delete', 'UserController@delete')->name('superAdmin.user-delete');
+
+    // Email Template Routes
+    Route::get('/email-templates', 'EmailTemplateController@index')->name('templates.index');
+    Route::get('/get-email-templates-data', 'EmailTemplateController@getTemplatesData')->name('templates.getTemplates');
+    Route::get('/email-templates/create', 'EmailTemplateController@create')->name('templates.create');
+    Route::post('/email-templates/store', 'EmailTemplateController@store')->name('templates.store');
+    Route::post('/email-templates/update', 'EmailTemplateController@update')->name('templates.update');
+    Route::post('/email-templates/delete/{id}', 'EmailTemplateController@delete')->name('templates.delete');
+    Route::get('/email-templates/edit/{id}', 'EmailTemplateController@edit')->name('templates.edit');
+    Route::post('/email-templates/storeKeyword', 'EmailTemplateController@storeKeyword')->name('templates.storeKeyword');
 });
 
 Route::get('emails/resend', [UserController::class, 'resendEmail'])->name('emails.resendEmail');

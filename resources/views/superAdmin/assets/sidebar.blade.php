@@ -26,6 +26,10 @@
                          <a class="d-none" href="{{ url('admin/devices') }}" aria-expanded="true"><i
                                  class="ti-dashboard"></i><span>Devices</span></a>
                      </li>
+                     <li class="">
+                        <a href="{{ route('templates.index') }}" aria-expanded="true"><i
+                                class="ti-world"></i><span>Email Templates</span></a>
+                    </li>
                  </ul>
              </nav>
          </div>

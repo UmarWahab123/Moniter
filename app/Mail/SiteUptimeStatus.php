@@ -31,7 +31,7 @@ class SiteUptimeStatus extends Mailable
     public function build()
     {
         $mailData = $this->mailData;
-        $email_template = EmailTemplate::where('name', 'SiteUptimeStatus')->where('status', 1)->where('user_id', Auth::user()->id)->first();
+        $email_template = EmailTemplate::where('name', 'SiteUptimeStatus')->where('status', 1)->first();
         if ($email_template) {
             $template_keywords = TemplateKeyword::select('keyword')->where('status', 1)->get();
             $body = $email_template->body;

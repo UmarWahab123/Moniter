@@ -9,12 +9,12 @@
     <!-- page container area start -->
     <div class="page-container">
         <!-- sidebar menu area start -->
-        @include('user.assets.sidebar')
+        @include('superAdmin.assets.sidebar')
         <!-- sidebar menu area end -->
         <!-- main content area start -->
         <div class="main-content">
             <!-- page title area start -->
-            @include('user.assets.title_area')
+            @include('superAdmin.assets.title_area')
 
             <!-- page title area end -->
             <div class="main-content-inner">
@@ -66,6 +66,10 @@
                             </div>
                             <div class="col-sm-4 mt-4 pt-2">
                                 <div class="border p-3 bg-light">
+                                    <div class="col-md-12">
+                                        <a href="javascript;:" class="btn btn-primary" data-toggle="modal"
+                                            data-target="#Modal_Keyword">Add Keyword</a>
+                                    </div>
                                     <div class="col-md-12 keywords_div">
                                         <strong>Note: </strong>Please copy and paste the following variables in the editor
                                         as
@@ -78,14 +82,37 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="modal fade" id="Modal_Keyword">
+                        <div class="modal-dialog" style="max-width:800px">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Add New Keyword</h5>
+                                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="Form_keyword">
+                                        @csrf
+                                        <input type="hidden" name="id" id="editId">
+                                        <div class="from-group">
+                                            <label class="m-0 mt-2">Keyword <span class="text-danger">*</span></label>
+                                            <input type="text" name="keyword" class="form-control" id="keyword"
+                                                placeholder="Enter Keyword e.g. [[name]]">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary mt-4 pr-4 pl-4">Save</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <!-- main content area end -->
                 <!-- footer area start-->
-                @include('user.assets.footer')
+                @include('superAdmin.assets.footer')
 
                 <!-- footer area end-->
             </div>
-            @include('user.assets.javascript')
+            @include('superAdmin.assets.javascript')
             <!-- Start datatable js -->
             <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
             <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
@@ -113,7 +140,7 @@
                         return false;
                     }
                     $.ajax({
-                        url: "{{ route('users.templates.store') }}",
+                        url: "{{ route('templates.store') }}",
                         method: "POST",
                         data: new FormData(this),
                         cache: false,
@@ -125,6 +152,37 @@
                                     "positionClass": "toast-bottom-right"
                                 });
                                 location.href = '{{ route('templates.index') }}';
+                            }
+                        }
+                    });
+                });
+                $(document).on('submit', '#Form_keyword', function(e) {
+                    e.preventDefault();
+                    if ($('#keyword').val() == '') {
+                        toastr.info('Info!', 'Keyword Field is required', {
+                            "positionClass": "toast-bottom-right"
+                        });
+                        return false;
+                    }
+                    $.ajax({
+                        url: "{{ route('templates.storeKeyword') }}",
+                        method: "POST",
+                        data: new FormData(this),
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        success: function(data) {
+                            if (data.success) {
+                                $('#Modal_Keyword').modal('hide');
+                                $('.keywords_div').append('<p class="mb-1">' + data.keyword + '</p>')
+                                toastr.success('Success!', 'Keyword Added Successfully', {
+                                    "positionClass": "toast-bottom-right"
+                                });
+                                $('#keyword').val('');
+                            } else {
+                                toastr.error('Error!', 'This Keyword Already Existed', {
+                                    "positionClass": "toast-bottom-right"
+                                });
                             }
                         }
                     });

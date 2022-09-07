@@ -71,9 +71,6 @@
                                                 <input type="checkbox" @if ($permissions && in_array('websites',$permissions)) checked @endif @if ($permissions && in_array('websites',$permissions)) value="1" @else value = "0" @endif name="websites"> Websites
                                             </div>
                                             <div class="form-group">
-                                                <input type="checkbox" @if ($permissions && in_array('email_templates',$permissions)) checked @endif @if ($permissions && in_array('email_templates',$permissions))  value="1" @else value = "0" @endif name="email_templates"> Email Templates
-                                            </div>
-                                            <div class="form-group">
                                                 <input type="checkbox" @if ($permissions && in_array('servers',$permissions)) checked @endif @if ($permissions && in_array('servers',$permissions)) value="1" @else value = "0" @endif name="servers"> Servers
                                             </div>
                                             <div class="form-group">

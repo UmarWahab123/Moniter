@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\SuperAdmin;
 
 use App\EmailTemplate;
 use App\TemplateKeyword;
@@ -22,7 +22,7 @@ class EmailTemplateController extends Controller
 
     public function index()
     {
-        return view('admin.email_templates.index');
+        return view('superAdmin.email_templates.index');
     }
 
     public function getTemplatesData(Request $request)
@@ -33,7 +33,7 @@ class EmailTemplateController extends Controller
     public function create()
     {
         $template_keywords = TemplateKeyword::select('keyword')->where('status', 1)->get();
-        return view('admin.email_templates.create', compact('template_keywords'));
+        return view('superAdmin.email_templates.create', compact('template_keywords'));
     }
 
     public function store(Request $request)
@@ -45,7 +45,7 @@ class EmailTemplateController extends Controller
     {
         $template = EmailTemplate::find($id);
         $template_keywords = TemplateKeyword::select('keyword')->where('status', 1)->get();
-        return view('admin.email_templates.edit', compact('template', 'template_keywords'));
+        return view('superAdmin.email_templates.edit', compact('template', 'template_keywords'));
     }
 
     public function update(Request $request)

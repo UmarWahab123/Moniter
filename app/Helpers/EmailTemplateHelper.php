@@ -12,16 +12,12 @@ class EmailTemplateHelper
 {
     public static function getTemplatesData($request)
     {
-        $query = EmailTemplate::with('user')->where('status', 1)->where('user_id', Auth::user()->id)->latest();
+        $query = EmailTemplate::with('user')->where('status', 1)->latest();
         return Datatables::of($query)
             ->addIndexColumn()
             ->addColumn('action', function ($item) {
                 $edit_route = route('templates.edit', ['id' => $item->id]);
                 $delete_route = route('templates.delete', ['id' => $item->id]);
-                if (Auth::user()->role_id == 2) {
-                    $edit_route = route('users.templates.edit', ['id' => $item->id]);
-                    $delete_route = route('users.templates.delete', ['id' => $item->id]);
-                }
                 $html_string = '<div class="icons">' . '
                               <a href="javascript:void(0)" data-url="' . $edit_route . '" class="btn btn-outline-success btn-sm btn-edit" title="Edit"><i class="fa fa-pencil"></i></a>
                               <a href="javascript:;" data-url="' . $delete_route . '" class="btn btn-outline-danger btn-sm btn-delete" title="Delete"><i class="fa fa-trash"></i></a>

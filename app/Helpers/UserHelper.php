@@ -173,9 +173,6 @@ class UserHelper
         if ($request->websites == 1) {
             array_push($permissions, 'websites');
         }
-        if ($request->email_templates == 1) {
-            array_push($permissions, 'email_templates');
-        }
         if ($request->servers == 1) {
             array_push($permissions, 'servers');
         }
