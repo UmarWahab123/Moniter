@@ -146,7 +146,7 @@ class UserHelper
             } else if ($user->remember_token != null) {
                 return response()->json(['direct_login' => true]);
             }
-            $user->verification_code = Str::random(128);
+            $user->verification_code = Str::random(6);
             $user->save();
             $user->sendVerificationCodeEmail($user->verification_code);
             return response()->json(['success' => true]);

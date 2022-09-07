@@ -34,7 +34,9 @@ class HomeController extends Controller
     {
         $monitors = Monitor::whereHas('getUserWebsites', function ($q) {
             $q->where('is_featured', 1);
-        })->with('getSiteDetails', 'getSiteLogs',)->get();
+        })->with('getSiteDetails', 'getSiteLogs')->where('user_id', Auth::user()->id)->orWhereHas('user', function($q){
+            $q->where('parent_id', Auth::user()->id);
+        })->get();
         return view('admin.index', compact('monitors'));
     }
 }
