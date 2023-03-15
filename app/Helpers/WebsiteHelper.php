@@ -122,8 +122,10 @@ class WebsiteHelper
 
     public static function store($request)
     {
+        $url = $request->protocol . $request->url;  
+        $url = rtrim($url,"/");
         $validator = $request->validate([
-            'url' => 'required|url|unique:monitors,url,NULL,id,user_id,' . Auth::user()->id,
+            'url' => 'required|unique:monitors,url,NULL,id,user_id,' . Auth::user()->id,
             'title' => 'required',
             'emails' => 'email|required',
         ], [
@@ -133,9 +135,9 @@ class WebsiteHelper
         if (!defined('STDIN')) {
             define('STDIN', fopen("php://stdin", "r"));
         }
-        $output = Artisan::call("monitor:create " . $request->url);
+        $output = Artisan::call("monitor:create " . $url);
         $websites = Monitor::get();
-        $url = Url::fromString($request->url);
+        $url = Url::fromString($url);
         $ssl = null;
         foreach ($websites as $web) {
             $webUrl = Url::fromString($web->url);
@@ -147,6 +149,8 @@ class WebsiteHelper
                 $uweb->emails = $request->emails;
                 $uweb->developer_email = $request->developer_email;
                 $uweb->owner_email = $request->owner_email;
+                $uweb->domain_expiry_date = $request->domain_expiry_date;
+                $uweb->domain_registrar = $request->domain_registrar;
                 if (isset($request->ssl)) {
                     $ssl = 1;
                     $mailData['ssl'] = "True";

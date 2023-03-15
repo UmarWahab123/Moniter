@@ -5,6 +5,7 @@ namespace App;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use App\Notifications\ResendEmailNotification;
+use App\Models\Packages\Package;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Notifications\EmailVerificationCodeNotification;
@@ -90,8 +91,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 
     public function package()
     {
-        return $this->belongsTo(Package::class);
+        return $this->belongsTo(Package::class,'package_id', 'id');
     }
-
     
 }

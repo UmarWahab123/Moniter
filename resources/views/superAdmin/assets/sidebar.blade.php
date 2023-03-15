@@ -14,13 +14,21 @@
          <div class="menu-inner">
              <nav>
                  <ul class="metismenu" id="menu">
-                    <li class="active">
+                    <li class="">
                         <a href="{{ route('superAdmin.dashboard') }}" aria-expanded="true"><i
                                 class="ti-dashboard"></i><span>dashboard</span></a>
                     </li>
-                    <li class="active">
+                    <li class="">
                         <a href="{{ route('superAdmin.users') }}" aria-expanded="true"><i
                                 class="ti-user"></i><span>Users</span></a>
+                    </li>
+                    <li class="">
+                        <a href="{{ url('superAdmin/package') }}" aria-expanded="true"><i
+                                class="ti-user"></i><span>Packages</span></a>
+                    </li>
+                    <li class="">
+                        <a href="{{ url('superAdmin/system-features') }}" aria-expanded="true"><i
+                                class="ti-user"></i><span>System Features</span></a>
                     </li>
                      <li class="">
                          <a class="d-none" href="{{ url('admin/devices') }}" aria-expanded="true"><i

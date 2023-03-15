@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\Package;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StorePackage extends FormRequest
 {
@@ -11,11 +12,14 @@ class StorePackage extends FormRequest
      *
      * @return bool
      */
+    public $request;
     public function authorize()
     {
         return true;
     }
-
+    public function _constructor($request){
+        $this->request = $request;
+    }
     /**
      * Get the validation rules that apply to the request.
      *
@@ -23,11 +27,16 @@ class StorePackage extends FormRequest
      */
     public function rules()
     {
+        $request = $this->request;
+        $id = $request->get('id');
         return [
-            'name' => 'required|unique:packages|max:255',
             'price' => 'required',
-            'duration_in_days' => 'required',
-            
+            'type' => 'required',
+            'status' => 'required',
+            'name' => [
+                'required',
+                Rule::unique('packages')->ignore($id)
+            ],
         ];
     }
 }

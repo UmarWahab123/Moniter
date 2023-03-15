@@ -1,29 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <!--[if lt IE 8]>
-                                                    <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-                                                <![endif]-->
-    <!-- preloader area start -->
-    {{-- <div id="preloader">
-        <div class="loader"></div>
-    </div> --}}
-    <!-- preloader area end -->
-    <!-- page container area start -->
-    <div class="page-container">
-        <!-- sidebar menu area start -->
-        @include('superAdmin.assets.sidebar')
-        <!-- sidebar menu area end -->
-        <!-- main content area start -->
-        <div class="main-content">
-            <!-- header area start -->
-            {{-- @include('admin.assets.header') --}}
 
-            <!-- header area end -->
-            <!-- page title area start -->
-            @include('superAdmin.assets.title_area')
-
-            <!-- page title area end -->
             <div class="main-content-inner">
                 <div class="row">
                     <!-- data table start -->
@@ -32,11 +10,14 @@
                         <div class="card">
                             <div class="card-body">
                                 <span class="h4">Users</span>
+                                <button class="btn btn-primary btn-sm float-right" id="addAdminBtn"> <i
+                                        class="fa fa-plus"></i> Add Admin</button>
                                     <table id="usersDataTable" class=" table table-stripped text-center">
                                         <thead>
                                             <tr>
 
                                                 <th>Name </th>
+                                                <th>Role </th>
                                                 <th>Email </th>
                                                 <th>Total Websites </th>
                                                 <th>Status </th>
@@ -52,20 +33,41 @@
                     <div>
                     </div>
                 </div>
-                <!-- main content area end -->
-                <!-- footer area start-->
-                @include('superAdmin.assets.footer')
-
-                <!-- footer area end-->
             </div>
+            <div class="modal fade" id="addAdminModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Add New Admin User</h5>
+                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="addAdminForm">
+                                @csrf
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Name</label>
+                                    <input type="text" name="name" class="form-control" id="exampleInputEmail1"
+                                        aria-describedby="" placeholder="Enter Name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Email</label>
+                                    <input type="email" name="email" class="form-control" id="exampleInputEmail1"
+                                        aria-describedby="emailHelp" placeholder="Enter Email">
+                                </div>
 
-            @include('superAdmin.assets.javascript')
-            <!-- Start datatable js -->
-            <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
-            <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
-            <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
-            <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
-            <script src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js"></script>
+                                <div class="form-check d-none">
+                                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                                </div>
+                                <button type="submit" id="adminSubmitBtn"
+                                    class="btn btn-primary mt-4 pr-4 pl-4">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endsection
+        @section('scripts')
             <script>
                 $.ajaxSetup({
                     headers: {
@@ -93,6 +95,10 @@
                             name: 'name'
                         },
                         {
+                            data: 'role',
+                            name: 'role'
+                        },
+                        {
                             data: 'email',
                             name: 'email'
                         },
@@ -111,6 +117,46 @@
 
 
                     ],
+                });
+                $(document).on('click', '#addAdminBtn', function() {
+                    @if (Auth::user()->email_verified_at == null)
+                        toastr.info('Info!', 'Please Verify your account first', {
+                            "positionClass": "toast-bottom-right"
+                        });
+                        return;
+                    @endif
+                    $('#addAdminModal').modal('show');
+
+                });
+                $('#addAdminForm').on('submit', function(e) {
+                    e.preventDefault();
+                    var form = $('#addAdminForm').serialize();
+                    $.ajax({
+                        url: '{{ url('superAdmin/add-user') }}',
+                        method: 'post',
+                        data: form,
+                        beforeSend: function() {
+                            $('#adminSubmitBtn').prop('disabled', true);
+                            $('#adminSubmitBtn').html('Please wait...');
+                        },
+                        success: function(data) {
+                            $('#addAdminModal').modal('hide');
+                            $('#addAdminForm')[0].reset();
+                            toastr.success('Success!', 'Admin added successfully', {
+                                "positionClass": "toast-bottom-right"
+                            });
+                            $('#usersDataTable').DataTable().ajax.reload();
+                            $('#adminSubmitBtn').prop('disabled', false);
+                            $('#adminSubmitBtn').html('Submit');
+                        },
+                        error: function() {
+                            toastr.error('Error!', 'Something went wrong', {
+                                "positionClass": "toast-bottom-right"
+                            });
+                            $('#adminSubmitBtn').prop('disabled', false);
+                            $('#adminSubmitBtn').html('Submit');
+                        },
+                    })
                 });
                 $(document).on('click', '.user-status', function(e) {
                     var id = $(this).val();

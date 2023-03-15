@@ -75,12 +75,7 @@ class SubscriptionController extends Controller
      */
     public function create(Request $request)
     {
-        //
-        $stripeClient = $this->stripeApiKey();
-
-        $stripeProduct = $this->productStripeId();
-
-        return SubscriptionHelper::createSubscription($request, $stripeClient, $stripeProduct);
+        return SubscriptionHelper::createSubscription($request);
     }
     public function sucessSubscription(Request $request)
     {

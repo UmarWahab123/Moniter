@@ -15,26 +15,33 @@
              <nav>
                  <ul class="metismenu" id="menu">
                     @if ($user_permissions == false)
-                    <li class="active">
-                        <a href="{{ url('admin/home') }}" aria-expanded="true"><i
+                    <li class="">
+                        <a href="{{ url('admin/home') }}"  aria-expanded="true"><i
                                 class="ti-dashboard"></i><span>dashboard</span></a>
                     </li>
                     <li class="">
                         <a href="{{ url('admin/websites') }}" aria-expanded="true"><i
                                 class="ti-world"></i><span>Websites</span></a>
                     </li>
-                    <li class="">
+                    <li class="server">
                         <a href="{{ route('servers.dashboard') }}" aria-expanded="true"><i
                                 class="ti-server"></i><span>Servers</span></a>
                     </li>
                     <li class="">
+                         <a href="{{ url('admin/subscription') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Subscription</span></a>
+                     </li>
+                    <!-- <li class="">
 
                         <a href="{{ url('admin/package') }}" aria-expanded="true"><i class="ti-server"></i><span>Plans</span></a>
-                    </li>
+                    </li> -->
 
                     <li class="">
                         <a href="{{ url('admin/users') }}" aria-expanded="true"><i
                                 class="ti-user"></i><span>Users</span></a>
+                    </li>
+                    <li class="">
+                        <a href="{{ url('admin/permission') }}" aria-expanded="true"><i
+                                class="ti-settings"></i><span>Users Permissions</span></a>
                     </li>
                     <li class="">
                         <a href="{{ url('admin/settings') }}" aria-expanded="true"><i
@@ -42,7 +49,7 @@
                     </li>
                     @endif
                     @if ($user_permissions && in_array('dashboard',$user_permissions))
-                     <li class="active">
+                     <li class="">
                          <a href="{{ url('admin/home') }}" aria-expanded="true"><i
                                  class="ti-dashboard"></i><span>dashboard</span></a>
                      </li>
@@ -59,11 +66,11 @@
                                  class="ti-server"></i><span>Servers</span></a>
                      </li>
                      @endif
-                     @if ($user_permissions && in_array('plans',$user_permissions))
+                     <!-- @if ($user_permissions && in_array('plans',$user_permissions))
                      <li class="">
                         <a href="{{ url('admin/package') }}" aria-expanded="true"><i class="ti-server"></i><span>Plans</span></a>
                     </li>
-                     @endif
+                     @endif -->
                      @if ($user_permissions && in_array('users',$user_permissions))
                      <li class="">
                          <a href="{{ url('admin/users') }}" aria-expanded="true"><i

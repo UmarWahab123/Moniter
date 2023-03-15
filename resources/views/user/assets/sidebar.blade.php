@@ -1,6 +1,6 @@
 @php
 if (Auth::user()) {
-      $user_permissions = unserialize(Auth::user()->permissions);
+      @$user_permissions = unserialize(Auth::user()->permissions);
   }
 @endphp
  <div class="sidebar-menu">
@@ -13,48 +13,48 @@ if (Auth::user()) {
                 <div class="menu-inner">
                     <nav>
                         <ul class="metismenu" id="menu">
-                            @if ($user_permissions == false)
-                            <li class="active">
+                            @if (@$user_permissions == false)
+                            <li class="">
                                 <a href="{{ url('user/home') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Dashboard</span></a>
                             </li>
                             <li class="">
                                 <a href="{{ url('user/websites') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Websites</span></a>
                             </li>
-                            <li class="">
+                            <!-- <li class="">
                                 <a href="{{ url('user/subscription') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Subscription</span></a>
-                            </li>
+                            </li> -->
                             <li class="">
                                 <a href="{{ url('user/settings') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Settings</span></a>
                             </li>
                             @endif
-                            @if ($user_permissions && in_array('dashboard',$user_permissions))
-                            <li class="active">
+                            @if (@$user_permissions && in_array('dashboard',@$user_permissions))
+                            <li class="">
                                 <a href="{{ url('user/home') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Dashboard</span></a>
                             </li>
                             @endif
-                            @if ($user_permissions && in_array('websites',$user_permissions))
+                            @if (@$user_permissions && in_array('websites',@$user_permissions))
                             <li class="">
                                 <a href="{{ url('user/websites') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Websites</span></a>
                             </li>
                             @endif
-                            @if ($user_permissions && in_array('subscription',$user_permissions))
+                            <!-- @if (@$user_permissions && in_array('subscription',@$user_permissions))
                             <li class="">
                                 <a href="{{ url('user/subscription') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Subscription</span></a>
                             </li>
-                            @endif
-                            @if ($user_permissions && in_array('email_templates',$user_permissions))
+                            @endif -->
+                            @if (@$user_permissions && in_array('email_templates',@$user_permissions))
                             <li class="">
                                 <a href="{{ route('users.templates.index') }}" aria-expanded="true"><i
                                         class="ti-world"></i><span>Email Templates</span></a>
                             </li>
                             @endif
-                            @if ($user_permissions && in_array('users',$user_permissions))
+                            @if (@$user_permissions && in_array('users',@$user_permissions))
                             <li class="">
                                 <a href="{{ route('users.users') }}" aria-expanded="true"><i
                                         class="ti-user"></i><span>Users</span></a>
                             </li>
                             @endif
-                            @if ($user_permissions && in_array('settings',$user_permissions))
+                            @if (@$user_permissions && in_array('settings',@$user_permissions))
                             <li class="">
                                 <a href="{{ url('user/settings') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Settings</span></a>
                             </li>

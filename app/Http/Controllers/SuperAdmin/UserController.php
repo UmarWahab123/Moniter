@@ -17,6 +17,10 @@ class UserController extends Controller
             View::share(['user_permissions' => $user_permissions]);
         }
     }
+    public function store(Request $request)
+    {
+        return UserHelper::store($request);
+    }
     public function index()
     {
         return view('superAdmin.users.index');

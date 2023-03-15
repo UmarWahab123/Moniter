@@ -68,31 +68,28 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['aut
 
     Route::get('/profile', 'ProfileController@index')->name('profile');
     Route::post('/profile', 'ProfileController@update')->name('profile');
+    Route::post('/change-password', 'ProfileController@changePassword')->name('changePassword');
+
 
     Route::get('/devices', 'DeviceManagementController@index')->name('devices');
     Route::post('/device-logout', 'DeviceManagementController@deviceLogout')->name('device-logout');
+    Route::get('subscription/',  [SubscriptionController::class,'index']);
+    Route::get('createSubscription',  [SubscriptionController::class,'create']);
+    Route::get('sucessSubscription',  [SubscriptionController::class,'sucessSubscription']);
+    Route::get('cancelSubscription',  [SubscriptionController::class,'cancelSubscription']);
 
-
-    //admin package
-
-    Route::get('/package', [PackageController::class,'index']);
-    Route::post('/add-package', [PackageController::class,'store']);
-
-    Route::post('/update-package', [PackageController::class,'update']);
-
-    Route::get('package/edit',  [PackageController::class,'edit']);
-    Route::get('package/update-status',  [PackageController::class,'updateStatus']);
-   // Route::post('add-server', 'ServerController@addServer')->name('add-server');
-
+    Route::get('/permission','PermissionController@permission');
+    Route::post('/add-permission', 'PermissionController@addPermission');
+    Route::get('permission/edit',  'PermissionController@editPermission');
+    Route::post('permission/delete','PermissionController@permissionDelete');
+    Route::get('permission/permission-setting','PermissionController@permissionSettings');
+    Route::post('/store-assign-permission','PermissionController@storeAssignPermissions');
+    Route::post('userpermission/delete','PermissionController@userPermissionDelete');
 });
 
 Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth', 'user']], function () {
     Route::get('/home', 'HomeController@index')->name('user.home');
     Route::get('/websites', 'WebsiteController@index')->name('websites');
-    Route::get('subscription/',  [SubscriptionController::class,'index']);
-    Route::post('createSubscription',  [SubscriptionController::class,'create']);
-    Route::get('sucessSubscription',  [SubscriptionController::class,'sucessSubscription']);
-    Route::get('cancelSubscription',  [SubscriptionController::class,'cancelSubscription']);
     Route::post('/add-website', 'WebsiteController@store')->name('add-website');
     Route::get('/delete-website', 'WebsiteController@destroy')->name('delete-website');
     Route::post('/edit-website', 'WebsiteController@update')->name('edit-website');
@@ -119,7 +116,6 @@ Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth'
     Route::get('/user-status', 'UserController@userStatus')->name('users.user-status');
     Route::get('/{id}/user-permissions', 'UserController@userPermissions')->name('users.users-permissions');
     Route::post('save-permissions', 'UserController@saveUserPermissions')->name('users.users-save-permissions');
-
 
 });
 
@@ -149,7 +145,7 @@ Route::group(['namespace' => 'SuperAdmin', 'prefix' => 'superAdmin', 'middleware
     Route::get('/user/get-data', 'UserController@getData')->name('superAdmin.get-data');
     Route::get('/user-status', 'UserController@userStatus')->name('superAdmin.user-status');
     Route::post('/user-delete', 'UserController@delete')->name('superAdmin.user-delete');
-
+    Route::post('/add-user', 'UserController@store')->name('add-user');
     // Email Template Routes
     Route::get('/email-templates', 'EmailTemplateController@index')->name('templates.index');
     Route::get('/get-email-templates-data', 'EmailTemplateController@getTemplatesData')->name('templates.getTemplates');
@@ -159,6 +155,21 @@ Route::group(['namespace' => 'SuperAdmin', 'prefix' => 'superAdmin', 'middleware
     Route::post('/email-templates/delete/{id}', 'EmailTemplateController@delete')->name('templates.delete');
     Route::get('/email-templates/edit/{id}', 'EmailTemplateController@edit')->name('templates.edit');
     Route::post('/email-templates/storeKeyword', 'EmailTemplateController@storeKeyword')->name('templates.storeKeyword');
+   //SuperAdmin package
+    Route::get('/package', [PackageController::class,'index']);
+    Route::post('/add-package', [PackageController::class,'store']);
+    // Route::post('/update-package', [PackageController::class,'update']);
+    Route::get('package/edit',  [PackageController::class,'edit']);
+    Route::get('package/update-status',  [PackageController::class,'updateStatus']);
+    Route::get('package/assign-feature',[PackageController::class,'assignFeature']);
+    Route::post('/store-assign-feature', [PackageController::class,'storeAssignFeature']);
+
+   //SuperAdmin system features
+    Route::get('/system-features',  [PackageController::class,'systemFeatures']);
+    Route::post('/add-system-feature', [PackageController::class,'addSystemFeature']);
+    Route::get('system-feature/edit',  [PackageController::class,'systemFeatureEdit']);
+    Route::post('system-feature/delete',[PackageController::class,'systemFeatureDelete']);
+    Route::post('package-feature/delete',[PackageController::class,'assignFeatureDelete']);
 });
 
 Route::get('emails/resend', [UserController::class, 'resendEmail'])->name('emails.resendEmail');

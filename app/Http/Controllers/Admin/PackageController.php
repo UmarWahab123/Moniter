@@ -87,21 +87,23 @@ class PackageController extends Controller
      */
     public function store(StorePackage $request)
     {
-    
-        $stripeClient = $this->stripeApiKey();
-
-        $stripeProduct = $this->productStripeId();
-
-        $package = PackageHelper::storePackages($request->all(), $stripeClient, $stripeProduct);
-
+        $package = PackageHelper::storePackages($request->all());
         if ($package) {
-            return response()->json([
-                'success' => true,
-                'message' => 'packages added successfully',
-            ]);
+            $action = $package[1];
+            if($action == "Added"){
+                return response()->json([
+                    'success' => true,
+                    'message' => 'New Plan added successfully',
+                ]);
+            }else{
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Plan updated successfully',
+                ]);
+            }
+           
         }
     }
-
     /**
      * Display the specified resource.
      *
@@ -142,6 +144,38 @@ class PackageController extends Controller
         //
         return PackageHelper::updateStatus($request);
     }
+    public function assignFeature(Request $request)
+    {
+        $id = $request->id;
+        $package_features = PackageFeature::where('package_id',$id)->with('systemFeature')->get();
+
+        $table_html = PackageHelper::assignedFeaturesTable($package_features);
+
+        $ids = (clone $package_features)->pluck('system_feature_id')->toArray();
+
+        $systemFeature = SystemFeature::whereNotIN('id',$ids)->get();
+        $option = '';
+        $option .= '<option value="">Select Feature</option>';  
+        foreach($systemFeature as $value){
+        $option .= '<option value="'.$value->id.'">'.$value->name.'</option>';  
+        }
+
+        return response()->json(['success' => true, 'response' => $option, 'table_html' => $table_html]);
+    }
+    public function storeAssignFeature(Request $request)
+    {
+        $packageFeature = PackageHelper::storeAssignFeature($request->all());
+        if ($packageFeature) {
+            return response()->json([
+                'success' => true,
+                'message' => 'System Feature assign successfully',
+            ]);
+            }else{
+            return response()->json([
+                'success' => false,
+            ]);
+        }
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -149,8 +183,43 @@ class PackageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-        //
+    // public function destroy($id)
+    // {
+    //     //
+    // }
+    public function systemFeatures(Request $request){
+        return PackageHelper::systemFeatures($request);
     }
+    public function addSystemFeature(Request $request)
+    {
+        $systemFeature = PackageHelper::storeSystemFeature($request->all());
+        if ($systemFeature) {
+            $action = $systemFeature[1];
+            if($action == "Added"){
+                return response()->json([
+                    'success' => true,
+                    'message' => 'New System Feature added successfully',
+                ]);
+            }else{
+                return response()->json([
+                    'success' => true,
+                    'message' => 'System Feature updated successfully',
+                ]);
+            }
+           
+        }
+    }
+    public function systemFeatureEdit(Request $request)
+    {
+        return PackageHelper::systemFeatureEdit($request);
+    }
+    public function systemFeatureDelete(Request $request)
+    {
+        return PackageHelper::systemFeatureDelete($request);
+    }
+    public function assignFeatureDelete(Request $request)
+    {
+        return PackageHelper::assignFeatureDelete($request);
+    }
+    
 }

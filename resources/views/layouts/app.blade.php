@@ -84,8 +84,48 @@
                     </div>
                 </div>
             </div>
+
+            <!-- sidebar menu area start -->
+            @if (@auth()->user()->role_id == 1)
+                @include('admin.assets.sidebar')
+            @elseif(@auth()->user()->role_id == 3)
+                @include('superAdmin.assets.sidebar')
+            @elseif(@auth()->user()->role_id == 2)
+                @include('user.assets.sidebar')
+            @endif
+            <!-- sidebar menu area end -->
+            <div class="page-container">
+            <!-- main content area start -->
+            <div class="main-content">
+            <!-- page title area start -->
+            @if (@auth()->user()->role_id == 1)
+                @include('admin.assets.title_area')
+            @elseif (@auth()->user()->role_id == 3)
+            @include('superAdmin.assets.title_area')
+            @elseif(@auth()->user()->role_id == 2)
+                @include('user.assets.title_area')
+            @endif
+            
             @yield('content')
 
+            </div>
+            </div>
+            @if (@auth()->user()->role_id == 1)
+                @include('admin.assets.footer')
+            @elseif(@auth()->user()->role_id == 2)
+                @include('user.assets.footer')
+            @elseif(@auth()->user()->role_id == 3)
+            @include('superAdmin.assets.footer')
+            @endif
+
+            @if (@auth()->user()->role_id == 1)
+                @include('admin.assets.javascript')
+            @elseif(@auth()->user()->role_id == 2)
+                @include('user.assets.javascript')
+            @elseif(@auth()->user()->role_id == 3)
+                @include('superAdmin.assets.javascript')
+            @endif
+            @yield('scripts')
             <script>
                 $(document).on('click', '#resendEmail', function() {
                     $.ajax({
@@ -110,6 +150,11 @@
                             });
                         }
                     });
+                });
+                $(document).ready(function(){
+                    var activeurl = window.location;
+                $('a[href="'+activeurl+'"]').parents('li').addClass('active');
+
                 });
             </script>
         </main>

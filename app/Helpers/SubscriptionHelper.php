@@ -17,82 +17,27 @@ class SubscriptionHelper
 
     public static function index()
     {
-
-        $package = Package::with(['stripeSubscription' => function ($s) {
-            $s->where('user_id', Auth::user()->id);
-        }, 'packagefeatures.systemFeature'])->get();
-
-        return view("user.Subscription.index", ["package" => $package]);
+        $package = Package::with(['packagefeatures.systemFeature'])->get();
+        return view("admin.subscription.index", ["package" => $package]);
     }
-
-    public static function createSubscription($request, $stripeClient, $stripeProduct)
+    public static function createSubscription($request)
     {
-
-        $stripeClient;
-        $session = \Stripe\Checkout\Session::create([
-            'payment_method_types' => ['card'],
-            'success_url' => url("user/sucessSubscription"),
-            'cancel_url' => url("user/cancelSubscription"),
-            'mode' => 'subscription',
-            'line_items' => [[
-                'price' => $request['priceId'],
-                // For metered billing, do not pass quantity
-                'quantity' => 1,
-            ]],
-        ]);
-
-
-        $user =  Auth::user();
-
-        $package = Package::findorfail($request->package_id);
-
-        $dollars = str_replace('$', '', $package['price']);
-
-        $priceId = $package['price_id'];
-
-        $price = bcmul($dollars, 100);
-        $stripePayment = StripePayment::where('user_id', $user->id)->whereNotNull('customer_id')->first();
-
-        if ($stripePayment) {
-            $customerId = $stripePayment->customer_id;
-        } else {
-            $createCustomer = $stripeClient->customers->create([
-                'name' => $user['name'],
-                'email' => $user['email'],
-            ]);
-
-            $customerId = $createCustomer->id;
-
-            $stripeClient->customers->createSource(
-                $customerId,
-                ['source' => 'tok_visa']
-            );
+        $user = User::find(Auth::user()->id);
+        if ($user != null) {
+            $package_id = $user->package_id;
+            if($package_id != null){
+            $action = "upgrade";
+            $user->package_id = $request->package_id;
+            $user->save();
+            return response()->json(['success' => true,'action'=>$action]);
+            }else{
+            $action = "Subscribed";
+                $user->package_id = $request->package_id;
+                $user->save();
+            return response()->json(['success' => true,'action'=>$action]);
+            }
         }
-
-        $stripeSubcription =  $stripeClient->subscriptions->create([
-            'customer' => $customerId,
-
-            'items' => [
-                ['price' =>  $priceId],
-            ],
-            'payment_behavior' => 'default_incomplete',
-            'expand' => ['latest_invoice.payment_intent'],
-        ]);
-
-
-        $clientSecret = $stripeSubcription->latest_invoice->payment_intent->client_secret;
-        $stripePayment = StripePayment::create([
-            'user_id' => $user->id,
-            'package_id' => $request->package_id,
-            'subscription_id' => $stripeSubcription->id,
-            'customer_id' => $customerId,
-            'currency' => 'usd',
-            'is_subscribed' => 0,
-            'detail' => 'Payment for | Monthly subscription',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        return ['clientSecret' => $clientSecret, 'url' => $session->url, 'packageId' => $request->package_id, 'price' => $price, 'priceId' => $priceId, 'CustomerId' => $customerId, 'SubscriptionId' => $stripeSubcription->id];
+        return response()->json(['success' => false]);
     }
     public static function sucessSubscription($request, $stripeClient, $stripeProduct)
     {
@@ -107,7 +52,7 @@ class SubscriptionHelper
 
         //  $user->stripePayment = $stripePayment;
         // dd($user);
-        return redirect('user/subscription/')->with('success', 'Subcription created Sucessfully');
+        return redirect('admin/subscription/')->with('success', 'Subcription created Sucessfully');
         //return $user;
     }
     public function pauseSubscription($requestData, $stripeClient)
@@ -160,7 +105,7 @@ class SubscriptionHelper
 
       
 
-        return redirect('user/subscription/');
+        return redirect('admin/subscription/');
         //return $user;
     }
 

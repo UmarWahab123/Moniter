@@ -45,11 +45,13 @@ class UserHelper
                 }
                 if ($item->status == 1) {
                     $html_string .= '<button class="btn btn-sm btn-outline-danger user-status" data-status=0 value="' . $item->id . '"   title="Suspend User"><i class="fa fa-ban"></i></button>';
+                    $html_string .= '<button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm btn-rounded manage-permission ml-1" title="ManagePermission">Manage Permission</button>';
                 } else if ($item->status == 0) {
                     $html_string .= '<button class="btn btn-sm btn-outline-success user-status" data-status=1 value="' . $item->id . '"   title="Activate User"  ><i class="fa fa-check-circle"></i></button>';
+                    $html_string .= '<button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm btn-rounded manage-permission ml-1" title="ManagePermission">Manage Permission</button>';
                 }
                 if (Auth::user()->role_id == 3) {
-                    $html_string .= '<button class="btn btn-sm btn-outline-danger btn_delete" value="' . $item->id . '"   title="Delete User"  ><i class="fa fa-trash"></i></button>';
+                    $html_string .= '<button class="btn btn-sm btn-outline-danger btn_delete ml-1" value="' . $item->id . '"   title="Delete User"  ><i class="fa fa-trash"></i></button>';
                 }
                 return $html_string;
             })
@@ -65,6 +67,12 @@ class UserHelper
                         <a href="' . $route . '" title="User Details">' . $item->name . '</a>
                      ';
                 return $html_string;
+            })
+            ->addColumn('role', function ($item) {
+            
+                if (Auth::user()->role_id == 3) {
+                    return $item->role->name;
+                }
             })
             ->addColumn('counter', function ($item) {
                 if ($item->userWebsites->isEmpty()) {
@@ -84,7 +92,7 @@ class UserHelper
             ->setRowId(function ($item) {
                 return $item->id;
             })
-            ->rawColumns(['action', 'status', 'name'])
+            ->rawColumns(['action', 'status', 'name','role'])
             ->make(true);
     }
     public static function store($request)
@@ -96,7 +104,11 @@ class UserHelper
             $user->email = $request->email;
             $user->password = bcrypt(12345678);
             $user->status = 1;
-            $user->role_id = 2;
+            if(Auth::user()->role_id == 3){
+                $user->role_id = 1;
+            }else{
+                $user->role_id = 2;
+            }
             $user->parent_id = Auth::user()->id;
             if ($user->save()) {
                 Mail::to($request->email)->send(new UserSignupMail($mailData));
