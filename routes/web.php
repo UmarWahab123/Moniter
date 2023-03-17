@@ -85,6 +85,9 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['aut
     Route::get('permission/permission-setting','PermissionController@permissionSettings');
     Route::post('/store-assign-permission','PermissionController@storeAssignPermissions');
     Route::post('userpermission/delete','PermissionController@userPermissionDelete');
+    Route::get('permission/get-permissions','PermissionController@getPermissions');
+
+    
 });
 
 Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth', 'user']], function () {
@@ -125,6 +128,7 @@ Route::group(['middleware' => ['auth']], function () {
     /*Server routes*/
     Route::get('servers/dashboard', 'ServerController@dashboard')->name('servers.dashboard');
     Route::get('servers', 'ServerController@index')->name('servers');
+    Route::get('get-operating-system','ServerController@getOperatingSystem');
     Route::get('get-servers', 'ServerController@getServers')->name('get-servers');
     Route::post('add-server', 'ServerController@addServer')->name('add-server');
     Route::get('server-logs/{id}', 'ServerController@serverLogs')->name('server-logs');
@@ -170,6 +174,12 @@ Route::group(['namespace' => 'SuperAdmin', 'prefix' => 'superAdmin', 'middleware
     Route::get('system-feature/edit',  [PackageController::class,'systemFeatureEdit']);
     Route::post('system-feature/delete',[PackageController::class,'systemFeatureDelete']);
     Route::post('package-feature/delete',[PackageController::class,'assignFeatureDelete']);
+   // Operating System
+   Route::get('/operating-system',  'OperatingSystemController@operatingSystem');
+   Route::post('/add-operating-system', 'OperatingSystemController@addOperatingSystem');
+   Route::get('operating-system/edit', 'OperatingSystemController@EditOperatingSystem');
+   Route::post('operating-system/delete', 'OperatingSystemController@deleteOperatingSystem');
+
 });
 
 Route::get('emails/resend', [UserController::class, 'resendEmail'])->name('emails.resendEmail');

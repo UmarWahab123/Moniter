@@ -9,6 +9,7 @@ use App\Helpers\ServersHelper;
 use App\Helpers\ServerLogsHelper;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
+use App\Models\OperatingSystem;
 
 class ServerController extends Controller
 {
@@ -23,7 +24,16 @@ class ServerController extends Controller
     {
         return view('servers.index');
     }
-
+    public function getOperatingSystem()
+    {
+        $operatingSystem = OperatingSystem::get();
+        $option = '';
+        $option .= '<option value=""  selected="">Choose OS</option>';  
+        foreach($operatingSystem as $value){
+        $option .= '<option value="'.$value->id.'">'.$value->name.'</option>';  
+        }
+        return response()->json(['success' => true, 'response' => $option]);
+    }
     public function dashboard()
     {
         return ServersHelper::dashboard();

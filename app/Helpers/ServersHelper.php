@@ -10,7 +10,8 @@ use App\UserWebsitePermission;
 use Auth;
 use Yajra\Datatables\Datatables;
 use Carbon\Carbon;
-
+use App\Models\OperatingSystem;
+  
 class ServersHelper
 {
 
@@ -100,6 +101,9 @@ class ServersHelper
         $create->name       = $request->name;
         $create->ip_address = $request->ip_address;
         $create->os         = $request->operating_system;
+        $create->primary_email   = $request->primary_email;
+        $create->secondary_email   = $request->secondary_email;
+        $create->developer_email   = $request->developer_email;
         $create->user_id    = Auth::user()->id;
         $create->key        = $random_key;
         $create->save();
@@ -175,8 +179,20 @@ class ServersHelper
         if ($server != null) {
             $data['name'] = $server->name;
             $data['ip_address'] = $server->ip_address;
-            $data['os'] = $server->os;
-            return response()->json(['success' => true, 'data' => $data]);
+            $operatingSystem = OperatingSystem::get();
+            $option = '';
+            foreach($operatingSystem as $value){
+             if($value->id == $server->os){
+                $option .= '<option value="'.$value->id.'" selected>'.$value->name.'</option>';  
+             }else{
+                $option .= '<option value="'.$value->id.'">'.$value->name.'</option>';  
+
+             }
+            }
+            $data['primary_email'] = $server->primary_email;
+            $data['secondary_email'] = $server->secondary_email;
+            $data['developer_email'] = $server->developer_email;
+            return response()->json(['success' => true, 'data' => $data,'option'=>$option]);
         }
         return response()->json(['success' => false]);
     }

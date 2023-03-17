@@ -10,6 +10,7 @@ use Yajra\Datatables\Datatables;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use App\Models\UserPermission;
 
 class UserHelper
 {
@@ -40,15 +41,14 @@ class UserHelper
                 $html_string = "";
                 if (Auth::user()->role_id == 1) {
                     $html_string .= '
-                            <button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm edit-user"  title="Edit"><i class="fa fa-pencil"></i></button>
+                           <button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm btn-rounded manage_permission ml-1" title="ManagePermission">Manage Permission</button>
+                           <button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm edit-user"  title="Edit"><i class="fa fa-pencil"></i></button>
                          ';
                 }
                 if ($item->status == 1) {
                     $html_string .= '<button class="btn btn-sm btn-outline-danger user-status" data-status=0 value="' . $item->id . '"   title="Suspend User"><i class="fa fa-ban"></i></button>';
-                    $html_string .= '<button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm btn-rounded manage-permission ml-1" title="ManagePermission">Manage Permission</button>';
                 } else if ($item->status == 0) {
                     $html_string .= '<button class="btn btn-sm btn-outline-success user-status" data-status=1 value="' . $item->id . '"   title="Activate User"  ><i class="fa fa-check-circle"></i></button>';
-                    $html_string .= '<button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm btn-rounded manage-permission ml-1" title="ManagePermission">Manage Permission</button>';
                 }
                 if (Auth::user()->role_id == 3) {
                     $html_string .= '<button class="btn btn-sm btn-outline-danger btn_delete ml-1" value="' . $item->id . '"   title="Delete User"  ><i class="fa fa-trash"></i></button>';
@@ -99,6 +99,7 @@ class UserHelper
     {
         if (!empty($request->all())) {
             $mailData = $request->all();
+            $permission_id = $request->permission_id;
             $user = new User();
             $user->name = $request->name;
             $user->email = $request->email;
@@ -111,6 +112,18 @@ class UserHelper
             }
             $user->parent_id = Auth::user()->id;
             if ($user->save()) {
+                $user_id = $user->id;
+                foreach ($permission_id as $key => $value) {
+                    if(!empty($value['id']))
+                    {
+                        UserPermission::where('id',$value['id'])->update($value);
+                    }
+                    else
+                    {
+                        $data = ['user_id'=>$user_id,'permission_id'=>$value];
+                        UserPermission::create($data);
+                    }   
+                }
                 Mail::to($request->email)->send(new UserSignupMail($mailData));
                 return response()->json(['success' => true]);
             }

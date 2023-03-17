@@ -26,7 +26,7 @@ class PermissionHelper
             ->addColumn('action', function ($item) {
                 $html_string = '
                 <button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm edit-permission"  title="Edit"><i class="fa fa-pencil"></i></button>
-                <button  value="' . $item->id . '" class="btn btn-sm btn-outline-danger btn_delete ml-1" value="25" title="Delete Permision"><i class="fa fa-trash"></i></button>
+                <button  value="' . $item->id . '" class="btn btn-sm btn-outline-danger btn_delete ml-1" title="Delete Permision"><i class="fa fa-trash"></i></button>
                 '
                 ;
              return $html_string;
@@ -92,7 +92,7 @@ class PermissionHelper
 
         return $html;
     }
-    public static function assignFeatureDelete($request)
+    public static function userPermissionDelete($request)
     {
          $userPermission = UserPermission::find($request->id)->delete();
          return response()->json(['success' => true]);

@@ -122,7 +122,7 @@ class PackageHelper
             ->addColumn('action', function ($item) {
                 $html_string = '
                 <button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm edit-system-feature"  title="Edit"><i class="fa fa-pencil"></i></button>
-                <button  value="' . $item->id . '" class="btn btn-sm btn-outline-danger btn_delete ml-1" value="25" title="Delete Feature"><i class="fa fa-trash"></i></button>
+                <button  value="' . $item->id . '" class="btn btn-sm btn-outline-danger btn_delete ml-1" title="Delete Feature"><i class="fa fa-trash"></i></button>
                 '
                 ;
              return $html_string;

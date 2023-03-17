@@ -30,6 +30,10 @@
                         <a href="{{ url('superAdmin/system-features') }}" aria-expanded="true"><i
                                 class="ti-user"></i><span>System Features</span></a>
                     </li>
+                    <li class="">
+                        <a href="{{ url('superAdmin/operating-system') }}" aria-expanded="true"><i
+                                class="ti-user"></i><span>Operating System</span></a>
+                    </li>
                      <li class="">
                          <a class="d-none" href="{{ url('admin/devices') }}" aria-expanded="true"><i
                                  class="ti-dashboard"></i><span>Devices</span></a>

@@ -6,7 +6,9 @@
 
         <div class="row">
             <!-- basic form start -->
-                <div class="card col-md-6">
+                <div class="col-md-6">
+                <div class="card">
+
                     <div class="card-body">
                         <h4 class="header-title">Profile Basic Info Settings
                         </h4>
@@ -49,7 +51,9 @@
                         </form>
                     </div>
                 </div>
-                <div class="card col-md-6">
+              </div>
+                <div class="col-md-6">
+                <div class="card">
                     <div class="card-body">
                         <h4 class="header-title">Change Password Settings
                         </h4>
@@ -78,6 +82,7 @@
                         </form>
                     </div>
                 </div>
+             </div>
         </div>
     </div>
 </div>

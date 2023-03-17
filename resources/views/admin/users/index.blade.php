@@ -53,7 +53,15 @@
                         <input type="email" name="email" class="form-control" id="exampleInputEmail1"
                             aria-describedby="emailHelp" placeholder="Enter Email">
                     </div>
-
+                    <div class="row">
+                    <!-- <input type="text" name="user_id" class="form-control d-none" id="user_id"> -->
+                    <div class="col-md-12">
+                    <label class="m-0">Assign Permissions<span class="text-danger">*</span></label>
+                    <select name="permission_id[]" id="selected_permission_id" class="form-control mt-1" multiple>
+                      
+                    </select>
+                    </div>
+                    </div>
                     <div class="form-check d-none">
                         <input type="checkbox" class="form-check-input" id="exampleCheck1">
                         <label class="form-check-label" for="exampleCheck1">Check me out</label>
@@ -117,8 +125,8 @@
                     <div class="row">
                     <input type="text" name="user_id" class="form-control d-none" id="user_id">
                     <div class="col-md-12">
-                    <label class="m-0">Permissions<span class="text-danger">*</span></label>
-                    <select name="permission_id" id="permission_id" class="form-control">
+                    <label class="m-0">Assign Permissions<span class="text-danger">*</span></label>
+                    <select name="permission_id" id="permission_id" class="form-control mt-1">
                         <option value="" selected="">Please Select Permissions</option>
                         <option value=""></option>
                     </select>
@@ -181,7 +189,7 @@
 
         ],
     });
-    $(document).on('click', '.manage-permission', function(e) {
+    $(document).on('click', '.manage_permission', function(e) {
         var id = $(this).val();
         $.ajax({
             url: "{{ url('admin/permission/permission-setting') }}",
@@ -258,7 +266,7 @@
                         toastr.success('Success!', 'Permission Deleted successfully !', {
                             "positionClass": "toast-bottom-right"
                         });
-                        $( ".manage-permission" ).trigger( "click" );
+                        $( ".manage_permission" ).trigger("click");
                     },
                     error: function() {
                         toastr.error('Error!', 'Something went wrong', {
@@ -320,13 +328,24 @@
             });
             return;
         @endif
-        $('#addUserModal').modal('show');
+        $.ajax({
+            url: "{{ url('admin/permission/get-permissions') }}",
+            method: 'get',
+            success: function(data) {
+                $('#addUserModal').modal('show');
+                $('#selected_permission_id').html(data.response);
+            },
+            error: function() {
+                toastr.error('Error!', 'Something went wrong', {
+                    "positionClass": "toast-bottom-right"
+                });
+            },
+        })
 
     });
     $('#addUserForm').on('submit', function(e) {
         e.preventDefault();
         var form = $('#addUserForm').serialize();
-
         $.ajax({
             url: '{{ url('admin/add-user') }}',
             method: 'post',

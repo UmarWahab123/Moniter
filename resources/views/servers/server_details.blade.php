@@ -1,19 +1,5 @@
 @extends('layouts.app')
-
 @section('content')
-    <div class="page-container">
-        @if (Auth::user() && Auth::user()->role_id == 1)
-        @include('admin.assets.sidebar')
-        @else
-        @include('user.assets.sidebar')
-        @endif
-        <div class="main-content">
-            @if (Auth::user() && Auth::user()->role_id == 1)
-                @include('admin.assets.title_area')
-            @else
-                @include('user.assets.title_area')
-            @endif
-
             <div class="main-content-inner">
                 <div class="row">
                     <div class="col-12 mt-5">
@@ -218,18 +204,10 @@
 
                     </div>
                 </div>
-                @if (Auth::user() && Auth::user()->role_id == 1)
-                    @include('admin.assets.footer')
-                @else
-                    @include('user.assets.footer')
-                @endif
+      
             </div>
-            @if (Auth::user() && Auth::user()->role_id == 1)
-                @include('admin.assets.javascript')
-            @else
-                @include('user.assets.javascript')
-            @endif
-
+     @endsection
+    @section('scripts')
             <script>
                 $(document).ready(function() {
 

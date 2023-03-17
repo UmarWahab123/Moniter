@@ -62,7 +62,7 @@ class PermissionController extends Controller
         $ids = (clone $userPermission)->pluck('permission_id')->toArray();
         $permissions = Permission::whereNotIN('id',$ids)->get();
         $option = '';
-        $option .= '<option value="">Select Permissions</option>';  
+        $option .= '<option value="" selected>Select Permissions</option>';  
         foreach($permissions as $value){
         $option .= '<option value="'.$value->id.'">'.$value->name.'</option>';  
         }
@@ -84,5 +84,15 @@ class PermissionController extends Controller
     public function userPermissionDelete(Request $request)
     {
         return PermissionHelper::userPermissionDelete($request);
+    }
+    public function getPermissions()
+    {
+        $permissions = Permission::get();
+        $option = '';
+        $option .= '<option value="" selected>Select Permissions</option>';  
+        foreach($permissions as $value){
+        $option .= '<option value="'.$value->id.'">'.$value->name.'</option>';  
+        }
+        return response()->json(['success' => true, 'response' => $option]);
     }
 }

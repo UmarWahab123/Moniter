@@ -54,13 +54,25 @@
                             <input type="text" name="ip_address" class="form-control" id="ip_address"
                                 placeholder="Enter IP Address">
                         </div>
-                        <div class="col-md-6 mt-2">
+                        <div class="col-md-6">
                             <label class="m-0">Operating System <span class="text-danger">*</span></label>
                             <select name="operating_system" id="operating_system" class="form-control">
-                                <option value="" selected="">Choose OS</option>
-                                <!-- <option value="windows">Windows</option> -->
-                                <option value="linux">Linux</option>
                             </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="m-0">Primary Email<span class="text-danger">*</span></label>
+                            <input type="text" name="primary_email" class="form-control" id="primary_email"
+                                placeholder="Enter Primary Email">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="m-0">Secondary Email</label>
+                            <input type="text" name="secondary_email" class="form-control" id="secondary_email"
+                                placeholder="Enter Secondary Email">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="m-0">Developer Email</label>
+                            <input type="text" name="developer_email" class="form-control" id="developer_email"
+                                placeholder="Enter Developer Email">
                         </div>
                     </div>
                     <button type="submit" id="ServerSubmitBtn"
@@ -94,13 +106,26 @@
                             <input type="text" name="ip_address" class="form-control" id="edit_ip_address"
                                 placeholder="Enter IP Address" disabled="true">
                         </div>
-                        <div class="col-md-6 mt-2">
+                        <div class="col-md-6">
                             <label class="m-0">Operating System <span class="text-danger">*</span></label>
                             <select name="operating_system" id="edit_operating_system" class="form-control">
-                                <option value="" selected="">Choose OS</option>
-                                <!-- <option value="windows">Windows</option> -->
-                                <option value="linux">Linux</option>
+                            
                             </select>
+                        </div>
+                        <div class="col-md-6 ">
+                            <label class="m-0">Primary Email<span class="text-danger">*</span></label>
+                            <input type="text" name="primary_email" class="form-control" id="edit_primary_email"
+                                placeholder="Enter Primary Email">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="m-0">Secondary Email</label>
+                            <input type="text" name="secondary_email" class="form-control" id="edit_secondary_email"
+                                placeholder="Enter Secondary Email">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="m-0">Developer Email</label>
+                            <input type="text" name="developer_email" class="form-control" id="edit_developer_email"
+                                placeholder="Enter Developer Email">
                         </div>
                     </div>
                     <button type="submit" id="EditServerSubmitBtn"
@@ -238,7 +263,20 @@
             });
             return;
         @endif
-        $('#addServerModal').modal('show');
+        $.ajax({
+            url: "{{ url('get-operating-system') }}",
+            method: 'get',
+            success: function(data) {
+                $('#addServerModal').modal('show');
+                $('#operating_system').html(data.response);
+            },
+            error: function() {
+                toastr.error('Error!', 'Something went wrong', {
+                    "positionClass": "toast-bottom-right"
+                });
+            },
+        })
+
     });
 
     $('#addServerForm').on('submit', function(e) {
@@ -339,7 +377,11 @@
                 $('#editServerModal').modal('show');
                 $('#edit_name').val(data.data['name']);
                 $('#edit_ip_address').val(data.data['ip_address']);
-                $('#edit_operating_system').val(data.data['os']);
+                console.log(data.option);
+                $('#edit_operating_system').html(data.option);
+                $('#edit_primary_email').val(data.data['primary_email']);
+                $('#edit_secondary_email').val(data.data['secondary_email']);
+                $('#edit_developer_email').val(data.data['developer_email']);
                 $('#editId').val(server_id);
             },
             error: function() {

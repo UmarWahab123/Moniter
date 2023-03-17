@@ -155,7 +155,7 @@ class PackageController extends Controller
 
         $systemFeature = SystemFeature::whereNotIN('id',$ids)->get();
         $option = '';
-        $option .= '<option value="">Select Feature</option>';  
+        $option .= '<option value="" selected>Select Feature</option>';  
         foreach($systemFeature as $value){
         $option .= '<option value="'.$value->id.'">'.$value->name.'</option>';  
         }
