@@ -3,10 +3,9 @@
 @section('content')
 <div class="main-content-inner">
     <div class="col-lg-12 col-ml-12 mt-5">
-
         <div class="row">
             <!-- basic form start -->
-                <div class="col-md-6">
+            <div class="col-md-6">
                 <div class="card">
 
                     <div class="card-body">
@@ -52,7 +51,7 @@
                     </div>
                 </div>
               </div>
-                <div class="col-md-6">
+             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="header-title">Change Password Settings
@@ -82,7 +81,7 @@
                         </form>
                     </div>
                 </div>
-             </div>
+            </div>
         </div>
     </div>
 </div>

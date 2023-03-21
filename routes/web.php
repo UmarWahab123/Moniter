@@ -46,7 +46,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['aut
     Route::get('/websites', 'WebsiteController@index')->name('websites');
     Route::post('/add-website', 'WebsiteController@store')->name('add-website');
     Route::post('/edit-website', 'WebsiteController@update')->name('edit-website');
-    Route::get('/edit-website', 'WebsiteController@edit')->name('edit-website');
+    Route::get('website/edit-website', 'WebsiteController@edit')->name('edit-website');
     Route::get('/delete-website', 'WebsiteController@destroy')->name('delete-website');
     Route::post('/assign-website-to-user', 'WebsiteController@assignWebsiteToSubUser')->name('assign-websites-to-user');
     Route::get('/show_assigned_users', 'WebsiteController@showAssignedUser')->name('show_assigned_users');
@@ -86,6 +86,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['aut
     Route::post('/store-assign-permission','PermissionController@storeAssignPermissions');
     Route::post('userpermission/delete','PermissionController@userPermissionDelete');
     Route::get('permission/get-permissions','PermissionController@getPermissions');
+    //server webisites
 
     
 });
@@ -106,6 +107,7 @@ Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth'
 
     Route::get('/profile', 'ProfileController@index')->name('profile');
     Route::post('/profile', 'ProfileController@update')->name('profile');
+    Route::post('/change-password', 'ProfileController@changePassword')->name('changePassword');
 
     Route::get('/devices', 'DeviceManagementController@index')->name('devices');
     Route::post('/device-logout', 'DeviceManagementController@deviceLogout')->name('device-logout');
@@ -140,6 +142,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('servers/binded-websites', 'ServerController@bindedWebsites')->name('servers.binded-websites');
     Route::get('servers/get-biinded-websites', 'ServerController@getBindedWebsites')->name('get-binded-websites');
     Route::post('servers/save-biinded-websites', 'ServerController@saveBindedWebsites')->name('save-binded-websites');
+    Route::get('/user-added-websites','ServerController@userAddedWebsite');
+    Route::post('server-website/delete','ServerController@serverWebsiteDelete');
+    Route::post('website/assign-status-change','ServerController@websiteAssignStatusChange');
+
 });
 
 Route::group(['namespace' => 'SuperAdmin', 'prefix' => 'superAdmin', 'middleware' => ['auth', 'superAdmin']], function () {

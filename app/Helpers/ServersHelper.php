@@ -260,4 +260,62 @@ class ServersHelper
             return response()->json(['success' => true]);
         }
     }
+    public static function userAddedWebsiteTable($data){
+        $html = '
+        <table id="user-added-websites-table" class="table text-center table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>S.No</th>
+                    <th>Title</th>
+                    <th>Primary Email</th>
+                    <th>Domain Expiry Date</th>
+                    <th>Domain Registrar</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>';
+    foreach ($data as $key => $website) {
+        $html .= '<tr>
+            <td>' . ($key + 1) . '</td>
+            <td>' . @$website->title . '</td>
+            <td>' . @$website->emails . '</td>
+            <td>' . @$website->domain_expiry_date . '</td>
+            <td>' . @$website->domain_registrar . '</td>
+            <td>';
+        if (!empty(@$website->server_id)) {
+            $html .= '<button value="' . @$website->id . '" class="btn btn-sm btn btn-success btn-assign-unassign-website">Assigned &#x2713;</button>
+                <button class="btn btn-sm btn btn-outline-dark d-none">Unassigned &#x2717;</button>';
+        } else {
+            $html .= '<button class="btn btn-sm btn btn-success d-none">Assigned &#x2713;</button>
+                <button value="' . @$website->id . '" class="btn btn-sm btn btn-outline-dark btn-assign-unassign-website">Unassigned &#x2717;</button>';
+        }
+        $html .= '<button value="' . @$website->id . '" class="btn btn-sm btn-outline-danger server_website_delete ml-1" title="Delete Website"><i class="fa fa-trash"></i></button>
+            </td>
+        </tr>';
+    }
+    $html .= '</tbody></table>';
+    
+
+        return $html;
+    }
+    public static function serverWebsiteDelete($request)
+    {
+         $userWebsite = UserWebsite::find($request->id)->delete();
+         return response()->json(['success' => true]);
+    }
+    public static function websiteAssignStatusChange($request)
+    {
+         $website_id = $request->id;
+         $userWebsite = UserWebsite::find($website_id);
+         if(!empty($userWebsite->server_id)){
+            $userWebsite->server_id  = Null;
+            $userWebsite->save();
+            return response()->json(['success' => true,'message'=>'Website Unassigned Successfully !']);
+         }else{
+            $userWebsite->server_id  = $request->server_id ;
+            $userWebsite->save();
+            return response()->json(['success' => true,'message'=>'Website Assigned Successfully !']);
+         }
+         return response()->json(['success' => false]);
+    }
 }

@@ -6,6 +6,7 @@ use Auth;
 use App\User;
 use Illuminate\Http\Request;
 use App\Helpers\ProfileHelper;
+use App\Models\UserDetail;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\View;
 
@@ -20,11 +21,15 @@ class ProfileController extends Controller
     }
     public function index()
     {
-        $profile = User::where('id', Auth::user()->id)->first();
+        $profile = UserDetail::where('user_id', Auth::user()->id)->first();
         return view('user.profile.index', compact('profile'));
     }
     public function update(Request $request)
     {
         return ProfileHelper::update($request);
+    }
+    public function changePassword(Request $request)
+    {
+        return ProfileHelper::changePassword($request);
     }
 }

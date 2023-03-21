@@ -7,13 +7,15 @@ use App\ServerDetail;
 use Illuminate\Http\Request;
 use Yajra\Datatables\Datatables;
 use Carbon\Carbon;
+use Auth;
 
 class ServerLogsHelper
 {
     public static function serverLogs($id)
     {
-        $server = Server::find($id);
-        return view('servers.server_details', compact('server', 'id'));
+        $server  =Server::with('userInfo')->where('id',$id)->first();
+        $all_servers = Server::select('id', 'name')->where('user_id', Auth::user()->id)->get();
+        return view('servers.server_details', compact('server','all_servers', 'id'));
     }
 
     public static function serverLogsInDetails(Request $request)
@@ -39,6 +41,12 @@ class ServerLogsHelper
         }
         if ($request->for_type == 'total_user') {
             return ServerLogsHelper::totalUserDatatable($query, $type, $dynamic_tab_name);
+        }
+        if ($request->for_type == 'incident') {
+            return ServerLogsHelper::incidentDatatable($query, $type, $dynamic_tab_name);
+        }
+        if ($request->for_type == 'service') {
+            return ServerLogsHelper::serviceDatatable($query, $type, $dynamic_tab_name);
         }
     }
 
@@ -130,6 +138,40 @@ class ServerLogsHelper
             if (!empty($unserialize)) {
                 if (array_key_exists('total_user', $unserialize)) {
                     $meta_data = $unserialize['total_user'];
+                    if (!is_array($meta_data)) {
+                        $meta_data = [$meta_data];
+                    }
+                    if (array_key_exists($column, $meta_data)) {
+                        return $meta_data[$column];
+                    } else {
+                        return "--";
+                    }
+                }
+            } else {
+                return "--";
+            }
+        }
+        if ($type == "incident") {
+            if (!empty($unserialize)) {
+                if (array_key_exists('incident', $unserialize)) {
+                    $meta_data = $unserialize['incident'];
+                    if (!is_array($meta_data)) {
+                        $meta_data = [$meta_data];
+                    }
+                    if (array_key_exists($column, $meta_data)) {
+                        return $meta_data[$column];
+                    } else {
+                        return "--";
+                    }
+                }
+            } else {
+                return "--";
+            }
+        }
+        if ($type == "service") {
+            if (!empty($unserialize)) {
+                if (array_key_exists('service', $unserialize)) {
+                    $meta_data = $unserialize['service'];
                     if (!is_array($meta_data)) {
                         $meta_data = [$meta_data];
                     }
@@ -364,7 +406,65 @@ class ServerLogsHelper
             ->rawColumns(['name', 'version', 'os_release_id', 'id_like', 'version_id', 'home_url', 'support_url', 'bug_report_url', 'privacy_policy_url', 'version_codename', 'ubuntu_codename', 'pretty_name'])
             ->make(true);
     }
+    private static function incidentDatatable($query, $type, $dynamic_tab_name)
+    {
+        return Datatables::of($query)
+        ->addIndexColumn()
+        ->addColumn('size', function ($item) use ($type, $dynamic_tab_name) {
+            $column = "size";
+            $data = ServerLogsHelper::toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+            return $data;
+        })
+        ->addColumn('used', function ($item) use ($type, $dynamic_tab_name) {
+            $column = "used";
+            $data = ServerLogsHelper::toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+            return $data;
+        })
+        ->addColumn('available', function ($item) use ($type, $dynamic_tab_name) {
+            $column = "available";
+            $data = ServerLogsHelper::toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+            return $data;
+        })
+        ->addColumn('used_percentage', function ($item) use ($type, $dynamic_tab_name) {
+            $column = "used_percentage";
+            $data = ServerLogsHelper::toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+            return $data;
+        })
+        ->setRowId(function ($item){
+            return $item->id;
+        })
+        ->rawColumns(['size', 'used', 'available', 'used_percentage'])
+        ->make(true);
 
+    }
+    private static function serviceDatatable($query, $type, $dynamic_tab_name){
+        return Datatables::of($query)
+        ->addIndexColumn()
+        ->addColumn('size', function ($item) use ($type, $dynamic_tab_name) {
+            $column = "size";
+            $data = ServerLogsHelper::toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+            return $data;
+        })
+        ->addColumn('used', function ($item) use ($type, $dynamic_tab_name) {
+            $column = "used";
+            $data = ServerLogsHelper::toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+            return $data;
+        })
+        ->addColumn('available', function ($item) use ($type, $dynamic_tab_name) {
+            $column = "available";
+            $data = ServerLogsHelper::toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+            return $data;
+        })
+        ->addColumn('used_percentage', function ($item) use ($type, $dynamic_tab_name) {
+            $column = "used_percentage";
+            $data = ServerLogsHelper::toGetSerializeResponse($item, $type, $column, $dynamic_tab_name);
+            return $data;
+        })
+        ->rawColumns(['size', 'used', 'available', 'used_percentage'])
+        ->make(true);
+
+
+    }
     private static function totalUserDatatable($query, $type, $dynamic_tab_name)
     {
         return Datatables::of($query)

@@ -222,6 +222,12 @@ input[type=number] {
     //         ],
     // });
     $(document).on('click', '.assign-feature', function(e) {
+        @if (Auth::user()->email_verified_at == null)
+            toastr.info('Info!', 'Please Verify your account first', {
+                "positionClass": "toast-bottom-right"
+            });
+            return;
+        @endif
         var id = $(this).val();
         $.ajax({
             url: "{{ url('superAdmin/package/assign-feature') }}",

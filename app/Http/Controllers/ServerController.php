@@ -10,6 +10,8 @@ use App\Helpers\ServerLogsHelper;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use App\Models\OperatingSystem;
+use App\UserWebsite;
+
 
 class ServerController extends Controller
 {
@@ -93,4 +95,20 @@ class ServerController extends Controller
     {
         return ServersHelper::saveBindedWebsites($request);
     }
+    public function userAddedWebsite(Request $request)
+    {
+        $user_id = $request->user_id;
+        $userWebsite = UserWebsite::where('user_id',$user_id)->get();
+        $table_html = ServersHelper::userAddedWebsiteTable($userWebsite);
+        return response()->json(['success' => true,'table_html' => $table_html]);
+    }
+    public function serverWebsiteDelete(Request $request)
+    {
+        return ServersHelper::serverWebsiteDelete($request);
+    }
+    public function websiteAssignStatusChange(Request $request)
+    {
+        return ServersHelper::websiteAssignStatusChange($request);
+    }
+    
 }

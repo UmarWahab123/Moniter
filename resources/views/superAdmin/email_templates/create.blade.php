@@ -6,17 +6,7 @@
             height: 180px;
         }
     </style>
-    <!-- page container area start -->
-    <div class="page-container">
-        <!-- sidebar menu area start -->
-        @include('superAdmin.assets.sidebar')
-        <!-- sidebar menu area end -->
-        <!-- main content area start -->
-        <div class="main-content">
-            <!-- page title area start -->
-            @include('superAdmin.assets.title_area')
 
-            <!-- page title area end -->
             <div class="main-content-inner">
                 <div class="card">
                     <div class="card-body">
@@ -106,19 +96,11 @@
                         </div>
                     </div>
                 </div>
-                <!-- main content area end -->
-                <!-- footer area start-->
-                @include('superAdmin.assets.footer')
 
-                <!-- footer area end-->
             </div>
-            @include('superAdmin.assets.javascript')
+            @endsection
+            @section('scripts')
             <!-- Start datatable js -->
-            <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
-            <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
-            <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
-            <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
-            <script src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js"></script>
             <script src="https://cdn.ckeditor.com/ckeditor5/34.1.0/classic/ckeditor.js"></script>
             <script>
                 $.ajaxSetup({

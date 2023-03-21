@@ -41,9 +41,9 @@ class WebsiteController extends Controller
         return WebsiteHelper::update($request);
     }
 
-    public function websiteLogs(Request $request, $website_id)
+    public function websiteLogs(Request $request, $id)
     {
-        return WebsiteLogHelper::websiteLogs($request, $website_id);
+        return WebsiteLogHelper::websiteLogs($request, $id);
     }
 
     public function featureWebsite(Request $request)

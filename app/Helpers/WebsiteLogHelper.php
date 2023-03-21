@@ -5,16 +5,22 @@ namespace App\Helpers;
 use Yajra\Datatables\Datatables;
 use App\WebsiteLog;
 use App\Monitor;
-
+use Auth; 
 class WebsiteLogHelper
 {
-    public static function websiteLogs($request, $website_id)
+    public static function websiteLogs($request, $id)
     {
+        $website_id = $id;
         $website = Monitor::with('getSiteDetails', 'getSiteLogs')->where('id', $website_id)->first();
         if ($request->ajax()) {
             return (new WebsiteLogHelper)->WebsitesLogDatatable($website_id);
         }
-        return view('admin.websites.website-details', compact('website_id', 'website'));
+        if(Auth::user()->role_id==1){
+            return view('admin.websites.website-details', compact('website_id', 'website'));
+        }else{
+            return view('user.websites.website-details', compact('website_id', 'website'));
+
+        }
     }
 
     private function WebsitesLogDatatable($website_id)

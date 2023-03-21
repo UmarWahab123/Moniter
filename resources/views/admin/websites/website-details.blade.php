@@ -1,29 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    <!--[if lt IE 8]>
-                    <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-                            <![endif]-->
-    <!-- preloader area start -->
-    {{-- <div id="preloader">
-        <div class="loader"></div>
-    </div> --}}
-    <!-- preloader area end -->
-    <!-- page container area start -->
-    <div class="page-container">
-        <!-- sidebar menu area start -->
-        @include('admin.assets.sidebar')
-        <!-- sidebar menu area end -->
-        <!-- main content area start -->
-        <div class="main-content">
-            <!-- header area start -->
-            {{-- @include('admin.assets.header') --}}
-
-            <!-- header area end -->
-            <!-- page title area start -->
-            @include('admin.assets.title_area')
-
-            <!-- page title area end -->
             <div class="main-content-inner">
                 <div class="row">
                     <!-- data table start -->
@@ -103,11 +80,6 @@
                     <div>
                     </div>
                 </div>
-                <!-- main content area end -->
-                <!-- footer area start-->
-                @include('admin.assets.footer')
-
-                <!-- footer area end-->
             </div>
             <!-- Modal -->
             <div class="modal fade" id="downReasonModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -148,9 +120,8 @@
                     </div>
                 </div>
             </div>
-            @include('admin.assets.javascript')
-            <!-- Start datatable js -->
-
+            @endsection
+            @section('scripts')
             <script>
                 $.ajaxSetup({
                     headers: {

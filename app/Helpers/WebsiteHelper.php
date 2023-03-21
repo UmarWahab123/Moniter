@@ -147,6 +147,7 @@ class WebsiteHelper
                 $uweb->user_id = Auth::user()->id;
                 $uweb->title = $request->title;
                 $uweb->emails = $request->emails;
+                $uweb->server_id = $request->server_id;
                 $uweb->developer_email = $request->developer_email;
                 $uweb->owner_email = $request->owner_email;
                 $uweb->domain_expiry_date = $request->domain_expiry_date;
@@ -160,7 +161,7 @@ class WebsiteHelper
                 }
                 $uweb->ssl = $ssl;
                 $uweb->save();
-                Monitor::where('id', $web->id)->update(['certificate_check_enabled' => $ssl, 'user_id' => Auth::user()->id, 'server_id' => $mailData['server']]);
+                Monitor::where('id', $web->id)->update(['certificate_check_enabled' => $ssl, 'user_id' => Auth::user()->id, 'server_id' => $mailData['server_id']]);
                 $mails = $request->emails;
                 if ($mails != null) {
                     $mails = explode(",", $request->emails);
@@ -207,7 +208,9 @@ class WebsiteHelper
             $data['developer_email'] = $monitor->getSiteDetails->developer_email;
             $data['owner_email'] = $monitor->getSiteDetails->owner_email;
             $data['ssl'] = $monitor->getSiteDetails->ssl;
-            $data['server'] = $monitor->server_id;
+            $data['domain_expiry_date'] = $monitor->getSiteDetails->domain_expiry_date;
+            $data['domain_registrar'] = $monitor->getSiteDetails->domain_registrar;
+            $data['server_id'] = $monitor->getSiteDetails->server_id;
             return response()->json(['success' => true, 'data' => $data]);
         }
         return response()->json(['success' => false]);
@@ -221,9 +224,9 @@ class WebsiteHelper
             $ssl = 1;
         }
         $monitor->certificate_check_enabled = $ssl;
-        $monitor->server_id = $request['server'];
+        $monitor->server_id = $request['server_id'];
         if ($monitor->save()) {
-            UserWebsite::where('website_id', $request->id)->update(['emails' => $request->emails, 'title' => $request->title, 'developer_email' => $request->developer_email, 'owner_email' => $request->owner_email]);
+            UserWebsite::where('website_id', $request->id)->update(['emails' => $request->emails, 'title' => $request->title, 'developer_email' => $request->developer_email, 'domain_expiry_date'=>$request->domain_expiry_date, 'domain_registrar'=>$request->domain_registrar, 'owner_email' => $request->owner_email]);
             return response()->json(['success' => true]);
         }
         return response()->json(['success' => false]);

@@ -7,7 +7,7 @@
         <div class="sales-report-area sales-style-two">
             <div class="row">
                 @foreach ($monitors as $monitor)
-                    <a href="{{ url('admin/website-logs/' . $monitor->id) }}"
+                    <a href="{{ url('user/website-logs/' . $monitor->id) }}"
                         class="col-xl-3 col-ml-3 col-md-3 mt-5">
                         <div class="single-report">
                             <div class="s-sale-inner pt--30 mb-3">
@@ -61,4 +61,7 @@
         </div>
     @endif
 </div>
+@endsection
+@section('scripts')
+
 @endsection
