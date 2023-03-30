@@ -2,15 +2,16 @@
 
 namespace App\Helpers;
 
+use App\Mail\UserSignupMail;
+use App\Models\Packages\Package;
+use App\Models\UserPermission;
 use App\Role;
 use App\User;
-use Illuminate\Support\Str;
-use App\Mail\UserSignupMail;
-use Yajra\Datatables\Datatables;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use App\Models\UserPermission;
+use Illuminate\Support\Str;
+use Yajra\Datatables\Datatables;
 
 class UserHelper
 {
@@ -102,6 +103,7 @@ class UserHelper
     public static function store($request)
     {
         if (!empty($request->all())) {
+            $package = Package::where('type', 'Free')->first();
             $mailData = $request->all();
             $permission_id = $request->permission_id;
             $user = new User();
@@ -109,6 +111,7 @@ class UserHelper
             $user->email = $request->email;
             $user->password = bcrypt(12345678);
             $user->status = 1;
+            $user->package_id = @$package->id;
             if(Auth::user()->role_id == 3){
                 $user->role_id = 1;
             }else{
@@ -117,17 +120,20 @@ class UserHelper
             $user->parent_id = Auth::user()->id;
             if ($user->save()) {
                 $user_id = $user->id;
-                foreach ($permission_id as $key => $value) {
-                    if(!empty($value['id']))
-                    {
-                        UserPermission::where('id',$value['id'])->update($value);
+                if(@$permission_id){
+                        foreach ($permission_id as $key => $value) {
+                        if(!empty($value['id']))
+                        {
+                            UserPermission::where('id',$value['id'])->update($value);
+                        }
+                        else
+                        {
+                            $data = ['user_id'=>$user_id,'permission_id'=>$value];
+                            UserPermission::create($data);
+                        }   
                     }
-                    else
-                    {
-                        $data = ['user_id'=>$user_id,'permission_id'=>$value];
-                        UserPermission::create($data);
-                    }   
                 }
+                
                 Mail::to($request->email)->send(new UserSignupMail($mailData));
                 $no_of_users_allowed = @auth()->user()->package->no_of_users;
                 $no_of_users_added = User::where('parent_id', auth()->user()->id)->where('is_deleted', NULL)->count();
@@ -139,6 +145,8 @@ class UserHelper
            
             return response()->json(['success' => false]);
         }
+
+        return response()->json(['success' => false]);
     }
     public static function userStatus($request)
     {

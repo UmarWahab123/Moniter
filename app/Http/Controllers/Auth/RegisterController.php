@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Controller;
+use App\Models\Packages\Package;
 use App\Models\UserDetail;
 use App\User;
 use Auth;
