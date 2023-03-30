@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use App\Mail\UserSignupMail;
 use App\Models\Packages\Package;
+use App\Models\UserDetail;
 use App\Models\UserPermission;
 use App\Role;
 use App\User;
@@ -120,6 +121,9 @@ class UserHelper
             $user->parent_id = Auth::user()->id;
             if ($user->save()) {
                 $user_id = $user->id;
+                $user_detail = new UserDetail;
+                $user_detail->user_id = $user_id;
+                $user_detail->save();
                 if(@$permission_id){
                         foreach ($permission_id as $key => $value) {
                         if(!empty($value['id']))
