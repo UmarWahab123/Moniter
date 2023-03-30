@@ -163,7 +163,7 @@ class WebsiteHelper
                 }
                 $uweb->ssl = $ssl;
                 $uweb->save();
-                Monitor::where('id', $web->id)->update(['certificate_check_enabled' => $ssl, 'user_id' => Auth::user()->id, 'server_id' => $mailData['server_id']]);
+                Monitor::where('id', $web->id)->update(['certificate_check_enabled' => $ssl, 'user_id' => Auth::user()->id, 'server_id' => @$mailData['server_id']]);
                 $mails = $request->emails;
                 if ($mails != null) {
                     $mails = explode(",", $request->emails);
