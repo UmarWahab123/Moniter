@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Auth\LoginController;
-use App\User;
 use App\Http\Controllers\Controller;
+use App\Models\UserDetail;
+use App\User;
+use Auth;
+use Carbon\Carbon;
+use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Foundation\Auth\RegistersUsers;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Auth;
 class RegisterController extends Controller
 {
     /*
@@ -77,6 +78,7 @@ class RegisterController extends Controller
     public function register_user(Request $request){
         $id = $request->id;
         $data = $request->all();
+        $package = Package::where('type', 'Free')->first();
         $email_exist=User::where('email',$request->email)->first();
         if(!empty($email_exist)){
          return response()->json(['success' => false, 'msg' => 'Email is already exist ! Try a valid email']);
@@ -91,8 +93,13 @@ class RegisterController extends Controller
         }
         $data['role_id'] = 2;
         $data['status'] = 1;
-        $data['package_id'] = 1;
+        $data['package_id'] = @$package->id;
         $user = User::create($data);
+
+        $user_detail = new UserDetail;
+        $user_detail->user_id = $user->id;
+        $user_detail->save();
+
         return response()->json(['success' => true, 'msg' => 'You Have Successufully Registerd !']);
  }
 
