@@ -80,7 +80,8 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['aut
     Route::get('cancelSubscription',  [SubscriptionController::class,'cancelSubscription']);
 
     Route::get('/permission','PermissionController@permission');
-    Route::post('/add-permission', 'PermissionController@addPermission');
+    // Route::post('/add-permission', 'PermissionController@addPermission');
+    Route::get('/add-permission', 'PermissionController@addPermission');
     Route::get('permission/edit',  'PermissionController@editPermission');
     Route::post('permission/delete','PermissionController@permissionDelete');
     Route::get('permission/permission-setting','PermissionController@permissionSettings');

@@ -129,7 +129,33 @@
     });
 
     $('#addPackage').on('click', function() {
-        $('#addPermissionModal').modal('show');
+        // $('#addPermissionModal').modal('show');
+        $.ajax({
+            url: '{{ url('admin/add-permission') }}',
+            method: 'get',
+            beforeSend: function() {
+                $('#addPackage').prop('disabled', true);
+                $('#addPackage').html('Please wait...');
+            },
+            success: function(data) {
+                
+                if (data.success == true) {
+
+                    toastr.success('Success!', data.message , {
+                        "positionClass": "toast-bottom-right"
+                    });
+                    $('#permission-table').DataTable().ajax.reload();
+                    $('#addPackage').prop('disabled', false);
+                    $('#addPackage').html('Add Permission');
+                } else if (data.success == false) {
+                    toastr.error('Error!', 'Something went wrong', {
+                        "positionClass": "toast-bottom-right"
+                    });
+                    $('#addPackage').prop('disabled', false);
+                    $('#addPackage').html('Add Permission');
+                }
+            },
+        })
     });
 
     $('#addPermissionForm').on('submit', function(e) {

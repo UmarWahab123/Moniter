@@ -29,22 +29,39 @@ class PermissionController extends Controller
     }
     public function addPermission(Request $request)
     {
-        $permission = PermissionHelper::storePermission($request->all());
-        if ($permission) {
-            $action = $permission[1];
-            if($action == "Added"){
-                return response()->json([
-                    'success' => true,
-                    'message' => 'New Permission added successfully',
-                ]);
-            }else{
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Permission updated successfully',
-                ]);
+        try {
+            $permissions = ['Add Website', 'Add Server'];
+            foreach ($permissions as $key => $permission) {
+                Permission::updateOrCreate(
+                    [
+                        'name'  => $permission
+                    ],
+                    [
+                        'name' => $permission,
+                        'index' => ++$key
+                    ]);
             }
-           
+            return response()->json(['success' => true, 'msg' => "All Permissions Added Successfully !!!"]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'msg' => $e->getMessage()]);
         }
+        
+        // $permission = PermissionHelper::storePermission($request->all());
+        // if ($permission) {
+        //     $action = $permission[1];
+        //     if($action == "Added"){
+        //         return response()->json([
+        //             'success' => true,
+        //             'message' => 'New Permission added successfully',
+        //         ]);
+        //     }else{
+        //         return response()->json([
+        //             'success' => true,
+        //             'message' => 'Permission updated successfully',
+        //         ]);
+        //     }
+           
+        // }
     }
     public function editPermission(Request $request)
     {
