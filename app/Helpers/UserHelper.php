@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use App\Mail\UserSignupMail;
 use App\Models\Packages\Package;
+use App\Models\Permission;
 use App\Models\UserDetail;
 use App\Models\UserPermission;
 use App\Role;
