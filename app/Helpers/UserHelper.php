@@ -132,7 +132,8 @@ class UserHelper
                         }
                         else
                         {
-                            $data = ['user_id'=>$user_id,'permission_id'=>$value];
+                            $permission = Permission::find($value);
+                            $data = ['user_id'=>$user_id,'permission_id'=>$value, 'type' => @$permission->index == 1 ? 'add-website' : 'add-server'];
                             UserPermission::create($data);
                         }   
                     }
