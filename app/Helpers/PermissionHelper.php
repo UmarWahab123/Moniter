@@ -67,6 +67,11 @@ class PermissionHelper
     public static function storeAssignPermissions($request)
     {
         $data = $request;
+        if($data['permission_id'] == 1){
+            $data['type'] = "add-website";
+        }else{
+            $data['type'] = 'add-server';
+        }
         $userPermission = UserPermission::create($data);
         return $userPermission;
        

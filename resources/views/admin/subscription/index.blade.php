@@ -44,16 +44,20 @@
 
                     <div class="card-body p-4">
                         <div class="mt-2" style="display: flex; flex-direction: column; justify-content: center;">
-                            @foreach ($pk['packagefeatures'] as $pf)
                             <div>
                                 <div style="display: flex; justify-content: center;">
-                                    <div class="col-8"><span class="pkg_detail"> {{$pf->systemFeature->name}}</span></div>
-                                    <div class="col-4 px-0"><span class="pkg_detail_clr">{{$pf->max_allowed_count}}</span></div>
-
+                                    <div class="col-8"><span class="pkg_detail  text alert-link mr-2" style="font-weight: 600;color: black;">Total Servers </span></div>
+                                    <div class="col-4 px-0"><span class="pkg_detail_clr" style="font-weight: 600;color: black;">{{$pk->no_of_servers}}</span></div>
+                                </div><br>
+                                <div style="display: flex; justify-content: center;">
+                                    <div class="col-8"><span class="pkg_detail  text alert-link" style="font-weight: 600;color: black;">Total Websites</span></div>
+                                    <div class="col-4 px-0"><span class="pkg_detail_clr" style="font-weight: 600;color: black;">{{$pk->no_of_websites}}</span></div>
+                                </div><br>
+                                <div style="display: flex; justify-content: center;">
+                                    <div class="col-8"><span class="pkg_detail  text alert-link mr-4" style="font-weight: 600;color: black;">Total Users</span></div>
+                                    <div class="col-4 px-0"><span class="pkg_detail_clr" style="font-weight: 600;color: black;">{{$pk->no_of_users}}</span></div>
                                 </div>
                             </div><br>
-
-                            @endforeach
                             <br>
                             <div class="row">
                                 <div class="col">
@@ -77,19 +81,24 @@
                     <input type="hidden" name="package_id" class="form-control package_id" value="{{$pk->id }}" aria-describedby="" placeholder="">
 
                     <div class="card-header p-4" style=" background: rgb(130 81 247)">
-                        <div><span class="price_pkg">$ {{$pk->price }} </span><span class="month_text"></span><br><span class="pkg_name">{{$pk->name}} <small>( {{$pk->type}} )</small></span></div>
+                        <div><span class="price_pkg">$ {{$pk->price }} </span><span class="month_text"></span><br><span class="pkg_name" >{{$pk->name}} <small>( {{$pk->type}} )</small></span></div>
                     </div>
                     <div class="card-body p-4">
                         <div class="mt-2" style="display: flex; flex-direction: column; justify-content: center;">
-                            @foreach ($pk['packagefeatures'] as $pf)
-                            <div>
+                        <div>
+                              <div style="display: flex; justify-content: center;">
+                                    <div class="col-8"><span class="pkg_detail text alert-link mr-2" style="font-weight: 600;color: black;">Total Servers </span></div>
+                                    <div class="col-4 px-0"><span class="pkg_detail_clr" style="font-weight: 600;color: black;">{{$pk->no_of_servers}}</span></div>
+                                </div><br>
                                 <div style="display: flex; justify-content: center;">
-                                    <div class="col-8"><span class="pkg_detail"> {{$pf->systemFeature->name}}</span></div>
-                                    <div class="col-4 px-0"><span class="pkg_detail_clr">{{$pf->max_allowed_count}}</span></div>
-
+                                    <div class="col-8"><span class="pkg_detail text alert-link" style="font-weight: 600;color: black;">Total Websites</span></div>
+                                    <div class="col-4 px-0"><span class="pkg_detail_clr" style="font-weight: 600;color: black;">{{$pk->no_of_websites}}</span></div>
+                                </div><br>
+                                <div style="display: flex; justify-content: center;">
+                                    <div class="col-8"><span class="pkg_detail text alert-link mr-4" style="font-weight: 600;color: black;">Total Users</span></div>
+                                    <div class="col-4 px-0"><span class="pkg_detail_clr" style="font-weight: 600;color: black;">{{$pk->no_of_users}}</span></div>
                                 </div>
                             </div><br>
-                            @endforeach
                             <div class="row">
                                 <div class="col">
                                     <div class=" mb-2" name="" id="loading">

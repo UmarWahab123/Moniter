@@ -38,8 +38,10 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('monitor:check-ssl-certificate-expiry')->withoutOverlapping()->daily()
         ->appendOutputTo('storage/logs/check-ssl-certificate-expiry.log');
+
         $schedule->command('monitor:check-domain-expiry')->withoutOverlapping()->daily()
         ->appendOutputTo('storage/logs/check-domain-expiry.log');
+        
         $schedule->command('monitor:monthly-summry')->withoutOverlapping()->monthly()
         ->appendOutputTo('storage/logs/monthly-summry.log');
 

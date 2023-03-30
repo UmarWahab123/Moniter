@@ -49,4 +49,7 @@ class UserController extends Controller
     {
         return UserHelper::saveUserPermissions($request);
     }
+    public function delete(Request $request){
+        return UserHelper::delete($request);
+    }
 }

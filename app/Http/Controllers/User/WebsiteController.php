@@ -35,8 +35,12 @@ class WebsiteController extends Controller
         if ($request->ajax()) {
             return WebsiteHelper::WebsitesDatatable($query);
         }
+        $no_of_servers_allowed = @auth()->user()->package->no_of_servers;
+        $user_servers_added = Server::where('user_id', auth()->user()->id)->count();
+        $website_Permission_id = @auth()->user()->userpermissions->where('type','add-website')->first();
+        $user_permission_to_add_website = @$website_Permission_id->permission_id;
         $servers = Server::select('id', 'name')->where('user_id', Auth::user()->parent_id)->get();
-        return view('user.websites.index', compact('websites', 'servers'));
+        return view('user.websites.index', compact('websites', 'servers','user_permission_to_add_website','no_of_servers_allowed','user_servers_added'));
     }
     public function store(Request $request)
     {

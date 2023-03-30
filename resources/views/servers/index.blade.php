@@ -32,6 +32,7 @@
         </div>
     </div>
 </div>
+<input type="hidden" class="user_permission_to_add_server" value={{ @$user_permission_to_add_server }}>
 
 <div class="modal fade" id="addServerModal">
     <div class="modal-dialog" style="max-width:800px">
@@ -135,6 +136,10 @@
 
         </div>
     </div>
+
+    <!-- to store no of servers in package and user servers count -->
+    <input type="hidden" class="user_servers_added" value={{ $user_servers_added }}>
+    <input type="hidden" class="no_of_servers_allowed" value={{ $no_of_servers_allowed }}>
 </div>
 
 <div class="modal fade" id="binded_websites">
@@ -263,6 +268,26 @@
             });
             return;
         @endif
+        // check if user exceeding limit
+        var no_of_servers_allowed = parseInt($('.no_of_servers_allowed').val());
+        var user_servers_added = parseInt($('.user_servers_added').val());
+        if(no_of_servers_allowed <= user_servers_added){
+            toastr.info('Info!', 'Adding servers limit reached. Please upgrade your package', {
+                "positionClass": "toast-bottom-right"
+            });
+            return;
+        }
+        // check if user permission to add website
+        @if(Auth::user()->role_id == 2)
+        var user_permission_to_add_server = parseInt($('.user_permission_to_add_server').val());
+        if(user_permission_to_add_server == 0 ){
+            toastr.info('Permission Failed!', 'User does not have the permission to add the server Sorry !', {
+                "positionClass": "toast-bottom-right"
+            });
+            return;
+        }
+        @endif
+
         $.ajax({
             url: "{{ url('get-operating-system') }}",
             method: 'get',
@@ -293,6 +318,10 @@
             },
             success: function(data) {
                 if (data.success == true) {
+
+                    $('.no_of_servers_allowed').val(data.no_of_servers_allowed);
+                    $('.user_servers_added').val(data.user_servers_added);
+
                     $('#addServerModal').modal('hide');
                     $('#addServerForm')[0].reset();
                     toastr.success('Success!', 'Server added successfully', {
@@ -349,10 +378,14 @@
                         id: id
                     },
                     success: function(data) {
-                        toastr.success('Success!', 'Server deleted successfully', {
+                        if(data.success) {
+                            toastr.success('Success!', 'Server deleted successfully', {
                             "positionClass": "toast-bottom-right"
-                        });
-                        $('#servers_table').DataTable().ajax.reload();
+                            });
+                            $('#servers_table').DataTable().ajax.reload();
+                            $('.no_of_servers_allowed').val(data.no_of_servers_allowed);
+                        $('.user_servers_added').val(data.user_servers_added);
+                        }
                     },
                     error: function() {
                         toastr.error('Error!', 'Something went wrong', {

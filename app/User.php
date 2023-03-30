@@ -6,11 +6,12 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use App\Notifications\ResendEmailNotification;
 use App\Models\Packages\Package;
+use App\Models\UserPermission;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Notifications\EmailVerificationCodeNotification;
 
-class User extends Authenticatable implements JWTSubject, MustVerifyEmail
+class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
 
@@ -20,7 +21,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'status', 'role_id'
+        'name', 'email', 'password', 'status', 'role_id','package_id'
     ];
 
     /**
@@ -81,7 +82,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
 
     public function resendEmail()
     {
-        return $this->notify(new ResendEmailNotification);
+        return $this->notify(new ResendEmailNotification(auth()->user()));
     }
 
     public function sendVerificationCodeEmail($verification_code)
@@ -93,5 +94,11 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
     {
         return $this->belongsTo(Package::class,'package_id', 'id');
     }
+    public function userpermissions()
+    {
+        return $this->hasMany(UserPermission::class,'user_id', 'id');
+    }
     
 }
+
+    

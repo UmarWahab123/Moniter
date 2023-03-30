@@ -24,6 +24,9 @@ input[type=number] {
                                     <th>ID</th>
                                     <th>Name</th>
                                     <th>Type</th>
+                                    <th>Allowed Servers</th>
+                                    <th>Allowed Websites</th>
+                                    <th>Allowed User Accounts</th>
                                     <th>Price</th>
                                     <th>Status</th>
                                     <th>Action</th>
@@ -48,7 +51,7 @@ input[type=number] {
                 <form id="addPackageForm">
                     @csrf
                     <div class="row">
-                    <input type="text" name="id" class="form-control d-none" id="edit_id">
+                        <input type="text" name="id" class="form-control d-none" id="edit_id">
                         <div class="col-md-6">
                             <label class="m-0">Name <span class="text-danger">*</span></label>
                             <input type="text" name="name" class="form-control" id="name"
@@ -63,14 +66,34 @@ input[type=number] {
                                 <option value="Yearly">Yearly</option>
                             </select>
                         </div>
-                       </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                        <label class="m-0">Total Allowed Servers <span class="text-danger">*</span></label>
+                            <input type="text" name="no_of_servers" class="form-control" id="no_of_servers"
+                                placeholder="Enter Allowed Number of Servers">
+                        </div>
+
+                        <div class="col-6">
+                        <label class="m-0">Total Allowed Websites <span class="text-danger">*</span></label>
+                            <input type="text" name="no_of_websites" class="form-control" id="no_of_websites"
+                                placeholder="Enter Allowed Number of Websites">
+                        </div>
+                    </div>
                     <div class="row mt-2">
+                    <div class="col-6">
+                        <label class="m-0">Total Allowed User Accounts <span class="text-danger">*</span></label>
+                            <input type="text" name="no_of_users" class="form-control" id="no_of_users"
+                                placeholder="Enter Allowed Number of User Accounts">
+                        </div>
                         <div class="col-md-6">
                             <label class="m-0">Price <span class="text-danger">*</span></label>
                             <input type="text" name="price" class="form-control" id="price"
                                 placeholder="Enter Price">
                         </div>
-                        <div class="col-md-6">
+                        </div>
+                        <div class="row mt-2">
+                        <div class="col-md-12">
                             <label class="m-0">Status<span class="text-danger">*</span></label>
                             <select name="status" id="status" class="form-control">
                                 <option value="" selected="">Please Select</option>
@@ -172,6 +195,9 @@ input[type=number] {
                 data: 'type',
                 name: 'Type'
             },
+            { data: 'no_of_servers', name: 'Allowed Servers' },
+            { data: 'no_of_websites', name: 'Allowed Websites' },
+            { data: 'no_of_users', name: 'Allowed User Accounts' },
             {
                 data: 'price',
                 name: 'Price'
@@ -262,10 +288,14 @@ input[type=number] {
             success: function(data) {
                 $('#addPackageModal').modal('show');
                 $('#name').val(data.data['name']);
+                $('#no_of_servers').val(data.data['no_of_servers']);
+                $('#no_of_websites').val(data.data['no_of_websites']);
+                $('#no_of_users').val(data.data['no_of_users']);
                 $('#price').val(data.data['price']);
                 $('#type').val(data.data['type']);
                 $('#status').val(data.data['status']);
                 $('#description').val(data.data['description']);
+                
                 $('#edit_id').val(id);
             },
             error: function() {
@@ -437,6 +467,47 @@ input[type=number] {
                     },
                     error: function() {
                         toastr.error('Error!', 'Something went wrong', {
+                            "positionClass": "toast-bottom-right"
+                        });
+
+                    },
+                });
+            }
+        })
+
+    });
+    $(document).on('click', '.btn_delete', function(e) {
+        var id = $(this).val();
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You want to Delete the selected Package !",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, do it!'
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    url:"{{ url('superAdmin/package/delete') }}",
+                    method: 'post',
+                    data: {
+                        id: id,
+                    },
+                    success: function(data) {
+                        if(data.success == false){
+                        toastr.success('Failed', data.msg, {
+                        "positionClass": "toast-bottom-right"
+                        });
+                        }else if(data.success == true) {
+                            toastr.success('Error!', data.msg, {
+                            "positionClass": "toast-bottom-right"
+                        });
+                        $('#package_table').DataTable().ajax.reload();
+                        }
+                    },
+                    error: function() {
+                        toastr.success('Error!', 'Something went wrong', {
                             "positionClass": "toast-bottom-right"
                         });
 

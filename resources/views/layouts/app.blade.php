@@ -67,9 +67,8 @@
                 <div class="row mb-4">
                     <div class="alert alert-primary fixed-top col-md-12" role="alert"
                         style="font-size: 20px; min-height: 18px; text-align: center">
-                        <b> A verification email has been sent to your email address. Please Verify your account! <a
-                                href="javascript:void(0);" id="resendEmail">Click Here</a> to resend email, if not
-                            received.</b>
+                        <b> User must verify the email before performing any actions. <a
+                                href="javascript:void(0);" id="resendEmail">Click Here</a> to send verification email.</b>
                     </div>
                 </div>
             @endif
@@ -122,7 +121,7 @@
                 @include('admin.assets.javascript')
             @elseif(@auth()->user()->role_id == 2)
                 @include('user.assets.javascript')
-            @elseif(@auth()->user()->role_id == 3)
+            @else
                 @include('superAdmin.assets.javascript')
             @endif
             @yield('scripts')

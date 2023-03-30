@@ -17,7 +17,7 @@ class SubscriptionHelper
 
     public static function index()
     {
-        $package = Package::with(['packagefeatures.systemFeature'])->get();
+        $package = Package::get();
         return view("admin.subscription.index", ["package" => $package]);
     }
     public static function createSubscription($request)

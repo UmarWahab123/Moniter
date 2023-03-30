@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\User\Subscription\SubscriptionController;
 use Carbon\Carbon;
 
@@ -60,7 +61,7 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['aut
     Route::get('/user-status', 'UserController@userStatus')->name('user-status');
     Route::get('/{id}/user-permissions', 'UserController@userPermissions')->name('users.permissions');
     Route::post('save-permissions', 'UserController@saveUserPermissions')->name('users.save-permissions');
-
+    Route::post('/user-delete', 'UserController@delete')->name('admin.user-delete');
     Route::get('/settings', 'SettingController@index')->name('settings');
 
     Route::post('/add-settings', 'SettingController@store')->name('add-settings');
@@ -145,7 +146,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/user-added-websites','ServerController@userAddedWebsite');
     Route::post('server-website/delete','ServerController@serverWebsiteDelete');
     Route::post('website/assign-status-change','ServerController@websiteAssignStatusChange');
-
 });
 
 Route::group(['namespace' => 'SuperAdmin', 'prefix' => 'superAdmin', 'middleware' => ['auth', 'superAdmin']], function () {
@@ -185,16 +185,26 @@ Route::group(['namespace' => 'SuperAdmin', 'prefix' => 'superAdmin', 'middleware
    Route::post('/add-operating-system', 'OperatingSystemController@addOperatingSystem');
    Route::get('operating-system/edit', 'OperatingSystemController@EditOperatingSystem');
    Route::post('operating-system/delete', 'OperatingSystemController@deleteOperatingSystem');
+   Route::post('package/delete', [PackageController::class,'deletePackage']);
+
+   
 
 });
-
+Route::post('register/user', [RegisterController::class, 'register_user'])->name('register-user');
 Route::get('emails/resend', [UserController::class, 'resendEmail'])->name('emails.resendEmail');
-Route::get('verify-user-email-address', function () {
-    $user = User::find(Auth::user()->id);
-    $user->email_verified_at = Carbon::now();
-    $user->save();
-    return redirect('/home');
-});
+Route::get('verify-user-email-address/{id}', function ($id) {
+    $user = User::find($id);
+    if($user){
+        $user->email_verified_at = Carbon::now();
+        $user->save();
+        if(auth()->user()){
+            return redirect('/home')->with('email-verified', 'Email Verified Successfully!');
+        }
+        return redirect('/login')->with('email-verified', 'Email Verified Successfully!');
+    }
+    
+    return redirect('/login')->with('no-user', 'User not found!');
+})->name('verify-user-email-address');
 Route::post('emails/send-verification_code', [UserController::class, 'sendVerificationCodeEmail'])->name('emails.send-verification_code');
 Route::post('/do-login', [AuthController::class, "doLogin"])->name('custom_login');
 Route::get('/login/verify-login', [AuthController::class, "createVerfication"])->name('login.custom-verify');

@@ -310,6 +310,11 @@
                       </div>
       
                     </div>
+<input type="hidden" class="user_permission_to_add_website" value={{ @$user_permission_to_add_website }}>
+
+     <!-- to store no of servers in package and user servers count -->
+<input type="hidden" class="user_website_added" value={{ $user_website_added }}>
+<input type="hidden" class="no_of_website_allowed" value={{ $no_of_websites_allowed }}>
             <div class="modal fade" id="assignWebsiteModal">
             <div class="modal-dialog" style="max-width:1000px">
                 <div class="modal-content">
@@ -382,7 +387,6 @@
                                     <label class="form-check-label" for="exampleCheck1">SSL Check</label>
                                 </div>
                             </div>
-
                         </div>
                         <button type="submit" id="websiteSubmitBtn"
                             class="btn btn-primary pr-4 pl-4 mt-3 mb-4">Submit</button>
@@ -1003,6 +1007,7 @@
                     });
                     return;
                 @endif
+              
                 var user_id = $(this).val();
                 $.ajax({
                     url: "{{ url('user-added-websites') }}",
@@ -1022,8 +1027,29 @@
                 })
             });
             $("#showAddWebsiteFormBtn").click(function() {
+              // check if user permission to add website
+              @if(Auth::user()->role_id == 2)
+                var user_permission_to_add_website = $('.user_permission_to_add_website').val();
+                if(user_permission_to_add_website == 0 ){
+                    toastr.info('Permission Failed!', 'User does not have the permission to add the website Sorry !', {
+                        "positionClass": "toast-bottom-right"
+                    });
+                    return;
+                }
+              @endif
+              // check if user exceeding limit
+                var no_of_websites_allowed = parseInt($('.no_of_website_allowed').val());
+                var user_website_added = parseInt($('.user_website_added').val());
+                if(no_of_websites_allowed <= user_website_added){
+                    toastr.info('Info!', 'Adding website limit reached. Please upgrade your package', {
+                        "positionClass": "toast-bottom-right"
+                    });
+                    return;
+                }
+
                 // check if the element has the 'd-none' class
                 if ($("#addWebsiteForm").hasClass("d-none")) {
+          
                 // if it does, remove the class
                 $("#addWebsiteForm").removeClass("d-none");
                 } else {
@@ -1057,6 +1083,8 @@
                             $('#assignWebsiteBtn').trigger('click');
                             $('#websiteSubmitBtn').prop('disabled', false);
                             $('#websiteSubmitBtn').html('Submit');
+                            $('.no_of_website_allowed').val(data.no_of_websites_allowed);
+                            $('.user_website_added').val(data.user_website_added);
                         } else if (data.success == false) {
                             toastr.error('Error!', 'Something went wrong', {
                                 "positionClass": "toast-bottom-right"
@@ -1105,6 +1133,8 @@
                                 toastr.success('Success!', 'Website Deleted successfully', {
                                     "positionClass": "toast-bottom-right"
                                 });
+                                $('.no_of_website_allowed').val(data.no_of_websites_allowed);
+                                $('.user_website_added').val(data.user_website_added);
                               $('#assignWebsiteBtn').trigger('click');
                             },
                             error: function() {

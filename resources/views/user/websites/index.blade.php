@@ -57,6 +57,7 @@
         </div>
     </div>
 </div>
+<input type="hidden" class="user_permission_to_add_website" value={{ @$user_permission_to_add_website }}>
 <div class="modal fade" id="addWebsiteModal">
     <div class="modal-dialog" style="max-width:800px">
         <div class="modal-content">
@@ -68,6 +69,14 @@
                 <form id="addWebsiteForm">
                     @csrf
                     <div class="row">
+                    <div class="col-md-6">
+                            <label class="m-0">Choose <span class="text-danger">*</span></label>
+                            <select name="protocol" id="protocol" class="form-control" style="min-height:45px;">
+                                <option value="" selected disabled>Choose</option>
+                                <option value="Http://">Http</option>
+                                <option value="Https://">Https</option>
+                            </select>
+                        </div>
                         <div class="col-md-6">
                             <label class="m-0">URL <span class="text-danger">*</span></label>
                             <input type="text" name="url" class="form-control" id="url"
@@ -96,12 +105,22 @@
                         </div>
                         <div class="col-md-6 mt-2">
                             <label class="m-0">Choose Server </label>
-                            <select name="server" id="add_server" class="form-control" style="min-height:45px;">
+                            <select name="server_id" id="add_server" class="form-control" style="min-height:45px;">
                                 <option value="" selected disabled>Choose Server</option>
                                 @foreach ($servers as $server)
                                 <option value="{{ $server->id }}">{{ $server->name }}</option>
                                 @endforeach
                             </select>
+                        </div>
+                        <div class="col-md-6 mt-2">
+                            <label class="m-0">Domain Expiry Date </label>
+                            <input type="date" name="domain_expiry_date" class="form-control"  id="domain_expiry_date"
+                                placeholder="Select Domain Date">
+                        </div>
+                        <div class="col-md-6 mt-2">
+                            <label class="m-0">Domain Registrar </label>
+                            <input type="text" name="domain_registrar" class="form-control" id="domain_registrar"
+                                placeholder="Enter Domain Registrar">
                         </div>
                         <div class="col-md-6 mt-2">
                             <div class="form-check mt-4">
@@ -120,6 +139,10 @@
         </div>
     </div>
 </div>
+  <!-- to store no of servers in package and user servers count -->
+  <input type="hidden" class="user_servers_added" value={{ $user_servers_added }}>
+    <input type="hidden" class="no_of_servers_allowed" value={{ $no_of_servers_allowed }}>
+    
 <div class="modal fade" id="editWebsiteModal">
     <div class="modal-dialog" style="max-width:800px">
         <div class="modal-content">
@@ -132,6 +155,19 @@
                     @csrf
                     <input type="hidden" name="id" id="editId">
                     <div class="row">
+                    <div class="col-md-6">
+                            <label class="m-0">Choose <span class="text-danger">*</span></label>
+                            <select name="protocol" id="editProtocol" class="form-control" style="min-height:45px;">
+                                <option value="" selected disabled>Choose</option>
+                                <option value="http://">Http</option>
+                                <option value="https://">Https</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="m-0">URL <span class="text-danger">*</span></label>
+                            <input type="text" name="url" class="form-control" id="editUrl"
+                                placeholder="Enter Url">
+                        </div>
                         <div class="col-md-6">
                             <label class="m-0 mt-2">Title <span class="text-danger">*</span></label>
                             <input type="text" name="title" class="form-control" id="editTitle"
@@ -154,12 +190,22 @@
                         </div>
                         <div class="col-md-6 mt-2">
                             <label class="m-0">Choose Server </label>
-                            <select name="server" id="edit_server" class="form-control" style="min-height:45px;">
+                            <select name="server_id" id="edit_server" class="form-control" style="min-height:45px;">
                                 <option value="" selected disabled>Choose Server</option>
                                 @foreach ($servers as $server)
                                 <option value="{{ $server->id }}">{{ $server->name }}</option>
                                 @endforeach
                             </select>
+                        </div>
+                        <div class="col-md-6 mt-2">
+                            <label class="m-0">Domain Expiry Date </label>
+                            <input type="date" name="domain_expiry_date" class="form-control"  id="edit_domain_expiry_date"
+                                placeholder="Select Domain Date">
+                        </div>
+                        <div class="col-md-6 mt-2">
+                            <label class="m-0">Domain Registrar </label>
+                            <input type="text" name="domain_registrar" class="form-control" id="edit_domain_registrar"
+                                placeholder="Enter Domain Registrar">
                         </div>
                         <div class="col-md-6 mt-2">
                             <div class="form-check ">
@@ -277,6 +323,23 @@ $('#addWebsiteBtn').on('click', function() {
         });
         return;
     @endif
+    // check if user exceeding limit
+    var no_of_servers_allowed = parseInt($('.no_of_servers_allowed').val());
+    var user_servers_added = parseInt($('.user_servers_added').val());
+    if(no_of_servers_allowed <= user_servers_added){
+        toastr.info('Info!', 'Adding servers limit reached. Please upgrade your package', {
+            "positionClass": "toast-bottom-right"
+        });
+        return;
+    }
+    // check if user permission to add website
+    var user_permission_to_add_website = $('.user_permission_to_add_website').val();
+    if(user_permission_to_add_website == 0 ){
+        toastr.info('Permission Failed!', 'User does not have the permission to add the website Sorry !', {
+            "positionClass": "toast-bottom-right"
+        });
+        return;
+    }
     $('#addWebsiteModal').modal('show');
 });
 $('#addWebsiteForm').on('submit', function(e) {
@@ -298,6 +361,8 @@ $('#addWebsiteForm').on('submit', function(e) {
                 toastr.success('Success!', 'Website added successfully and being monitored', {
                     "positionClass": "toast-bottom-right"
                 });
+                $('.no_of_servers_allowed').val(data.no_of_websites_allowed);
+                $('.user_servers_added').val(data.user_websites_added);
                 $('#websitesDataTable').DataTable().ajax.reload();
                 $('#websiteSubmitBtn').prop('disabled', false);
                 $('#websiteSubmitBtn').html('Submit');
@@ -349,6 +414,8 @@ $(document).on('click', '.delete-site', function(e) {
                     toastr.success('Success!', 'Website deleted successfully', {
                         "positionClass": "toast-bottom-right"
                     });
+                    $('.no_of_servers_allowed').val(data.no_of_websites_allowed);
+                   $('.user_servers_added').val(data.user_websites_added);
                     $('#websitesDataTable').DataTable().ajax.reload();
                 },
                 error: function() {
@@ -371,12 +438,16 @@ $(document).on('click', '.edit-site', function(e) {
         },
         success: function(data) {
             $('#editWebsiteModal').modal('show');
+            $('#editProtocol').val(data.data['protocol']);
+            $('#editUrl').val(data.data['url']);
             $('#editTitle').val(data.data['title']);
             $('#editEmails').val(data.data['emails']);
             $('#edit_developer_email').val(data.data['developer_email']);
             $('#edit_owner_email').val(data.data['owner_email']);
             $('#editId').val(website_id);
-            $('#edit_server').val(data.data['server']);
+            $('#edit_domain_expiry_date').val(data.data['domain_expiry_date'])
+            $('#edit_domain_registrar').val(data.data['domain_registrar'])
+            $('#edit_server').val(data.data['server_id']).prop('selected', true);
             if (data.data['ssl'] == 1) {
                 $('#editSsl').prop('checked', true);
             } else {

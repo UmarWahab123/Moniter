@@ -26,7 +26,7 @@
                         <a href="{{ url('superAdmin/package') }}" aria-expanded="true"><i
                                 class="ti-user"></i><span>Packages</span></a>
                     </li>
-                    <li class="">
+                    <li class="d-none">
                         <a href="{{ url('superAdmin/system-features') }}" aria-expanded="true"><i
                                 class="ti-user"></i><span>System Features</span></a>
                     </li>

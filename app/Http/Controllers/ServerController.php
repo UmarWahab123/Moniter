@@ -24,7 +24,12 @@ class ServerController extends Controller
     }
     public function index()
     {
-        return view('servers.index');
+        $no_of_servers_allowed = @auth()->user()->package->no_of_servers;
+        $user_servers_added = Server::where('user_id', auth()->user()->id)->count();
+        // dd($no_of_servers_allowed, $user_servers_added);
+        $server_permission_id = @auth()->user()->userpermissions->where('type','add-server')->first();
+        $user_permission_to_add_server = @$server_permission_id->permission_id;
+        return view('servers.index', compact('no_of_servers_allowed', 'user_servers_added','user_permission_to_add_server'));
     }
     public function getOperatingSystem()
     {

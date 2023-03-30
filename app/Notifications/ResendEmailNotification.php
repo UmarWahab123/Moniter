@@ -11,15 +11,15 @@ use Illuminate\Support\Facades\Lang;
 class ResendEmailNotification extends Notification
 {
     use Queueable;
-
+    protected $user = null;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($user)
     {
-        //
+        $this->user = $user;
     }
 
     /**
@@ -44,7 +44,7 @@ class ResendEmailNotification extends Notification
         return (new MailMessage)
             ->subject(Lang::get('Verify Email Address'))
             ->line(Lang::get('Please click the button below to verify your email address.'))
-            ->action(Lang::get('Verify Email Address'), url('/verify-user-email-address'))
+            ->action(Lang::get('Verify Email Address'), route('verify-user-email-address', ['id' => $this->user->id]))
             ->line(Lang::get('If you did not create an account, no further action is required.'));
     }
 

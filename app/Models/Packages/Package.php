@@ -6,7 +6,7 @@ use App\Models\Packages\PackageFeature;
 use App\Models\System\SystemFeature;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
+use App\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Package extends Model
@@ -19,6 +19,9 @@ class Package extends Model
         'type',
         'status',
         'price',
+        'no_of_servers',
+        'no_of_websites',
+        'no_of_users'
     ];
     public function users()
     {

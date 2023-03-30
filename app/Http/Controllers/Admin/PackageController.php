@@ -221,5 +221,9 @@ class PackageController extends Controller
     {
         return PackageHelper::assignFeatureDelete($request);
     }
+    public function deletePackage(Request $request)
+    {
+        return PackageHelper::deletePackage($request);
+    }
     
 }

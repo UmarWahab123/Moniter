@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Models\Packages\Package;
+use App\User;
 use App\Models\Packages\PackageFeature;
 use App\Models\System\SystemFeature;
 use Yajra\Datatables\Datatables;
@@ -14,7 +15,6 @@ class PackageHelper
     public static function index($request)
     {
         $data['systemFeature'] = SystemFeature::all();
-
         if ($request->ajax()) {
             return (new PackageHelper)->UserDatatable();
         }
@@ -31,16 +31,17 @@ class PackageHelper
                     $html_string = '
                     <button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm edit-package"  title="Edit"><i class="fa fa-pencil"></i></button>
                     <button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm change-status" data-status="0" title="ActiveStatus"><i class="fa fa-toggle-on" aria-hidden="true"></i></button>
-                    <button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm btn-rounded assign-feature" title="AssignFeature">Assign Feature</button>
-
+                    <button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm btn-rounded assign-feature d-none" title="AssignFeature">Assign Feature</button>
+                    <button  value="' . $item->id . '" class="btn btn-sm btn-outline-danger btn_delete ml-1" title="Delete Package"><i class="fa fa-trash"></i></button>
                    '
-                    
                     ;
                 }else{
                     $html_string = '
                     <button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm edit-package" title="Edit"><i class="fa fa-pencil"></i></button>
                     <button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm change-status" data-status="1" title="InActiveStatus"><i class="fa fa-toggle-off" aria-hidden="true"></i></button>
-                    <button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm btn-rounded assign-feature" title="AssignFeature">Assign Feature</button>
+                    <button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm btn-rounded assign-feature d-none" title="AssignFeature">Assign Feature</button>
+                    <button  value="' . $item->id . '" class="btn btn-sm btn-outline-danger btn_delete ml-1" title="Delete Package"><i class="fa fa-trash"></i></button>
+
                     '
                     
                     ;
@@ -190,6 +191,15 @@ class PackageHelper
 
         return $html;
     }
-
+    public static function deletePackage($request)
+    {
+         $user_subscribed = User::where('package_id',$request->id)->first();
+        //to check whether package is subscribed by any user 
+         if(!empty($user_subscribed->package_id)){
+         return response()->json(['success' => false, 'msg' => 'This Package is Subscribed by User you can not delete this Package !']);
+         }
+         $package= Package::find($request->id)->delete();
+         return response()->json(['success' => true,'msg' => 'Package Deleted successfully !']);
+    }
 
 }

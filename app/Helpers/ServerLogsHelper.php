@@ -7,15 +7,21 @@ use App\ServerDetail;
 use Illuminate\Http\Request;
 use Yajra\Datatables\Datatables;
 use Carbon\Carbon;
+use App\UserWebsite;
+
 use Auth;
 
 class ServerLogsHelper
 {
     public static function serverLogs($id)
     {
+        $no_of_websites_allowed = @auth()->user()->package->no_of_websites;
+        $user_website_added = UserWebsite::where('user_id', auth()->user()->id)->count();
         $server  =Server::with('userInfo')->where('id',$id)->first();
         $all_servers = Server::select('id', 'name')->where('user_id', Auth::user()->id)->get();
-        return view('servers.server_details', compact('server','all_servers', 'id'));
+        $website_Permission_id = @auth()->user()->userpermissions->where('type','add-website')->first();
+        $user_permission_to_add_website = @$website_Permission_id->permission_id;
+        return view('servers.server_details', compact('server','all_servers', 'id','no_of_websites_allowed','user_website_added','user_permission_to_add_website'));
     }
 
     public static function serverLogsInDetails(Request $request)

@@ -40,7 +40,7 @@ class CheckDomainExpiryCommand extends Command
     public function handle()
     {
         $monitors=Monitor::where('domain_checked',0)->orderBy('id','asc')->get();
-        $url = 'http://70b47a6098de.ngrok.io/domain-expiry';
+        $url = 'https://wstats.websiteuptimerobot.com/domain-expiry';
         $method = 'GET';
        
         foreach($monitors as $monitor)

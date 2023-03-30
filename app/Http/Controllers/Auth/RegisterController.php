@@ -1,14 +1,15 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
-
+use App\Http\Controllers\Auth\LoginController;
 use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
-
-
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Auth;
 class RegisterController extends Controller
 {
     /*
@@ -23,13 +24,12 @@ class RegisterController extends Controller
     */
 
     use RegistersUsers;
-
     /**
      * Where to redirect users after registration.
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/login';
 
     /**
      * Create a new controller instance.
@@ -38,7 +38,7 @@ class RegisterController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest');
+     $this->middleware('guest');
     }
 
     /**
@@ -65,12 +65,35 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'status' => 1,
             'role_id' => 1,
+            'package_id' => 1,
             'password' => Hash::make($data['password']),
         ]);
     }
+    public function register_user(Request $request){
+        $id = $request->id;
+        $data = $request->all();
+        $email_exist=User::where('email',$request->email)->first();
+        if(!empty($email_exist)){
+         return response()->json(['success' => false, 'msg' => 'Email is already exist ! Try a valid email']);
+        }
+        if($request->password != $request->password_confirmation){
+            return response()->json(['success' => false, 'msg' => 'Password and Confirm password does not match']);
+        }
+        if(!empty($data['password'])){
+            $data['password'] = bcrypt($data['password']);
+        }else{
+            unset($data['password']);
+        }
+        $data['role_id'] = 2;
+        $data['status'] = 1;
+        $data['package_id'] = 1;
+        $user = User::create($data);
+        return response()->json(['success' => true, 'msg' => 'You Have Successufully Registerd !']);
+ }
+
 }

@@ -41,7 +41,7 @@ class EmailVerificationCodeNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('Login Verificode Code')
+            ->subject('Login Verification Code')
             ->line('Your Verification code for Login.')
             ->line('Verification Code: ' . $this->verification_code)
             ->line('Thank you for using our application!');

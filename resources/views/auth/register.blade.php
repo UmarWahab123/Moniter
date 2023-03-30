@@ -5,7 +5,8 @@
     <div class="login-area login-s2">
         <div class="container">
             <div class="login-box ptb--100">
-                <form method="POST" action="{{ route('register') }}">
+                <!-- <form method="POST" action="{{ route('register') }}"> -->
+                <form method="POST" class="register-user">
                     @csrf
 
                     <div class="login-form-head">
@@ -65,4 +66,34 @@
         </div>
     </div>
     <script type="text/javascript"></script>
+    @endsection
+@section('scripts')
+<script>
+    $(document).ready(function(){
+        $(document).on('submit', '.register-user', function(e){
+          e.preventDefault();
+          var formdata = $('.register-user').serialize();
+          $.ajax({
+            method: 'post',
+            dataType: 'json',
+            url: "{{route('register-user')}}",
+            data: formdata,
+            success: function(data) {
+            if(data.success == true){
+                    toastr.success('Success!', data.msg, {
+                        "positionClass": "toast-bottom-right"
+                    });
+                    window.location.href = '{{url('/login')}}';
+                }else{
+                    toastr.error('Error!', data.msg, {
+                        "positionClass": "toast-bottom-right"
+                    });
+                }
+            },
+        })
+        });
+
+      
+    });
+</script>
 @endsection

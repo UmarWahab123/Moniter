@@ -114,19 +114,24 @@ class ServersHelper
         $data['server_id']     = $create->id;
         $data['access_token']  = $python_token;
         // token must be send with server add
-        $response = ServersHelper::curl_call($url, $data);
-        if ($response) {
-            $create->file_path  = $response->file_path;
-            $create->save();
-        }
+        // $response = ServersHelper::curl_call($url, $data);
+        // if ($response) {
+        //     $create->file_path  = $response->file_path;
+        //     $create->save();
+        // }
         $url  = $api_path . '/add_server_new';
-        $response = ServersHelper::curl_call($url, $data);
-        if ($response) {
-            $create->server_file_path  = $response->file_path;
-            $create->save();
-        }
+        // $response = ServersHelper::curl_call($url, $data);
+        // if ($response) {
+        //     $create->server_file_path  = $response->file_path;
+        //     $create->save();
+        // }
+
+        $no_of_servers_allowed = @auth()->user()->package->no_of_servers;
+        $user_servers_added = Server::where('user_id', auth()->user()->id)->count();
         return response()->json([
             'success' => true,
+            'no_of_servers_allowed' => $no_of_servers_allowed,
+            'user_servers_added' => $user_servers_added
         ]);
     }
 
@@ -171,6 +176,11 @@ class ServersHelper
             }
             $server->delete();
         }
+
+        $no_of_servers_allowed = @auth()->user()->package->no_of_servers;
+        $user_servers_added = Server::where('user_id', auth()->user()->id)->count();
+        return response()->json(['success' => true, 'no_of_servers_allowed' => $no_of_servers_allowed,
+        'user_servers_added' => $user_servers_added]);
     }
 
     public static function edit($request)
@@ -301,7 +311,12 @@ class ServersHelper
     public static function serverWebsiteDelete($request)
     {
          $userWebsite = UserWebsite::find($request->id)->delete();
-         return response()->json(['success' => true]);
+         $no_of_websites_allowed = @auth()->user()->package->no_of_websites;
+        $user_website_added = UserWebsite::where('user_id', auth()->user()->id)->count();
+         return response()->json(['success' => true,
+         'no_of_websites_allowed'=>$no_of_websites_allowed,
+         'user_website_added'=>$user_website_added
+        ]);
     }
     public static function websiteAssignStatusChange($request)
     {

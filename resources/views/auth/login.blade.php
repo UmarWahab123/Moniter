@@ -3,6 +3,15 @@
 @section('content')
     <div class="login-area login-s2">
         <div class="container">
+            <div class="row">
+                <div class="col">
+                    @if (session('email-verified'))
+                        <div class="alert alert-success w-100">
+                            {{ session('email-verified') }}
+                        </div>
+                    @endif
+                </div>
+            </div>
             <div class="login-box ptb--100">
                 {{-- <form method="POST" action="{{ route('login') }}"> --}}
                 <form id="Form_login" action="{{ route('custom_login') }}" method="post">

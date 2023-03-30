@@ -20,7 +20,9 @@ class UserHelper
             return (new UserHelper)->UserDatatable();
         }
         if (Auth::user()->role_id == 1) {
-            return view('admin.users.index');
+            $no_of_users_allowed = @auth()->user()->package->no_of_users;
+            $no_of_users_added = User::where('parent_id', auth()->user()->id)->where('is_deleted', NULL)->count();
+            return view('admin.users.index',compact('no_of_users_allowed','no_of_users_added'));
         }
         return view('user.users.index');
     }
@@ -41,8 +43,10 @@ class UserHelper
                 $html_string = "";
                 if (Auth::user()->role_id == 1) {
                     $html_string .= '
-                           <button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm btn-rounded manage_permission ml-1" title="ManagePermission">Manage Permission</button>
+                           <button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm manage_permission ml-1" title="ManagePermission"><i class="fa fa-key"></i></button>
                            <button  value="' . $item->id . '"  class="btn btn-outline-primary btn-sm edit-user"  title="Edit"><i class="fa fa-pencil"></i></button>
+                           <button class="btn btn-sm btn-outline-danger ml-1 mr-1 btn-delete-admin-user " value="' . $item->id . '"  title="Delete User"><i class="fa fa-trash"></i></button>
+
                          ';
                 }
                 if ($item->status == 1) {
@@ -125,8 +129,14 @@ class UserHelper
                     }   
                 }
                 Mail::to($request->email)->send(new UserSignupMail($mailData));
-                return response()->json(['success' => true]);
+                $no_of_users_allowed = @auth()->user()->package->no_of_users;
+                $no_of_users_added = User::where('parent_id', auth()->user()->id)->where('is_deleted', NULL)->count();
+                 return response()->json(['success' => true,
+                'no_of_users_allowed'=>$no_of_users_allowed,
+                'no_of_users_added'=>$no_of_users_added
+                 ]);
             }
+           
             return response()->json(['success' => false]);
         }
     }
@@ -231,7 +241,12 @@ class UserHelper
                     $sub_users->save();
                 }
             }
-            return response()->json(['success' => true]);
+            $no_of_users_allowed = @auth()->user()->package->no_of_users;
+            $no_of_users_added = User::where('parent_id', auth()->user()->id)->where('is_deleted', NULL)->count();
+            return response()->json(['success' => true,
+             'no_of_users_allowed'=>$no_of_users_allowed,
+            'no_of_users_added' =>$no_of_users_added
+            ]);
         }
     }
 }

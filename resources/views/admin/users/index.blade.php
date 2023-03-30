@@ -4,7 +4,8 @@
     <div class="main-content-inner">
     <div class="row">
         <!-- data table start -->
-
+     <input type="hidden" class="no_of_users_added" value={{ $no_of_users_added }}>
+    <input type="hidden" class="no_of_users_allowed" value={{ $no_of_users_allowed }}>
         <div class="col-12 mt-5">
             <div class="card">
                 <div class="card-body">
@@ -141,6 +142,7 @@
             
         </div>
     </div>
+  
     @endsection
     @section('scripts')
     <script>
@@ -328,6 +330,15 @@
             });
             return;
         @endif
+         // check if user exceeding limit
+        var no_of_users_allowed = parseInt($('.no_of_users_allowed').val());
+        var no_of_users_added = parseInt($('.no_of_users_added').val());
+        if(no_of_users_allowed <= no_of_users_added){
+        toastr.info('Info!', 'Adding Users limit reached. Please upgrade your package', {
+            "positionClass": "toast-bottom-right"
+        });
+        return;
+        }
         $.ajax({
             url: "{{ url('admin/permission/get-permissions') }}",
             method: 'get',
@@ -355,14 +366,19 @@
                 $('#userSubmitBtn').html('Please wait...');
             },
             success: function(data) {
+                if(data.success==true){
+                toastr.success('Success!', 'User added successfully', {
+                "positionClass": "toast-bottom-right"
+                });
+                $('.no_of_users_allowed').val(data.no_of_users_allowed);
+                $('.no_of_users_added').val(data.no_of_users_added);
                 $('#addUserModal').modal('hide');
                 $('#addUserForm')[0].reset();
-                toastr.success('Success!', 'User added successfully', {
-                    "positionClass": "toast-bottom-right"
-                });
                 $('#usersDataTable').DataTable().ajax.reload();
                 $('#userSubmitBtn').prop('disabled', false);
                 $('#userSubmitBtn').html('Submit');
+                }
+             
             },
             error: function() {
                 toastr.error('Error!', 'Something went wrong', {
@@ -414,6 +430,44 @@
                 });
             }
         })
+
+    });
+    $(document).on('click','.btn-delete-admin-user',function(e){
+        var id = $(this).val();
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You want to Delete the selected User. You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, do it!'
+        }).then((result) =>{
+            if(result.value){
+                $.ajax({
+                    url:'{{route("admin.user-delete")}}',
+                    method: 'post',
+                    data: {
+                        id: id,
+                    },
+                    success: function(data) {
+                        toastr.success('Success!', 'User Deleted successfully', {
+                            "positionClass": "toast-bottom-right"
+                        });
+                        $('.no_of_users_allowed').val(data.no_of_users_allowed);
+                        $('.no_of_users_added').val(data.no_of_users_added);
+                        $('#usersDataTable').DataTable().ajax.reload();
+                    },
+                    error: function() {
+                        toastr.error('Error!', 'Something went wrong', {
+                            "positionClass": "toast-bottom-right"
+                        });
+
+                    },
+                });
+            }
+        })
+
 
     });
     </script>

@@ -31,9 +31,11 @@ class WebsiteHelper
         if ($request->ajax()) {
             return WebsiteHelper::WebsitesDatatable($query);
         }
+        $no_of_websites_allowed = @auth()->user()->package->no_of_websites;
+        $user_website_added = UserWebsite::where('user_id', auth()->user()->id)->count();
         $servers = Server::select('id', 'name')->where('user_id', Auth::user()->id)->get();
         $users = User::where('role_id', 2)->where('parent_id', Auth::user()->id)->select('id', 'name')->get();
-        return view('admin.websites.index', compact('websites', 'servers', 'users'));
+        return view('admin.websites.index', compact('websites', 'servers', 'users','no_of_websites_allowed','user_website_added'));
     }
 
     public static function WebsitesDatatable($query)
@@ -179,6 +181,13 @@ class WebsiteHelper
                         Mail::to($setting->settings)->send(new SiteStatusMail($mailData));
                     }
                 }
+                $no_of_websites_allowed = @auth()->user()->package->no_of_websites;
+                $user_websites_added = UserWebsite::where('user_id', auth()->user()->id)->count();
+                return response()->json([
+                    'success' => true,
+                    'no_of_websites_allowed' => $no_of_websites_allowed,
+                    'user_websites_added' => $user_websites_added
+                ]);
                 return response()->json(['success' => true, '']);
             }
         }
@@ -195,7 +204,12 @@ class WebsiteHelper
             foreach ($permissions as $permission) {
                 $permission->delete();
             }
-            return response()->json(['success' => true]);
+            $no_of_websites_allowed = @auth()->user()->package->no_of_websites;
+            $user_websites_added = UserWebsite::where('user_id', auth()->user()->id)->count();
+            return response()->json(['success' => true,
+            'no_of_websites_allowed' => $no_of_websites_allowed,
+            'user_websites_added' => $user_websites_added
+           ]);
         }
     }
 
@@ -203,6 +217,13 @@ class WebsiteHelper
     {
         $monitor = Monitor::find($request->website_id);
         if ($monitor != null) {
+            $url = $monitor->url;
+            $url = Url::fromString($url);
+            $protocol = $url->getScheme();
+            $eurl = $url->getHost();
+            $protocol = $protocol. '://';
+            $data['protocol'] = $protocol;
+            $data['url'] = $eurl;
             $data['title'] = $monitor->getSiteDetails->title;
             $data['emails'] = $monitor->getSiteDetails->emails;
             $data['developer_email'] = $monitor->getSiteDetails->developer_email;
@@ -210,7 +231,7 @@ class WebsiteHelper
             $data['ssl'] = $monitor->getSiteDetails->ssl;
             $data['domain_expiry_date'] = $monitor->getSiteDetails->domain_expiry_date;
             $data['domain_registrar'] = $monitor->getSiteDetails->domain_registrar;
-            $data['server_id'] = $monitor->getSiteDetails->server_id;
+            $data['server_id'] = $monitor->server_id;
             return response()->json(['success' => true, 'data' => $data]);
         }
         return response()->json(['success' => false]);
@@ -225,6 +246,10 @@ class WebsiteHelper
         }
         $monitor->certificate_check_enabled = $ssl;
         $monitor->server_id = $request['server_id'];
+        $url = $request->protocol . $request->url;  
+        $url = rtrim($url,"/");
+        $monitor->url = $url;
+        $monitor->save();
         if ($monitor->save()) {
             UserWebsite::where('website_id', $request->id)->update(['emails' => $request->emails, 'title' => $request->title, 'developer_email' => $request->developer_email, 'domain_expiry_date'=>$request->domain_expiry_date, 'domain_registrar'=>$request->domain_registrar, 'owner_email' => $request->owner_email]);
             return response()->json(['success' => true]);

@@ -63,6 +63,9 @@
         </div>
     </div>
 </div>
+  <!-- to store no of servers in package and user servers count -->
+<input type="hidden" class="user_website_added" value={{ $user_website_added }}>
+<input type="hidden" class="no_of_website_allowed" value={{ $no_of_websites_allowed }}>
 <div class="modal fade" id="addWebsiteModal">
     <div class="modal-dialog" style="max-width:800px">
         <div class="modal-content">
@@ -156,6 +159,19 @@
                     @csrf
                     <input type="hidden" name="id" id="editId">
                     <div class="row">
+                    <div class="col-md-6">
+                            <label class="m-0">Choose <span class="text-danger">*</span></label>
+                            <select name="protocol" id="edit_protocol_option" class="form-control" style="min-height:45px;">
+                                <option value="" selected disabled>Choose</option>
+                                <option value="http://">Http</option>
+                                <option value="https://">Https</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="m-0">URL <span class="text-danger">*</span></label>
+                            <input type="text" name="url" class="form-control" id="edit_url"
+                                placeholder="Enter Url">
+                        </div>
                         <div class="col-md-6">
                             <label class="m-0 mt-2">Title <span class="text-danger">*</span></label>
                             <input type="text" name="title" class="form-control" id="editTitle"
@@ -386,6 +402,16 @@
             });
             return;
         @endif
+          // check if user exceeding limit
+        var no_of_websites_allowed = parseInt($('.no_of_website_allowed').val());
+        var user_website_added = parseInt($('.user_website_added').val());
+        if(no_of_websites_allowed <= user_website_added){
+            toastr.info('Info!', 'Adding website limit reached. Please upgrade your package', {
+                "positionClass": "toast-bottom-right"
+            });
+            return;
+        }
+
         $('#addWebsiteModal').modal('show');
     });
     $('#addWebsiteForm').on('submit', function(e) {
@@ -402,6 +428,8 @@
             },
             success: function(data) {
                 if (data.success == true) {
+                    $('.no_of_website_allowed').val(data.no_of_websites_allowed);
+                    $('.user_website_added').val(data.user_websites_added);
                     $('#addWebsiteModal').modal('hide');
                     $('#addWebsiteForm')[0].reset();
                     toastr.success('Success!',
@@ -457,10 +485,14 @@
                         id: id
                     },
                     success: function(data) {
-                        toastr.success('Success!', 'Website deleted successfully', {
-                            "positionClass": "toast-bottom-right"
-                        });
-                        $('#websitesDataTable').DataTable().ajax.reload();
+                        if(data.success==true){
+                            toastr.success('Success!', 'Website deleted successfully', {
+                                "positionClass": "toast-bottom-right"
+                            });
+                            $('.no_of_website_allowed').val(data.no_of_websites_allowed);
+                            $('.user_website_added').val(data.user_websites_added);
+                            $('#websitesDataTable').DataTable().ajax.reload();
+                        }
                     },
                     error: function() {
                         toastr.error('Error!', 'Something went wrong', {
@@ -481,6 +513,8 @@
             },
             success: function(data) {
                 $('#editWebsiteModal').modal('show');
+                $('#edit_protocol_option').val(data.data['protocol']);
+                $('#edit_url').val(data.data['url']);
                 $('#editTitle').val(data.data['title']);
                 $('#editEmails').val(data.data['emails']);
                 $('#edit_developer_email').val(data.data['developer_email']);
@@ -488,7 +522,7 @@
                 $('#edit_domain_expiry_date').val(data.data['domain_expiry_date'])
                 $('#edit_domain_registrar').val(data.data['domain_registrar'])
                 $('#editId').val(website_id);
-                $('#edit_server').val(data.data['server_id']);
+                $('#edit_server').val(data.data['server_id']).prop('selected', true);
                 if (data.data['ssl'] == 1) {
                     $('#editSsl').prop('checked', true);
                 } else {

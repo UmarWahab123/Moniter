@@ -20,6 +20,10 @@ if (Auth::user()) {
                             <li class="">
                                 <a href="{{ url('user/websites') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Websites</span></a>
                             </li>
+                            <li class="server">
+                                <a href="{{ route('servers.dashboard') }}" aria-expanded="true"><i
+                                 class="ti-server"></i><span>Servers</span></a>
+                            </li>
                             <!-- <li class="">
                                 <a href="{{ url('user/subscription') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Subscription</span></a>
                             </li> -->
@@ -35,6 +39,11 @@ if (Auth::user()) {
                             @if (@$user_permissions && in_array('websites',@$user_permissions))
                             <li class="">
                                 <a href="{{ url('user/websites') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Websites</span></a>
+                            </li>
+                            @endif
+                            @if (@$user_permissions && in_array('servers',@$user_permissions))
+                            <li class="">
+                                <a href="{{ url('servers.dashboard') }}" aria-expanded="true"><i class="ti-dashboard"></i><span>Servers</span></a>
                             </li>
                             @endif
                             <!-- @if (@$user_permissions && in_array('subscription',@$user_permissions))
