@@ -327,7 +327,7 @@ $('#addWebsiteBtn').on('click', function() {
     var no_of_servers_allowed = parseInt($('.no_of_servers_allowed').val());
     var user_servers_added = parseInt($('.user_servers_added').val());
     if(no_of_servers_allowed <= user_servers_added){
-        toastr.info('Info!', 'Adding servers limit reached. Please upgrade your package', {
+        toastr.info('Info!', 'Adding website limit reached. Please contact your admin', {
             "positionClass": "toast-bottom-right"
         });
         return;
