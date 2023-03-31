@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use App\Models\OperatingSystem;
 use App\UserWebsite;
-
+use App\User;
 
 class ServerController extends Controller
 {
@@ -25,7 +25,9 @@ class ServerController extends Controller
     public function index()
     {
         $no_of_servers_allowed = @auth()->user()->package->no_of_servers;
-        $user_servers_added = Server::where('user_id', auth()->user()->id)->count();
+
+        $ids = User::where('parent_id', auth()->user()->id)->orWhere('id', auth()->user()->id)->orWhere('id', auth()->user()->parent_id)->pluck('id')->toArray();
+        $user_servers_added = Server::whereIn('user_id', $ids)->count();
         // dd($no_of_servers_allowed, $user_servers_added);
         $server_permission_id = @auth()->user()->userpermissions->where('type','add-server')->first();
         $user_permission_to_add_server = @$server_permission_id->permission_id;
