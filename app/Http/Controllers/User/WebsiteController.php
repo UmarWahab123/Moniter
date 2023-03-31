@@ -10,6 +10,7 @@ use App\Helpers\WebsiteHelper;
 use App\Helpers\WebsiteLogHelper;
 use App\Http\Controllers\Controller;
 use App\Server;
+use App\User;
 use Illuminate\Support\Facades\View;
 
 class WebsiteController extends Controller
