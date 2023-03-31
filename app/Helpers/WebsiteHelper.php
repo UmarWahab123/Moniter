@@ -32,7 +32,8 @@ class WebsiteHelper
             return WebsiteHelper::WebsitesDatatable($query);
         }
         $no_of_websites_allowed = @auth()->user()->package->no_of_websites;
-        $user_website_added = UserWebsite::where('user_id', auth()->user()->id)->orWhere('parent_id', auth()->user()->id)->count();
+        $ids = User::where('parent_id', auth()->user()->id)->orWhere('id', auth()->user()->id)->pluck('id')->toArray();
+        $user_website_added = UserWebsite::whereIn('user_id', $ids)->count();
         $servers = Server::select('id', 'name')->where('user_id', Auth::user()->id)->get();
         $users = User::where('role_id', 2)->where('parent_id', Auth::user()->id)->select('id', 'name')->get();
         return view('admin.websites.index', compact('websites', 'servers', 'users','no_of_websites_allowed','user_website_added'));
