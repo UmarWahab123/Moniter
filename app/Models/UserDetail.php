@@ -13,9 +13,9 @@ class UserDetail extends Model
         'user_id',
         'first_name',
         'last_name',
-        'primary_notification_email ',
-        'secondary_notification_email ',
+        'primary_notification_email',
+        'secondary_notification_email',
         'developer_email',
     ];
-    
+
 }
