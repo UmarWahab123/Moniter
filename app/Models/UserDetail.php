@@ -17,4 +17,5 @@ class UserDetail extends Model
         'secondary_notification_email ',
         'developer_email',
     ];
+    
 }
