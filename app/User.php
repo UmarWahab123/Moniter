@@ -103,7 +103,6 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasOne(UserDetail::class);
     }
-    
 }
 
     

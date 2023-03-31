@@ -106,7 +106,7 @@
                             <input type="text" value="{{ auth()->user()->userdetail->developer_email }}" name="developer_email" class="form-control"
                                 id="developer_email" placeholder="Enter Developer Email">
                         </div>
-                        <div class="col-md-6 mt-2">
+                        <div class="col-md-6 mt-2"> 
                             <label class="m-0">Owner Email </label>
                             <input type="text" value="{{ auth()->user()->userdetail->secondary_notification_email  }}" name="owner_email" class="form-control" id="owner_email"
                                 placeholder="Enter Owner Email">
@@ -143,7 +143,6 @@
                         class="btn btn-primary mt-4 pr-4 pl-4">Submit</button>
                 </form>
             </div>
-
         </div>
     </div>
 </div>
