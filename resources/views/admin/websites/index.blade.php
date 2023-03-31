@@ -98,17 +98,17 @@
                         <div class="col-md-6 mt-2">
                             <label class="m-0">Email <span class="text-danger">*</span></label><small
                                 class="text-info float-right d-none"> (Emails should be comma seprated)</small>
-                            <input type="text" name="emails" class="form-control" id="email"
+                            <input type="text" value="{{ auth()->user()->userdetail->primary_notification_email }}" name="emails" class="form-control" id="email"
                                 placeholder="Enter Email">
                         </div>
                         <div class="col-md-6 mt-2">
                             <label class="m-0">Developer Email </label>
-                            <input type="text" name="developer_email" class="form-control"
+                            <input type="text" value="{{ auth()->user()->userdetail->developer_email }}" name="developer_email" class="form-control"
                                 id="developer_email" placeholder="Enter Developer Email">
                         </div>
                         <div class="col-md-6 mt-2">
                             <label class="m-0">Owner Email </label>
-                            <input type="text" name="owner_email" class="form-control" id="owner_email"
+                            <input type="text" value="{{ auth()->user()->userdetail->secondary_notification_email  }}" name="owner_email" class="form-control" id="owner_email"
                                 placeholder="Enter Owner Email">
                         </div>
                         <div class="col-md-6 mt-2">

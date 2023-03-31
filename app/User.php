@@ -6,6 +6,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use App\Notifications\ResendEmailNotification;
 use App\Models\Packages\Package;
+use App\Models\UserDetail;
 use App\Models\UserPermission;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -97,6 +98,10 @@ class User extends Authenticatable implements JWTSubject
     public function userpermissions()
     {
         return $this->hasMany(UserPermission::class,'user_id', 'id');
+    }
+    public function userdetail()
+    {
+        return $this->hasOne(UserDetail::class);
     }
     
 }
