@@ -37,7 +37,7 @@ class WebsiteController extends Controller
         if ($request->ajax()) {
             return WebsiteHelper::WebsitesDatatable($query);
         }
-        $ids = User::where('parent_id', auth()->user()->id)->orWhere('id', auth()->user()->id)->pluck('id')->toArray();
+        $ids = User::where('id', auth()->user()->parent_id)->orWhere('id', auth()->user()->id)->pluck('id')->toArray();
 
         $no_of_servers_allowed = @auth()->user()->package->no_of_websites;
         $user_servers_added = UserWebsite::whereIn('user_id', $ids)->count();
