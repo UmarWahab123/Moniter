@@ -156,12 +156,12 @@
                     <input type="hidden" name="id" id="editId">
                     <div class="row">
                     <div class="col-md-6">
-                            <label class="m-0">Choose <span class="text-danger">*</span></label>
-                            <select name="protocol" id="editProtocol" class="form-control" style="min-height:45px;">
-                                <option value="" selected disabled>Choose</option>
-                                <option value="http://">Http</option>
-                                <option value="https://">Https</option>
-                            </select>
+                        <label class="m-0">Choose <span class="text-danger">*</span></label>
+                        <select name="protocol" id="editProtocol" class="form-control" style="min-height:45px;">
+                            <option value="" selected disabled>Choose</option>
+                            <option value="http://">Http</option>
+                            <option value="https://">Https</option>
+                        </select>
                         </div>
                         <div class="col-md-6">
                             <label class="m-0">URL <span class="text-danger">*</span></label>

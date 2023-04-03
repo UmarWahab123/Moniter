@@ -92,7 +92,7 @@ class RegisterController extends Controller
         }else{
             unset($data['password']);
         }
-        $data['role_id'] = 2;
+        $data['role_id'] = 1;
         $data['status'] = 1;
         $data['package_id'] = @$package->id;
         $user = User::create($data);
