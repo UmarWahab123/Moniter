@@ -29,6 +29,11 @@ class SubscriptionHelper
             $action = "upgrade";
             $user->package_id = $request->package_id;
             $user->save();
+            $sub_users = User::where('parent_id', Auth::user()->id)->get();
+            foreach($sub_users as $subuser){
+             $subuser->package_id = $request->package_id;
+             $subuser->save();
+            }
             return response()->json(['success' => true,'action'=>$action]);
             }else{
             $action = "Subscribed";

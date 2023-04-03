@@ -104,8 +104,13 @@ class UserHelper
     }
     public static function store($request)
     {
-        if (!empty($request->all())) {
-            $package = Package::where('type', 'Free')->first();
+         if(!empty($request->all())) {
+            if(Auth::user()->role_id == 3){
+                $package = Package::where('type', 'Free')->first();
+            }else{
+                $adminUser = User::where('id',auth()->user()->id)->first();
+            }
+            $adminUser = User::where('id',auth()->user()->id)->first();
             $mailData = $request->all();
             $permission_id = $request->permission_id;
             $user = new User();
@@ -113,10 +118,12 @@ class UserHelper
             $user->email = $request->email;
             $user->password = bcrypt(12345678);
             $user->status = 1;
-            $user->package_id = @$package->id;
             if(Auth::user()->role_id == 3){
+                $user->package_id = @$package->id;
                 $user->role_id = 1;
+
             }else{
+                $user->package_id = @$adminUser->package_id;
                 $user->role_id = 2;
             }
             $user->parent_id = Auth::user()->id;
