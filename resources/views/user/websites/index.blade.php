@@ -140,8 +140,8 @@
     </div>
 </div>
   <!-- to store no of servers in package and user servers count -->
-  <input type="hidden" class="user_servers_added" value={{ $user_servers_added }}>
-    <input type="hidden" class="no_of_servers_allowed" value={{ $no_of_servers_allowed }}>
+  <input type="hidden" class="user_websites_added" value={{ $user_websites_added }}>
+    <input type="hidden" class="no_of_websites_allowed" value={{ $no_of_websites_allowed }}>
     
 <div class="modal fade" id="editWebsiteModal">
     <div class="modal-dialog" style="max-width:800px">
@@ -324,9 +324,9 @@ $('#addWebsiteBtn').on('click', function() {
         return;
     @endif
     // check if user exceeding limit
-    var no_of_servers_allowed = parseInt($('.no_of_servers_allowed').val());
-    var user_servers_added = parseInt($('.user_servers_added').val());
-    if(no_of_servers_allowed <= user_servers_added){
+    var no_of_websites_allowed = parseInt($('.no_of_websites_allowed').val());
+    var user_websites_added = parseInt($('.user_websites_added').val());
+    if(no_of_websites_allowed <= user_websites_added){
         toastr.info('Info!', 'Adding website limit reached. Please contact your admin', {
             "positionClass": "toast-bottom-right"
         });
@@ -361,8 +361,8 @@ $('#addWebsiteForm').on('submit', function(e) {
                 toastr.success('Success!', 'Website added successfully and being monitored', {
                     "positionClass": "toast-bottom-right"
                 });
-                $('.no_of_servers_allowed').val(data.no_of_websites_allowed);
-                $('.user_servers_added').val(data.user_websites_added);
+                $('.no_of_websites_allowed').val(data.no_of_websites_allowed);
+                $('.user_websites_added').val(data.user_websites_added);
                 $('#websitesDataTable').DataTable().ajax.reload();
                 $('#websiteSubmitBtn').prop('disabled', false);
                 $('#websiteSubmitBtn').html('Submit');
@@ -414,8 +414,8 @@ $(document).on('click', '.delete-site', function(e) {
                     toastr.success('Success!', 'Website deleted successfully', {
                         "positionClass": "toast-bottom-right"
                     });
-                    $('.no_of_servers_allowed').val(data.no_of_websites_allowed);
-                   $('.user_servers_added').val(data.user_websites_added);
+                    $('.no_of_websites_allowed').val(data.no_of_websites_allowed);
+                   $('.user_websites_added').val(data.user_websites_added);
                     $('#websitesDataTable').DataTable().ajax.reload();
                 },
                 error: function() {

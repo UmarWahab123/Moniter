@@ -10,6 +10,8 @@ use App\UserWebsitePermission;
 use Auth;
 use Yajra\Datatables\Datatables;
 use Carbon\Carbon;
+use App\User;
+
 use App\Models\OperatingSystem;
   
 class ServersHelper
@@ -125,9 +127,13 @@ class ServersHelper
         //     $create->server_file_path  = $response->file_path;
         //     $create->save();
         // }
-
+        if(auth()->user()->role_id==1){
+        $ids = User::where('id', auth()->user()->id)->orWhere('parent_id', auth()->user()->id)->pluck('id')->toArray();
+        }else{
+        $ids = User::where('id', auth()->user()->parent_id)->orWhere('parent_id', auth()->user()->parent_id)->pluck('id')->toArray();
+        }
         $no_of_servers_allowed = @auth()->user()->package->no_of_servers;
-        $user_servers_added = Server::where('user_id', auth()->user()->id)->count();
+        $user_servers_added = Server::whereIn('user_id', $ids)->count();
         return response()->json([
             'success' => true,
             'no_of_servers_allowed' => $no_of_servers_allowed,
@@ -176,9 +182,13 @@ class ServersHelper
             }
             $server->delete();
         }
-
+        if(auth()->user()->role_id==1){
+        $ids = User::where('id', auth()->user()->id)->orWhere('parent_id', auth()->user()->id)->pluck('id')->toArray();
+        }else{
+        $ids = User::where('id', auth()->user()->parent_id)->orWhere('parent_id', auth()->user()->parent_id)->pluck('id')->toArray();
+        }
         $no_of_servers_allowed = @auth()->user()->package->no_of_servers;
-        $user_servers_added = Server::where('user_id', auth()->user()->id)->count();
+        $user_servers_added = Server::whereIn('user_id', $ids)->count();
         return response()->json(['success' => true, 'no_of_servers_allowed' => $no_of_servers_allowed,
         'user_servers_added' => $user_servers_added]);
     }

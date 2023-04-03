@@ -37,14 +37,13 @@ class WebsiteController extends Controller
         if ($request->ajax()) {
             return WebsiteHelper::WebsitesDatatable($query);
         }
-        $ids = User::where('id', auth()->user()->parent_id)->orWhere('id', auth()->user()->id)->pluck('id')->toArray();
-
-        $no_of_servers_allowed = @auth()->user()->package->no_of_websites;
-        $user_servers_added = UserWebsite::whereIn('user_id', $ids)->count();
+        $ids = User::where('id', auth()->user()->parent_id)->orWhere('parent_id', auth()->user()->parent_id)->pluck('id')->toArray();
+        $no_of_websites_allowed = @auth()->user()->package->no_of_websites;
+        $user_websites_added = UserWebsite::whereIn('user_id', $ids)->count();
         $website_Permission_id = @auth()->user()->userpermissions->where('type','add-website')->first();
         $user_permission_to_add_website = @$website_Permission_id->permission_id;
         $servers = Server::select('id', 'name')->where('user_id', Auth::user()->parent_id)->get();
-        return view('user.websites.index', compact('websites', 'servers','user_permission_to_add_website','no_of_servers_allowed','user_servers_added'));
+        return view('user.websites.index', compact('websites', 'servers','user_permission_to_add_website','no_of_websites_allowed','user_websites_added'));
     }
     public function store(Request $request)
     {

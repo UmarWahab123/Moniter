@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Yajra\Datatables\Datatables;
 use Carbon\Carbon;
 use App\UserWebsite;
+use App\User;
 
 use Auth;
 
@@ -15,8 +16,13 @@ class ServerLogsHelper
 {
     public static function serverLogs($id)
     {
+        if(auth()->user()->role_id==1){
+        $ids = User::where('id', auth()->user()->id)->orWhere('parent_id', auth()->user()->id)->pluck('id')->toArray();
+        }else{
+        $ids = User::where('id', auth()->user()->parent_id)->orWhere('parent_id', auth()->user()->parent_id)->pluck('id')->toArray();
+        }
         $no_of_websites_allowed = @auth()->user()->package->no_of_websites;
-        $user_website_added = UserWebsite::where('user_id', auth()->user()->id)->count();
+        $user_website_added = UserWebsite::whereIn('user_id', $ids)->count();
         $server  =Server::with('userInfo')->where('id',$id)->first();
         $all_servers = Server::select('id', 'name')->where('user_id', Auth::user()->id)->get();
         $website_Permission_id = @auth()->user()->userpermissions->where('type','add-website')->first();

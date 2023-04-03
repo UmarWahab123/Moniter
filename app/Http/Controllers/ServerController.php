@@ -25,8 +25,11 @@ class ServerController extends Controller
     public function index()
     {
         $no_of_servers_allowed = @auth()->user()->package->no_of_servers;
-
-        $ids = User::where('parent_id', auth()->user()->id)->orWhere('id', auth()->user()->id)->orWhere('id', auth()->user()->parent_id)->pluck('id')->toArray();
+        if(auth()->user()->role_id==1){
+        $ids = User::where('id', auth()->user()->id)->orWhere('parent_id', auth()->user()->id)->pluck('id')->toArray();
+        }else{
+        $ids = User::where('id', auth()->user()->parent_id)->orWhere('parent_id', auth()->user()->parent_id)->pluck('id')->toArray();
+        }
         $user_servers_added = Server::whereIn('user_id', $ids)->count();
         // dd($no_of_servers_allowed, $user_servers_added);
         $server_permission_id = @auth()->user()->userpermissions->where('type','add-server')->first();

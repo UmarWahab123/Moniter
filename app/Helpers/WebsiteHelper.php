@@ -9,6 +9,7 @@ use App\Server;
 use App\Monitor;
 use App\Setting;
 use App\WebsiteLog;
+use App\Models\UserPermission;
 use Spatie\Url\Url;
 use App\UserWebsite;
 use App\Mail\SiteStatusMail;
@@ -31,14 +32,13 @@ class WebsiteHelper
         if ($request->ajax()) {
             return WebsiteHelper::WebsitesDatatable($query);
         }
-        $no_of_websites_allowed = @auth()->user()->package->no_of_websites;
-        $ids = User::where('parent_id', auth()->user()->id)->orWhere('id', auth()->user()->id)->pluck('id')->toArray();
 
-        $user_website_added = UserWebsite::whereIn('user_id', $ids)->count();
-        
+        $ids = User::where('id', auth()->user()->id)->orWhere('parent_id', auth()->user()->id)->pluck('id')->toArray();
+        $no_of_websites_allowed = @auth()->user()->package->no_of_websites;
+        $user_websites_added = UserWebsite::whereIn('user_id', $ids)->count();
         $servers = Server::select('id', 'name')->where('user_id', Auth::user()->id)->get();
         $users = User::where('role_id', 2)->where('parent_id', Auth::user()->id)->select('id', 'name')->get();
-        return view('admin.websites.index', compact('websites', 'servers', 'users','no_of_websites_allowed','user_website_added'));
+        return view('admin.websites.index', compact('websites', 'servers', 'users','no_of_websites_allowed','user_websites_added'));
     }
 
     public static function WebsitesDatatable($query)
@@ -184,17 +184,21 @@ class WebsiteHelper
                         Mail::to($setting->settings)->send(new SiteStatusMail($mailData));
                     }
                 }
-                $no_of_websites_allowed = @auth()->user()->package->no_of_websites;
-                $user_websites_added = UserWebsite::where('user_id', auth()->user()->id)->count();
+                if(auth()->user()->role_id==1){
+                 $ids = User::where('id', auth()->user()->id)->orWhere('parent_id', auth()->user()->id)->pluck('id')->toArray();
+                }else{
+                 $ids = User::where('id', auth()->user()->parent_id)->orWhere('parent_id', auth()->user()->parent_id)->pluck('id')->toArray();
+                }
+                $no_of_websites_allowed = auth()->user()->package->no_of_websites;
+                $user_websites_added = UserWebsite::whereIn('user_id', $ids)->count();
                 return response()->json([
                     'success' => true,
                     'no_of_websites_allowed' => $no_of_websites_allowed,
                     'user_websites_added' => $user_websites_added
                 ]);
-                return response()->json(['success' => true, '']);
             }
         }
-        return response()->json(['error' => true]);
+        return response()->json(['success' => false]);
     }
 
     public static function destroy($request)
@@ -203,12 +207,17 @@ class WebsiteHelper
         if ($output > 0) {
             UserWebsite::where('website_id', $request->id)->delete();
             WebsiteLog::where('website_id', $request->id)->delete();
-            $permissions = UserWebsitePermission::where('website_id', $request->id)->get();
-            foreach ($permissions as $permission) {
-                $permission->delete();
+            // $permissions = UserPermission::where('website_id', $request->id)->get();
+            // foreach ($permissions as $permission) {
+            //     $permission->delete();
+            // }
+            if(auth()->user()->role_id==1){
+            $ids = User::where('id', auth()->user()->id)->orWhere('parent_id', auth()->user()->id)->pluck('id')->toArray();
+            }else{
+            $ids = User::where('id', auth()->user()->parent_id)->orWhere('parent_id', auth()->user()->parent_id)->pluck('id')->toArray();
             }
             $no_of_websites_allowed = @auth()->user()->package->no_of_websites;
-            $user_websites_added = UserWebsite::where('user_id', auth()->user()->id)->count();
+            $user_websites_added = UserWebsite::whereIn('user_id', $ids)->count();
             return response()->json(['success' => true,
             'no_of_websites_allowed' => $no_of_websites_allowed,
             'user_websites_added' => $user_websites_added
@@ -216,6 +225,7 @@ class WebsiteHelper
         }
     }
 
+    
     public static function edit($request)
     {
         $monitor = Monitor::find($request->website_id);

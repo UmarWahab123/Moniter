@@ -64,7 +64,7 @@
     </div>
 </div>
   <!-- to store no of servers in package and user servers count -->
-<input type="hidden" class="user_website_added" value={{ $user_website_added }}>
+<input type="hidden" class="user_website_added" value={{ $user_websites_added }}>
 <input type="hidden" class="no_of_website_allowed" value={{ $no_of_websites_allowed }}>
 <div class="modal fade" id="addWebsiteModal">
     <div class="modal-dialog" style="max-width:800px">
