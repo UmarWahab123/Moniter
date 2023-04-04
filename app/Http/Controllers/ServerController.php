@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use App\Models\OperatingSystem;
 use App\UserWebsite;
+use App\Models\ServerHistory;
 use App\User;
 
 class ServerController extends Controller
@@ -120,5 +121,19 @@ class ServerController extends Controller
     {
         return ServersHelper::websiteAssignStatusChange($request);
     }
+    public function serversHistory(Request $request){
+        $server_history = ServerHistory::where($request->id)
+        ->orderBy('updated_at', 'desc')
+        ->get();
+       // dd($server_history);
+        if($server_history){
+         if($request->ajax()){
+             return ServersHelper::serversHistoryDataTable($server_history);
+         }
+        }
+     }
+     public function destroyHistroy (Request $request){
+         return ServersHelper::destroyHistory($request);
+     }
     
 }

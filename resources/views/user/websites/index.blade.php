@@ -224,6 +224,28 @@
         </div>
     </div>
 </div>
+<div class="col-12 mt-5">
+  <div class="card">
+     <h4 class="modal-title ml-3 mt-3">Website's History</h4>
+         <div class="card-body">
+               <div class="table-responsive">
+                    <table id="websitesHistoryDataTable" class="table table-stripped text-center">
+                          <thead>
+                                   <tr>
+                                     <th>Column Name</th>
+                                     <th>Old Value </th>
+                                     <th>New Value </th>
+                                     <th>Updated By</th>
+                                     <th style="min-width:12%">Action</th>
+                                    </tr>
+                           </thead>
+                   </table>
+               </div>
+          </div>
+        </div>
+       </div>
+  </div>
+</div>
  @endsection
  @section('scripts')
 <script>
@@ -477,6 +499,7 @@ $(document).on('click', '#editWebsiteSubmitBtn', function(e) {
                 "positionClass": "toast-bottom-right"
             });
             $('#websitesDataTable').DataTable().ajax.reload();
+            $('#websitesHistoryDataTable').DataTable().ajax.reload();
         },
         error: function() {
             toastr.error('Error!', 'Something went wrong', {
@@ -609,5 +632,94 @@ $(document).on('click', '.feature', function(e) {
     }
 
 }); --}}
+        var table = $('#websitesHistoryDataTable').DataTable({
+            // "bAutoWidth": false,
+            serverSide: true,
+            processing: true,
+            searching: true,
+            ordering: true,
+            pageLength: {{ 50 }},
+            "processing": true,
+            'language': {
+                'loadingRecords': '&nbsp;',
+                'processing': 'Loading...'
+            },
+            scrollCollapse: true,
+            ajax: {
+                url: "{{ url('user/websites-history') }}",
+            
+                {{-- beforeSend:function()
+            {
+            },
+            success:function()
+            {
+            } --}}
+            },
+            columns: [
+
+
+        // {
+        //     data: 'website_id',
+        //     name: 'website_id'
+        // },
+        {
+            data: 'column_name',
+            name: 'column_name'
+        },
+        {
+            data: 'old_value',
+            name: 'old_value'
+        },
+
+        {
+            data: 'new_value',
+            name: 'new_value'
+        },
+        {
+            data: 'updated_by',
+            name: 'updated_by'
+        },
+        {
+            data: 'action',
+            name: 'action'
+                },
+        ],
+
+        });
+        $(document).on('click', '.delete-history-site', function(e) {
+
+        var id = $(this).val();
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, do it!'
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    url: '{{ url('user/delete-history-website') }}',
+                    method: 'get',
+                    data: {
+                        id: id
+                    },
+                    success: function(data) {
+                        toastr.success('Success!', 'History deleted successfully', {
+                            "positionClass": "toast-bottom-right"
+                        });
+                        $('#websitesHistoryDataTable').DataTable().ajax.reload();
+                    },
+                    error: function() {
+                        toastr.error('Error!', 'Something went wrong', {
+                            "positionClass": "toast-bottom-right"
+                        });
+                    },
+                });
+            }
+        })
+
+        });
 </script>
 @endsection

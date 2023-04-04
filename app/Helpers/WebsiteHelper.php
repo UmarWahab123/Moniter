@@ -16,6 +16,7 @@ use App\Mail\SiteStatusMail;
 use App\UserWebsitePermission;
 use Yajra\Datatables\Datatables;
 use Illuminate\Support\Facades\Mail;
+use App\Models\WebsiteHistory;
 
 class WebsiteHelper
 {
@@ -262,9 +263,47 @@ class WebsiteHelper
         $url = $request->protocol . $request->url;  
         $url = rtrim($url,"/");
         $monitor->url = $url;
+        if($monitor->isDirty()){
+            foreach($monitor->getDirty() as $column_name => $new_value){
+                $old_value = $monitor->getOriginal($column_name);
+                //dd($old_value);
+                if($new_value != $old_value){
+                    WebsiteHistory::create([
+                        'column_name'=>$column_name,
+                        'old_value'=>$old_value,
+                        'new_value'=>$new_value,
+                        'updated_by'=>Auth()->user()->name,
+                    ]);
+                }
+            }
+           }
         $monitor->save();
         if ($monitor->save()) {
-            UserWebsite::where('website_id', $request->id)->update(['emails' => $request->emails, 'title' => $request->title, 'developer_email' => $request->developer_email, 'domain_expiry_date'=>$request->domain_expiry_date, 'domain_registrar'=>$request->domain_registrar, 'owner_email' => $request->owner_email]);
+            // UserWebsite::where('website_id', $request->id)->update(['emails' => $request->emails, 'title' => $request->title, 'developer_email' => $request->developer_email, 'domain_expiry_date'=>$request->domain_expiry_date, 'domain_registrar'=>$request->domain_registrar, 'owner_email' => $request->owner_email]);
+            $user_web = UserWebsite::where('website_id', $request->id)->first();
+            $user_web->emails = $request->emails;
+            $user_web->title = $request->title;
+            $user_web->developer_email = $request->developer_email;
+            $user_web->domain_registrar = $request->domain_registrar;
+            $user_web->domain_expiry_date = $request->domain_expiry_date;
+            $user_web->owner_email = $request->owner_email;
+
+            if($user_web->isDirty()){
+                foreach($user_web->getDirty() as $column_name => $new_value){
+                    $old_value = $user_web->getOriginal($column_name);
+                    //dd($old_value);
+                    if($new_value != $old_value){
+                        WebsiteHistory::create([
+                            'column_name'=>$column_name,
+                            'old_value'=>$old_value,
+                            'new_value'=>$new_value,
+                            'updated_by'=>Auth()->user()->name,
+                        ]);
+                    }
+                }
+               }
+
+            $user_web->save();
             return response()->json(['success' => true]);
         }
         return response()->json(['success' => false]);
@@ -318,5 +357,48 @@ class WebsiteHelper
             }
             return response()->json(['success' => true, 'html' => $html]);
         }
+    }
+    public static function WebsitesHistoryDatatable($web_history){
+        return DataTables::of($web_history)
+        ->addIndexColumn()
+        ->addColumn('action',function($item){
+            $html_string = null;
+            $html_string .= ' <button  value="' . $item->id . '"  class="btn btn-outline-danger btn-sm delete-history-site d-inline"  title="Delete"><i class="fa fa-trash-o"></i></button>';
+            return '<td style="white-space: nowrap;">' . $html_string . '</td>';
+        })
+        ->addColumn('checkbox', function ($item) {
+            $html_string = null;
+            $html_string = '<input type="checkbox" name="' . $item->id . '"" id="' . $item->id . '"" value="' . $item->id . '" class="checkbox dt_checkboxes">';
+            return $html_string;
+        })
+        // ->addColumn('website_id',function($item){
+        //     return $item->website_id;
+        // })
+        ->addColumn('column_name',function($item){
+            return $item->column_name;
+        })
+        ->addColumn('old_value',function($item){
+            return $item->old_value;
+        })
+        ->addColumn('new_value',function($item){
+            return $item->new_value;
+        })
+        ->addColumn('updated_by', function($item){
+            return $item->updated_by;
+        })
+       // ->rawColumns(['website_id','column_name','old_value','new_value','updated_by'])
+       ->rawColumns(['checkbox','action'])
+        ->make(true);
+    }
+
+    public static function destroyWebHistory($request)
+    {
+     try{
+       $output = WebsiteHistory::where('id', $request->id)->delete();
+    // dd($output);
+        return response()->json(['success' => true]);
+       }catch(\Exception $e){
+        return response()->json(['error' => $e->getMessage()]); 
+      }
     }
 }

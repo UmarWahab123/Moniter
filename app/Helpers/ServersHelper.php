@@ -11,7 +11,7 @@ use Auth;
 use Yajra\Datatables\Datatables;
 use Carbon\Carbon;
 use App\User;
-
+use App\Models\ServerHistory;
 use App\Models\OperatingSystem;
   
 class ServersHelper
@@ -224,6 +224,25 @@ class ServersHelper
             $server->name = $request->name;
             $server->ip_address = $request->ip_address;
             $server->os = $request->operating_system;
+            $server->primary_email = $request->primary_email;
+            $server->secondary_email = $request->secondary_email;
+            $server->developer_email = $request->developer_email;
+            if($server->isDirty()){
+                foreach($server->getDirty() as $column_name => $new_value){
+                    $old_value = $server->getOriginal($column_name);
+                    if ($old_value != $new_value){
+                        ServerHistory::create([
+                            'column_name'=> $column_name,
+                            'old_value'=>$old_value,
+                            'new_value'=>$new_value,
+                            'updated_by'=>Auth()->user()->name
+
+                        ]);
+                    }
+
+
+                }
+            }
             $server->save();
             return response()->json(['success' => true]);
         }
@@ -342,5 +361,43 @@ class ServersHelper
             return response()->json(['success' => true,'message'=>'Website Assigned Successfully !']);
          }
          return response()->json(['success' => false]);
+    }
+    public static function serversHistoryDataTable($server_history){
+        return DataTables::of($server_history)
+        ->addIndexColumn()
+        ->addColumn('action',function($item){
+            $html_string = null;
+            $html_string .= ' <button  value="' . $item->id . '"  class="btn btn-outline-danger btn-sm d-history-server d-inline"  title="Delete"><i class="fa fa-trash-o"></i></button>';
+            return '<td style="white-space: nowrap;">' . $html_string . '</td>';
+        })
+        ->addColumn('checkbox',function($item){
+            $html_string = null;
+            $html_string = '<input type="checkbox" name="' . $item->id . '"" id="' . $item->id . '"" value="' . $item->id . '" class="checkbox dt_checkboxes">';
+            return '<td style="white-space: nowrap;">' . $html_string . '</td>';
+        })
+        ->addColumn('column_name',function($item){
+            return $item->column_name;
+        })
+        ->addColumn('old_value',function($item){
+            return $item->old_value;
+        })
+        ->addColumn('new_value',function($item){
+            return $item->new_value;
+        })
+        ->addColumn('updated_by', function($item){
+            return $item->updated_by;
+        })
+        ->rawColumns(['checkbox','action'])
+        ->make(true);
+
+    }
+    public static function destroyHistory($request)
+    {
+     try{
+        $output =ServerHistory::where('id', $request->id)->delete();
+        return response()->json(['success' => true]);
+         }catch(\Exception $e){
+            return response()->json(['error' => $e->getMessage()]);
+        }
     }
 }

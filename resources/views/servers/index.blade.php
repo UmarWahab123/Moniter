@@ -176,6 +176,30 @@
         </div>
     </div>
 </div>
+<div class="col-12 mt-5">  
+            <div class="card">
+            <h4 class="modal-title ml-3 mt-3">Server History</h4>
+                <div class="card-body"> 
+                    <div class="table-responsive">
+                        <table id="serversHistoryDataTable" class="table table-stripped text-center">
+                            <thead>
+                                <tr>
+                                    <th>Column Name</th>
+                                    <th>Old Value </th>
+                                    <th>New Value </th>
+                                    <th>Updated By</th>
+                                    <th style="min-width:12%">Action</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+        </div>
+    </div>
+</div>
 @endsection
 @section('scripts')
 <script>
@@ -440,6 +464,7 @@
                     "positionClass": "toast-bottom-right"
                 });
                 $('#servers_table').DataTable().ajax.reload();
+                $('#serversHistoryDataTable').DataTable().ajax.reload();
             },
             error: function() {
                 toastr.error('Error!', 'Something went wrong', {
@@ -577,6 +602,99 @@
     $(document).ready(function(){
         $('.server').addClass('sidebar-group-active');
         $('.server').addClass('active');
+    });
+        var table = $('#serversHistoryDataTable').DataTable({
+        // "bAutoWidth": false,
+        serverSide: true,
+        processing: true,
+        searching: true,
+        ordering: true,
+        pageLength: {{ 50 }},
+        "processing": true,
+        'language': {
+            'loadingRecords': '&nbsp;',
+            'processing': 'Loading...'
+        },
+        scrollCollapse: true,
+        ajax: {
+            url: "{{ url('server-history') }}",
+        
+            {{-- beforeSend:function()
+        {
+        },--}}
+        
+        // success:function(data)
+        // {
+        //     if(data.success){
+        //         console.log('Success');
+        //     }
+        // },
+        },
+        columns: [
+
+
+    // {
+    //     data: 'website_id',
+    //     name: 'website_id'
+    // },
+    {
+        data: 'column_name',
+        name: 'column_name'
+    },
+    {
+        data: 'old_value',
+        name: 'old_value'
+    },
+
+    {
+        data: 'new_value',
+        name: 'new_value'
+    },
+    {
+        data: 'updated_by',
+        name: 'updated_by'
+    },
+    {
+        data: 'action',
+        name: 'action'
+    },
+    ],
+
+    });
+
+    $(document).on('click','.d-history-server', function(e) {
+    var id = $(this).val();
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You want to delete this? Websites binded with this server will also be deleted!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, do it!'
+    }).then((result) => {
+        if (result.value) {
+            $.ajax({
+                url: '{{ url("delete-history-server") }}',
+                method: 'GET',
+                data: {
+                    id: id
+                },
+                success: function(data) {
+                    toastr.success('Success!', 'History deleted successfully', {
+                        "positionClass": "toast-bottom-right"
+                    });
+                    $('#serversHistoryDataTable').DataTable().ajax.reload();
+                },
+                error: function() {
+                    toastr.error('Error!', 'Something went wrong', {
+                        "positionClass": "toast-bottom-right"
+                    });
+                },
+            });
+        }
+    })
+
     });
 </script>  
 @endsection

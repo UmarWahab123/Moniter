@@ -9,6 +9,7 @@ use App\Helpers\WebsiteLogHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
+use App\Models\WebsiteHistory;
 
 class WebsiteController extends Controller
 {
@@ -72,5 +73,17 @@ class WebsiteController extends Controller
         $down_image_url = WebsiteLog::where('id', $request->id)->value('down_image_url');
         $html_string = '<img src="' . $down_image_url . '" alt="">';
         return response()->json(['success' => true, 'html_string' => $html_string]);
+    }
+    public function websiteHistory(Request $request){
+        $web_history = WebsiteHistory::orderBy('created_at','desc')->get();
+        
+        if($web_history){
+            if($request->ajax()) {
+                return WebsiteHelper::WebsitesHistoryDatatable($web_history);
+            }
+        }
+    }
+    public function destroyHistory(Request $request){
+        return WebsiteHelper::destroyWebHistory($request);
     }
 }

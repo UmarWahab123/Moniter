@@ -88,7 +88,9 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => ['aut
     Route::post('/store-assign-permission','PermissionController@storeAssignPermissions');
     Route::post('userpermission/delete','PermissionController@userPermissionDelete');
     Route::get('permission/get-permissions','PermissionController@getPermissions');
-    //server webisites
+    // webisite histories
+    Route::get('/websites-history','WebsiteController@websiteHistory')->name('website-history');
+    Route::get('/delete-history-website','WebsiteController@destroyHistory')->name('delete-history-website');
 
     
 });
@@ -123,6 +125,8 @@ Route::group(['namespace' => 'User', 'prefix' => 'user', 'middleware' => ['auth'
     Route::get('/user-status', 'UserController@userStatus')->name('users.user-status');
     Route::get('/{id}/user-permissions', 'UserController@userPermissions')->name('users.users-permissions');
     Route::post('save-permissions', 'UserController@saveUserPermissions')->name('users.users-save-permissions');
+    Route::get('/websites-history','WebsiteController@websiteHistory')->name('website-history');
+    Route::get('/delete-history-website','WebsiteController@destroyHistory')->name('delete-history-website');
 
 });
 
@@ -147,6 +151,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/user-added-websites','ServerController@userAddedWebsite');
     Route::post('server-website/delete','ServerController@serverWebsiteDelete');
     Route::post('website/assign-status-change','ServerController@websiteAssignStatusChange');
+    Route::get('server-history','ServerController@serversHistory')->name('server-history');
+    Route::get('delete-history-server','ServerController@destroyHistroy')->name('delete-history-server');
 });
 
 Route::group(['namespace' => 'SuperAdmin', 'prefix' => 'superAdmin', 'middleware' => ['auth', 'superAdmin']], function () {
