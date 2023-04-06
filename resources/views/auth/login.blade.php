@@ -122,7 +122,7 @@
                         let password = $('#login_passeord').val();
                         let checkbox = $('#remember').attr('checked');
                         checkbox = checkbox == undefined ? '' : 'checked';
-                        location.href = '{{ route("login.custom-verify") }}?email='+email+'&password='+password+'&checkbox='+checkbox;
+                        location.href = '{{ route("login.custom-verify") }}?email='+email+'&password='+encodeURIComponent(password)+'&checkbox='+checkbox;
                     } else {
                         toastr.info('Info!',
                         'Invalid Email/Password', {
