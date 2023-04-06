@@ -47,6 +47,12 @@ class SiteUptimeStatus extends Mailable
                         $body = str_replace($keyword, $mailData['site'], $body);
                         $subject = str_replace($keyword, $mailData['site'], $subject);
                         break;
+                    case '[[name]]':
+                        $body = str_replace($keyword, $mailData['name'], $body);
+                        break;
+                    case '[[time]]':
+                        $body = str_replace($keyword, $mailData['time'], $body);
+                        break;
                 }
             }
             $body = html_entity_decode($body);

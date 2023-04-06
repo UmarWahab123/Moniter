@@ -52,9 +52,10 @@ class SendEmails extends Command
      */
     public function handle()
     {
-        $sites = Monitor::orderBy('id', 'asc')->get();
+        $sites = Monitor::with('user')->orderBy('id', 'asc')->get();
 
         foreach ($sites as $site) {
+            $user = @$site->user->name;
             if ($site->uptime_status == 'up') {
                 $checkLogs = WebsiteLog::where('website_id', $site->id)->where('up_time', null)->first();
                 if ($checkLogs != null) {
@@ -63,6 +64,7 @@ class SendEmails extends Command
                         $website = $site->url;
                         $mailData['status'] = "Up";
                         $mailData['site'] = $website;
+                        $mailData['name'] = @$user;
                         WebsiteLog::where('website_id', $site->id)->where('up_time', null)->update(['up_time' => $site->uptime_status_last_change_date]);
                         if ($site->getSiteDetails != null) {
                             $user_id = $site->getSiteDetails->user_id;
@@ -138,6 +140,8 @@ class SendEmails extends Command
                     $website = $site->url;
                     $mailData['status'] = "Down";
                     $mailData['site'] = $website;
+                    $mailData['name'] = @$user;
+                    $mailData['time'] = @$site->uptime_status_last_change_date;
                     if ($site->getSiteDetails != null) {
                         $user_id = $site->getSiteDetails->user_id;
                         $email = $site->getSiteDetails->emails;
