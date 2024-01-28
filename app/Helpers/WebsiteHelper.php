@@ -80,7 +80,7 @@ class WebsiteHelper
                 if ($item->uptime_status == 'up')
                     $html = '<span class="badge badge-success ">Up</span>';
                 else if ($item->uptime_status == 'down')
-                    $html = '<span class="badge badge-danger ">Down</span>';
+                    $html = '<span class="badge badg-deanger ">Down</span>';
                 else
                     $html = '<span class="badge badge-info">' . $item->uptime_status . '</span>';
                 return $html;
